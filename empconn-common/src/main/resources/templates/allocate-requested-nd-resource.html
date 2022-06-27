@@ -1,0 +1,35 @@
+
+<div class="content" th:fragment="allocate-requested-nd-resource-content">
+			<!-- <tr>
+				<td><label th:text="#{allocate.requested.nd.resource.team.greetings}"></label>
+				</td>
+			</tr> -->
+			<tr>
+				<td><label
+					th:text="#{allocate.requested.nd.resource.document(${empName}, ${empId}, ${empTitle}, ${allocationPercentage}, ${newProjectName}, ${dateOfMovement})}"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table class="projectInfo" style="width: 100%;">
+						<tr>
+							<td>
+								<p style="font-weight: 400;">Project Name</p>
+								<p th:text="#{allocate.requested.nd.resource.team.projectName(${newProjectName})}"></p>
+							</td>
+							<td><label>Project Manager</label>
+								<p th:text="#{allocate.requested.nd.resource.team.projectManager(${managerName},${managerId})}"></p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><label th:text="#{greetings.thanks}"></label>
+				</td>
+			</tr>
+			<tr>
+				<td><label th:text="#{allocate.requested.nd.resource.team.clarification}"></label>
+				</td>
+			</tr>
+</div>

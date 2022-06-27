@@ -1,0 +1,33 @@
+<div class="content" th:fragment="allocation-email-reminder-content">
+		<!-- <p th:text="#{allocation.release.date.email.reminder.notification.greetings}"></p> -->
+		<p th:text="#{allocation.release.date.past.email.reminder.notification.document}"></p>		
+		
+		<table class="cranium-tbl" border="1" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<td style="background: transparent; color: #333; padding-left: 0px"
+					colspan="7" valign="top">RELEASE DATE PAST EMAIL NOTIFICATION INFORMATION
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">Emp Name</td>
+				<td valign="top">Emp Code</td>
+				<td valign="top">Account Name</td>
+				<td valign="top">ProjectName</td>
+				<td valign="top">Release Date</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="ri: ${allocation}">
+				<td valign="top"><p th:text="${ri?.empName}"></p></td>
+				<td valign="top"><p th:text="${ri?.empCode}"></p></td>
+				<td valign="top"><p th:text="${ri?.accountName}"></p></td>
+				<td valign="top"><p th:text="${ri?.projectName}"></p></td>
+				<td valign="top"><p th:text="${ri?.releaseDate}"></p></td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<p th:text="#{greetings.thanks}"></p>
+	<p th:text="#{allocation.release.date.past.email.reminder.notification.clarification}"></p>
+	</div>

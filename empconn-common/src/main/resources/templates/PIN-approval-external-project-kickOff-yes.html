@@ -1,0 +1,49 @@
+   <div class="content" th:fragment="pin-approved-external-kickoff-yes-content">
+                 <tr>
+                      <td>
+                          <label th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils1}"></label>
+                      </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table class="projectInfo" style="width: 100%;">
+                                <tr>
+                                    <td>
+                                        <p style="font-weight:400;">Project Name</p>
+                                        	<p th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils2(${projectName})}"></p>
+                                    </td>
+                                    <td>
+                                        <label>Account Name</label>
+                                        	<p th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils3(${accountName})}"></p>
+                                    </td>
+                                    <td>
+                                        <label>GDM Name</label>
+                                        	<p th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils4(${GDMName})}"></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                	<td>
+                                        <label>Start Date</label>
+                                        	<p th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils5(${startDate})}"></p>
+                                    </td>
+                                	<td>
+                                        <label>End Date</label>
+                                        	<p th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils6(${endDate})}"></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                	<td colspan="2">
+                                        <p th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils7(${link})}"></p>
+                                    </td>
+                                    <td>
+                                        <p th:text="#{pin.approved.external.project.kickoff.yes.projectDeatils8(${date})}"></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+             <tr>
+				<td><label th:text="#{greetings.thanks}"></label>
+				</td>
+			</tr>
+  </div>

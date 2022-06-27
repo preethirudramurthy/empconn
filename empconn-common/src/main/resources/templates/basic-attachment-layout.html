@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<style>
+body {
+	font-family: Calibri, sans-serif;
+	font-size: 18px;
+}
+
+.cranium-header-image {
+	line-height: 1.5;
+	background-color: #ebf2f2;
+}
+
+.footer {
+	line-height: 1.5;
+	background-color: #000099;
+	color: white;
+}
+</style>
+</head>
+<body>
+	<div class="cranium-header-image">
+		<img width="250" height="100" src="../images/cranium-logo.png"
+			th:src="|cid:cranium-logo|" alt="Cranium logo"
+			class="cranium-header-logo" />
+	</div>
+
+	<div th:insert="${contentTemplate}">
+	</div>
+
+	<div class="footer">
+		<p th:text="#{attachment.footer}" align="center">TAVANT – PIF -T-001/3.1/14 March 2019	Confidential and Proprietary</p>
+	</div>
+</body>
+</html>

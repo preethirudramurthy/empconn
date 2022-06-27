@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email template</title>
+    <style>
+        /* Importing Fonts   */
+
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+        /* styling part */
+        .container {
+            width: 100%;
+        }
+        .wrapper {
+            width: 900px;
+        }
+        .header {
+            padding: 15px 10px;
+            background: #F7F9FA;
+        }
+        .main {
+            padding: 30px 0;
+        }
+        .mainTitle
+        {
+            font-size: 18px;
+            font-weight: bold;
+        }
+		.header-tbl{
+			width: 100%;
+		}		
+		.header-tbl td{
+			width: 33.33%;
+		}		
+		.header-tbl td p{
+			text-align: center;
+		}
+        .projectInfo
+        {
+            border: 1px solid #ccc;
+            padding: 10px;
+            box-shadow:0px 2px 4px #ccc;
+            margin-bottom: 20px;
+            margin-top: 10px;
+			width: 900px;
+        }
+        .projectInfo td
+        {
+            vertical-align:top;
+            padding: 10px 15px;
+            width:33.33%;
+        }
+        .projectInfo label
+        {
+            color:#ccc;
+            font-size:13px;
+            color: #666;
+            line-height:normal;
+        }
+        .projectInfo p
+        {
+            margin:0;
+            margin-top:2px;
+            color:#000;
+            font-size:14px;
+        }
+		.projectInfo.resourceInfo.pro-checklist td{
+			width:auto;
+		}
+		.projectInfo.resource td{
+			width: auto;
+		}
+        .noteText
+        {
+            font-size:13px;
+            font-weight:normal;
+            display: block;
+        }
+        .success-msg-container {
+            margin: 0 70px;
+            padding: 30px 0;
+            border: 1px solid #f5ede7;
+            background: #fef8f3;
+        }
+        .success-msg {
+            margin: 10px 0 0 0;
+            font-weight: bolder;
+        }
+        .footer {
+            padding: 15px 20px;
+            background: #164575;
+            color: #d0d7e0;
+        }
+
+        .footer-content {
+            margin: 0;
+            text-align: left;
+            line-height: 20px;
+            font-size: 14px;
+        }
+		.resourceInfo
+		{
+			border-collapse: collapse;
+		}
+		.whiteSmokebg
+		{
+			background: #fafafa;
+			border: 1px solid #ddd;
+		}
+		.resourceInfo thead
+		{
+			background:#164575;
+			color:#fff;
+		}
+		.resourceInfo thead td
+		{
+			vertical-align:middle;
+		}
+    </style>
+</head>
+
+<body>
+    <!-- container -->
+
+    <table class="container">
+        <tbody>
+            <tr>
+                <td>
+                    <!-- wrapper -->
+
+                    <table class="wrapper">
+                        <tbody>
+                            <tr>
+                                <!-- Header -->
+
+                                <td class="header">
+								<table class="header-tbl" style="font-family:'Open Sans', sans-serif ;">
+								<tr>
+								<td>
+                                    <img src="data:image/png;base64,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" alt="" width="160px" />
+									</td>
+									<td><p>Project Initiation Form</p></td>
+									<td><p>Tavant Project Initiation</p></td>
+									</tr>
+									</table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="mainTitle" style="font-family:'Open Sans', sans-serif ; padding-top:15px;" colspan="3">Project Information</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table class="projectInfo" style="font-family:'Open Sans', sans-serif ;">
+                                       
+                                        <tr>
+                                            <td>
+                                                <label>Project Name</label>
+                                                <p th:text="${projectInformation?.projectName}"></p>
+                                            </td>
+                                            <td>
+                                                <label>Project Vertical</label>
+                                                <p th:text="${projectInformation?.vertical}"></p>
+                                            </td>
+                                            <td>
+                                                <label>Project Sub-Category</label>
+                                                <p th:text="${projectInformation?.subCategory}"></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>Customer Name</label>
+                                                <p th:text="${projectInformation?.customerName}">
+                                            </td>
+                                            <td>
+                                                <label>Business Manager Name</label>
+                                                <p th:text="${projectInformation?.businessManagerName}"></p>
+                                            </td>
+                                            <td>
+                                                <label>Project Manger Name</label>
+                                                <p th:text="${projectInformation?.projectManagerName}"></p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label>Project Start Date</label>
+                                                <p th:text="${projectInformation?.startDate}"></p>
+                                            </td>
+                                            <td>
+                                                <label>Project End Date</label>
+                                                <p th:text="${projectInformation?.endDate}"></p>
+                                            </td> 
+                                            <td>
+                                                <label>Initiation meeting to be held on</label>
+                                                <p  th:text="${projectInformation?.initialMeetingDate}"></p>
+                                            </td>
+                                            
+                                        </tr>
+                                        <tr>    
+                                            <td>
+                                                <label>Brief scope of the project</label>
+                                                <p th:text="${projectInformation?.scope}"></p>
+                                            </td>                                       
+                                        </tr>
+                                        </table>
+                                </td>
+                            </tr>
+							
+							<tr>
+                          <td class="mainTitle" style="font-family:'Open Sans', sans-serif ;" colspan="3">Associate(s) Information
+                          </td>
+                    </tr>
+					<tr>
+                                <td>
+                                    <table class="projectInfo resourceInfo resource" style="font-family:'Open Sans', sans-serif ;">
+                                        <thead>
+                                            <tr>
+                                                <td>Title</td>
+                                                <td># of associates</td>
+                                                <td>Allocation % age</td>
+                                                <td>Start Date</td>
+                                                <td>End Date</td>
+                                                <td>Primary Skills</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody th:each="ri: ${projectInformation?.resourceInformation}">
+											<tr class="whiteSmokebg">
+                                                <td class="mainTitle small" style="font-family:'Open Sans', sans-serif ;" colspan="6">
+                                                <p th:text="#{pin.approved.team.location(${ri?.location})}"></p>
+                                                </td>
+                                            </tr>
+											<tr>
+												<td><p th:text="${ri?.title}"></p></td>
+												<td><p th:text="${ri?.numberOfResources}"></p></td>
+												<td><p th:text="${ri?.allocationPercentage}"></p></td>
+												<td><p th:text="${ri?.startDate}"></p></td>
+												<td><p th:text="${ri?.endDate}"></p></td>
+												<td><p th:text="${ri?.primarySkills}"></p></td>
+											</tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                    </tr>
+					<tr>
+                          <td class="mainTitle" style="font-family:'Open Sans', sans-serif ;" colspan="3">Project Initiation Information
+                          </td>
+                    </tr>
+					<tr>
+                                <td>
+                                    <table class="projectInfo resourceInfo" style="font-family:'Open Sans', sans-serif ;">
+                                        <thead>
+                                            <tr>
+                                                <td>Initiated By</td>
+                                                <td>Initiated Date</td>
+                                                <td>Approved By</td>
+                                                <td style="white-space:nowrap;">Approved Date</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><p th:text="${projectInformation?.initiatedBy}"></p></td> 
+                                                <td><p th:text="${projectInformation?.initiatedDate}"></p></td>
+                                                <td><p th:text="${projectInformation?.approvedBy}"></p></td> 
+                                                <td><p th:text="${projectInformation?.approvedDate}"></p></td> 
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+					</tr>
+					<tr>
+                          <td class="mainTitle" style="font-family:'Open Sans', sans-serif ;" colspan="3">Project Checklist Information
+                          </td>
+                    </tr>
+					<tr>
+                                <td>
+                                    <table class="projectInfo resourceInfo pro-checklist" style="font-family:'Open Sans', sans-serif ;">
+                                        <thead>
+                                            <tr>
+                                                <td>SL.</td>
+                                                <td>Description</td>
+                                                <td>Comments</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="c, iter: ${projectInformation?.checklist}">
+	                                            <td valign="top"><p th:text="${iter.index+1}"></p></td>
+												<td valign="top"><p th:text="${c.description}"></p></td>
+												<td valign="top"><p th:text="${c.comments}"></p></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                    </tr>
+                            <tr>
+                                <!-- Footer -->
+                                <td class="footer">
+                                    <p class="footer-content" style="font-family:'Open Sans', sans-serif ;">
+										TAVANT – PIF -T-001/3.1/14 March 2019 <span style="padding:0px 10px"> | </span>	Confidential and Proprietary
+									</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>
+

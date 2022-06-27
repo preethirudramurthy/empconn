@@ -1,0 +1,2 @@
+INSERT INTO cranium.nd_request(nd_request_id, employee_id,project_id,percentage,start_date,release_date,is_billable,reporting_manager_id,is_active,created_on,created_by)
+VALUES((nextval('cranium.nd_request_id_sequence')), (select employee_id from cranium.employee where emp_code = 'F0006'), (select project_id from cranium.project where name = 'Central Bench'),100,CURRENT_DATE, CURRENT_DATE,'1',(select employee_id from cranium.employee where emp_code = 'F0006'),true, now(), (select employee_id from cranium.employee where emp_code = 'F0006'));

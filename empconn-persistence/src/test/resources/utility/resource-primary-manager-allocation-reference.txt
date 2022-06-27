@@ -1,0 +1,24 @@
+
+Input File Format:
+reportingManagerCode	empCode
+F0006	N0509
+R0089	R0053
+E0358	R0671
+B0068	R0670
+
+
+Preprocessed Content:
+F0006	N0509
+R0089	R0053
+E0358	R0671
+B0068	R0670
+
+Notepad++ Regexp Find Expression:
+(^[^\t]*)([\t])(.*)
+
+Notepad++ Regexp Replace Expression:
+update cranium.employee set primary_manager_id = \(select employee_id from cranium.employee where emp_code = '$1'\)  where emp_code = '$3';
+
+Result for the first record:
+update cranium.employee set primary_manager_id = (select employee_id from cranium.employee where emp_code = 'F0006')  where emp_code = 'N0509';
+

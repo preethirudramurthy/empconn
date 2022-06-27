@@ -1,0 +1,39 @@
+<div class="content" th:fragment="earmark-project-content">
+	<!-- <p th:text="#{resource.earmark.project.status.change.team.greetings}"></p> -->
+
+	<p th:text="#{resource.earmark.project.document}"></p>
+
+
+	<table class="cranium-tbl" border="0" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<td style="background: transparent; color: #333; padding-left: 0px"
+					colspan="7" valign="top">ASSOCIATES INFORMATION</td>
+			</tr>
+			<tr>
+				<td valign="top">Emp Name</td>
+				<td valign="top">Emp Code</td>
+				<td valign="top">Title</td>
+				<td valign="top">Account Name</td>
+				<td valign="top">ProjectName</td>
+				<td valign="top">Start Date</td>
+				<td valign="top">End Date</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="ri: ${earMark}">
+				<td valign="top"><p th:text="${ri?.empName}"></p></td>
+				<td valign="top"><p th:text="${ri?.empCode}"></p></td>
+				<td valign="top"><p th:text="${ri?.title}"></p></td>
+				<td valign="top"><p th:text="${ri?.accountName}"></p></td>
+				<td valign="top"><p th:text="${ri?.projectName}"></p></td>
+				<td valign="top"><p th:text="${ri?.startDate}"></p></td>
+				<td valign="top"><p th:text="${ri?.endDate}"></p></td>
+			</tr>
+		</tbody>
+	</table>
+	<tr>
+		<td><label th:text="#{greetings.thanks}"></label>
+		</td>
+	</tr>
+</div>

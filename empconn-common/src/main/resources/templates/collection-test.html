@@ -1,0 +1,193 @@
+
+<div class="content">
+	<table border="1" cellspacing="0" cellpadding="0">
+		<tbody>
+			<tr>
+				<td colspan="2" valign="top"><p>
+						<strong>PROJECT INFORMATION</strong>
+					</p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Project Name</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.projectName}"></p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Project Vertical</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.vertical}"></p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Project Sub-Category</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.subCategory}"></p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Customer Name</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.customerName}"></p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Business Manager Name</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.businessManagerName}"></p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Project Manager Name</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.projectManagerName}"></p>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Brief scope of the project</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.scope}"></p>
+
+				</td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Initiation meeting to be held on</strong>
+					</p></td>
+				<td valign="top"><p  th:text="${projectInformation?.initialMeetingDate}"></p>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Project Start Date</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.startDate}"></p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Project End Date</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.endDate}"></p></td>
+			</tr>
+
+		</tbody>
+	</table>
+	<br /> <br /> <br />
+	<table border="1" cellspacing="0" cellpadding="0">
+		<tbody>
+			<tr>
+				<td colspan="7" valign="top"><p>
+						<strong>ASSOCIATES INFORMATION</strong>
+					</p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Location</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong>Title</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong># of resources</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong>Alloc. % age</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong>Start Date</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong>End Date</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong>Primary Skills</strong>
+					</p></td>
+			</tr>
+
+			<tr th:each="ri: ${projectInformation?.resourceInformation}">
+				<td valign="top"><p th:text="${ri?.location}"></p></td>
+				<td valign="top"><p th:text="${ri?.title}"></p></td>
+				<td valign="top"><p th:text="${ri?.numberOfResources}"></p></td>
+				<td valign="top"><p th:text="${ri?.allocationPercentage}"></p></td>
+				<td valign="top"><p th:text="${ri?.startDate}"></p></td>
+				<td valign="top"><p th:text="${ri?.endDate}"></p></td>
+				<td valign="top"><p th:text="${ri?.primarySkills}"></p></td>/
+			<tr>
+		</tbody>
+	</table>
+	<br /> <br /> <br />
+	<table border="1" cellspacing="0" cellpadding="0">
+		<tbody>
+			<tr>
+				<td colspan="4" valign="top"><p>
+						<strong>PROJECT INITIATION INFORMATION</strong>
+					</p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Initiated By</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.initiatedBy}">NA</p></td>
+				<td valign="top"><p>
+						<strong>Initiated Date</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.initiatedDate}">NA</p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Approved By</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.approvedBy}">NA</p></td>
+				<td valign="top"><p>
+						<strong>Approved Date</strong>
+					</p></td>
+				<td valign="top"><p th:text="${projectInformation?.approvedDate}">NA</p></td>
+			</tr>
+
+		</tbody>
+	</table>
+
+	<br /> <br /> <br />
+	<table border="1" cellspacing="0" cellpadding="0">
+		<tbody>
+			<tr>
+				<td colspan="3" valign="top"><p>
+						<strong>PROJECT CHECKLIST INFORMATION</strong>
+					</p></td>
+			</tr>
+
+			<tr>
+				<td valign="top"><p>
+						<strong>Sl.</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong>DESCRIPTION</strong>
+					</p></td>
+				<td valign="top"><p>
+						<strong>COMMENTS</strong>
+					</p></td>
+			</tr>
+
+			<tr th:each="c, iter: ${projectInformation?.checklist}">
+				<td valign="top"><p th:text="${iter.index}"></p></td>
+				<td valign="top"><p th:text="${c.description}"></p></td>
+				<td valign="top"><p th:text="${c.comments}"></p></td>
+			</tr>
+
+		</tbody>
+	</table>
+
+</div>

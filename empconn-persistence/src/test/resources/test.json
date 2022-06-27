@@ -1,0 +1,19 @@
+{
+	"empCode": "W0200",
+	"firstName": "Ankush",
+	"middleName": " ",
+	"lastName": "Singh",
+	"isActive": true,
+	"lwd": " ",
+	"email": "ankush.singh@tavant.com",
+	"loginId": "ankush.singh",
+	"locationGroup": "Bangalore",
+	"title": "Software Engineer",
+	"businessUnit": "Delivery",
+	"division": "Delivery",
+	"department": "Dev",
+	"reportingManagerId": "M0050",
+	"gdmId": "M0050",
+	"dateOfJoining": "02-01-2020",
+	"isManager": false
+} 

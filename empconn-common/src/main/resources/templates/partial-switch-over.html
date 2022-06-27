@@ -1,0 +1,11 @@
+<div class="content" th:fragment="partial-switch-over-content">
+	<!-- <p th:text="#{partial.switch.over.team.greetings}"></p> -->
+
+	<p th:text="#{partial.switch.over.document(${empName}, ${empId}, ${empTitle}, ${existingProject}, ${existingProjectPercentage}, ${newProject}, ${newProjectPercentage}, ${dateOfMovement})}"></p>
+
+	<p th:text="#{greetings.thanks}"></p>
+
+	<p th:text="#{partial.switch.over.team.clarification}"></p>
+
+</div>
+

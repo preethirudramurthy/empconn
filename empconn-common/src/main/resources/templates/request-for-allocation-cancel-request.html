@@ -1,0 +1,37 @@
+<div class="content" th:fragment="request-for-allocation-cancel-request-content">
+	<!-- 	<p th:text="#{request.for.allocation.cancel.request.team.greetings}"></p> -->
+		<p th:text="#{request.for.allocation.cancel.request.static}"></p>
+		<table class="cranium-tbl" border="0" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<td style="background: transparent; color: #333; padding-left: 0px"
+					colspan="7" valign="top">ASSOCIATE INFORMATION</td>
+			</tr>
+			<tr>
+				<td valign="top">Emp ID</td>
+				<td valign="top">Associate Name</td>
+				<td valign="top">Requested Account</td>
+				<td valign="top">Requested Project</td>
+				<td valign="top">Allocation %</td>
+				<td valign="top">Allocation Start Date</td>
+				<td valign="top">Tentative Release End Date</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="ri: ${cancelNDRequest}">
+				<td valign="top"><p th:text="${ri?.empId}"></p></td>
+				<td valign="top"><p th:text="${ri?.resourceName}"></p></td>
+				<td valign="top"><p th:text="${ri?.requestedAccount}"></p></td>
+				<td valign="top"><p th:text="${ri?.requestedProject}"></p></td>
+				<td valign="top"><p th:text="${ri?.allocation}"></p></td>
+				<td valign="top"><p th:text="${ri?.allocStartDate}"></p></td>
+				<td valign="top"><p th:text="${ri?.tentativeReleaseEndDate}"></p></td>
+			</tr>
+		</tbody>
+	</table>
+	<tr>
+		<td><label th:text="#{greetings.thanks}"></label>
+		</td>
+	</tr>
+</div>	
+	

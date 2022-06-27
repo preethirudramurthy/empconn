@@ -1,0 +1,47 @@
+
+<div class="content" th:fragment="project-status-change-content">
+		<!-- 	<tr>
+				<td><label th:text="#{nd.request.allocation.greetings}"></label></td>
+			</tr> -->
+			<tr>
+				<td><label th:text="#{nd.request.allocation.static}"></label></td>
+			</tr>
+			<tr>
+				<td>
+					<table class="projectInfo" style="width: 100%;">
+						<tr>
+							<td>
+								<p style="font-weight: 400;">Emp Id</p>
+								<p th:text="#{nd.request.allocation.static.empId(${empId})}"></p>
+							</td>
+							<td><label>Associate Name</label>
+								<p th:text="#{nd.request.allocation.static.resourceName(${resourceName})}"></p>
+							</td>
+							<td><label>Requested Account</label>
+								<p th:text="#{nd.request.allocation.static.requestedAccount(${requestedAccount})}"></p>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Requested Project</label>
+								<p th:text="#{nd.request.allocation.static.requestedProject(${requestedProject})}"></p>
+							</td>
+							<td><label>Allocation Percentage</label>
+								<p th:text="#{nd.request.allocation.static.allocation(${allocation})}"></p>
+							</td>
+						</tr>
+						<tr>
+							<td><label>Allocation Start Date</label>
+								<p th:text="#{nd.request.allocation.startDate(${startDate})}"></p>
+							</td>
+							<td><label>Tentative Release Date</label>
+								<p th:text="#{nd.request.allocation.endDate(${endDate})}"></p></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><label th:text="#{greetings.thanks}"></label>
+				</td>
+			</tr>
+</div>
+

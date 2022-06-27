@@ -1,0 +1,41 @@
+<div class="content" th:fragment="allocate-earmarked-unearmerk-content">
+
+	<!-- <p th:text="#{allocate.earmarked.resource.unearmarked.greetings}"></p> -->
+
+	<p th:text="#{allocate.earmarked.resource.unearmarked.resource.details}"></p>
+	
+	<table class="cranium-tbl" border="0" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<td style="background: transparent; color: #333; padding-left: 0px"
+					colspan="7" valign="top">ASSOCIATES INFORMATION</td>
+			</tr>
+			<tr>
+				<td valign="top">Emp Name</td>
+				<td valign="top">Emp Code</td>
+				<td valign="top">Title</td>
+				<td valign="top">Account Name</td>
+				<td valign="top">ProjectName</td>
+				<td valign="top">Start Date</td>
+				<td valign="top">End Date</td>
+				<td valign="top">Billable</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.one(${employeeId})}"></p></td>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.two(${employeeName})}"></p></td>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.three(${title})}"></p></td>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.four(${accountName})}"></p></p></td>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.five(${projectName})}"></p></td>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.six(${startDate})}"></p></td>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.seven(${endDate})}"></p></td>
+				<td valign="top"><p th:text="#{allocate.earmarked.resource.unearmarked.resource.details.eight(${isBillable})}"></p></td>
+			</tr>
+		</tbody>
+	</table>
+	<tr>
+		<td><label th:text="#{greetings.thanks}"></label>
+		</td>
+	</tr>
+</div>

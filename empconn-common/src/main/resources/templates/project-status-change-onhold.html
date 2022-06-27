@@ -1,0 +1,7 @@
+	
+            <div class="content" th:fragment="project-status-change-onhold-content">
+               	
+               <!-- 	 <p th:text="#{project.status.change.onhold.team.greetings}"></p> -->
+                 <p th:text="#{project.status.change.onhold.document(${projectName}, ${verticalName}, ${startDate}, ${endDate}, ${oldProjectStatus}, ${newProjectStatus})}"></p>
+                 <p th:text="#{greetings.thanks}"></p>
+            </div>          

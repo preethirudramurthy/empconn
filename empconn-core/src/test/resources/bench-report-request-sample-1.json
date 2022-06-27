@@ -1,0 +1,22 @@
+{
+  "benchProjectIdList": [],
+  "orgLocationIdList": [
+    "100",
+    "104",
+    "102",
+    "106"
+  ],
+  "titleIdList": [
+    "123",
+    "177"
+  ],
+  "primarySkillId": "126",
+  "secondarySkillIdList": [
+    "1103",
+    "1104"
+  ],
+  "benchAgeFrom": "50",
+  "benchAgeTo": "100",
+  "availablePercentageLow": "50",
+  "availablePercentageHigh": "100"
+}

@@ -1,0 +1,1 @@
+ALTER TABLE cranium.earmark DROP COLUMN status;

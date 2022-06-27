@@ -1,0 +1,38 @@
+
+<div class="content" th:fragment="project-status-change-content">
+			<!-- <tr>
+				<td><label
+					th:text="#{project.status.change.team.greetings}"></label>
+				</td>
+			</tr> -->
+			<tr>
+				<td><label
+					th:text="#{resource.reporting-manager.change.document(${manager})}"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table class="projectInfo" style="width: 100%;">
+						<tr>
+							<td>
+								<p style="font-weight: 400;">Employee</p>
+								<p th:text="#{resource.employee-name.document(${employeeName})}"></p>
+							</td>
+							<td><label>Employee ID</label>
+								<p th:text="#{resource.employee-id.document(${empCode})}"></p></td>
+						</tr>
+						<tr>
+							<td><label>Title</label>
+								<p th:text="#{resource.title.document(${title})}"></p></td>
+							<td><label>Project Name</label>
+								<p th:text="#{resource.project-name.document(${projectName})}"></p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><label th:text="#{greetings.thanks}"></label>
+				</td>
+			</tr>
+</div>

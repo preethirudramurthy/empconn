@@ -1,0 +1,13 @@
+<div class="content" th:fragment="pin-resubmit-content">
+	<!-- <tr>
+		<td><label th:text="#{pin.resubmit.greetings}"></label></td>
+	</tr> -->
+	<tr>
+		<td><label
+			th:text="#{pin.resubmit.message(${projectName}, ${link})}"></label></td>
+	</tr>
+	<tr>
+		<td><label th:text="#{greetings.thanks}"></label>
+		</td>
+	</tr>
+</div>

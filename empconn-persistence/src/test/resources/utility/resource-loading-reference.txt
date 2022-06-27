@@ -1,0 +1,25 @@
+
+Input File Format:
+empCode	email	firstName	lastName	loginId	dateOfJoining	title	businessUnit	division	department	location	isActive	isManager	reportingManagerCode
+N0509	sreeram.v@tavant.com	Sreeram	Venkataramani	sreeram.v	12/21/2015	Sr. Business Architect	Delivery	Delivery	Dev	Bangalore	Active	No	F0006
+R0053	sneha.k@tavant.com	Sneha	Kumari	sneha.k	2/11/2019	Sr. Software Engineer	Delivery	Delivery	Dev	Bangalore	Active		R0089
+R0671	anthony.calderon@tavant.com	Anthony	Calderon	anthony.calderon	11/18/2019	Manager - Sales	Sales & Marketing	Sales & Marketing	Sales	United States	Active	No	E0358
+R0670	vijender.rondla@tavant.com	Vijender	Rondla	vijender.rondla	11/20/2019	Associate Project Director	Delivery	Delivery	Dev	United States	Active	No	B0068
+
+
+Preprocessed Content:
+N0509', 'sreeram.v@tavant.com', 'Sreeram', 'Venkataramani', 'sreeram.v', '12/21/2015', 'Sr. Business Architect', 'Delivery', 'Delivery', 'Dev', 'Bangalore', true, false
+R0053', 'sneha.k@tavant.com', 'Sneha', 'Kumari', 'sneha.k', '2/11/2019', 'Sr. Software Engineer', 'Delivery', 'Delivery', 'Dev', 'Bangalore', true, false
+R0671', 'anthony.calderon@tavant.com', 'Anthony', 'Calderon', 'anthony.calderon', '11/18/2019', 'Manager - Sales', 'Sales & Marketing', 'Sales & Marketing', 'Sales', 'United States', true, false
+R0670', 'vijender.rondla@tavant.com', 'Vijender', 'Rondla', 'vijender.rondla', '11/20/2019', 'Associate Project Director', 'Delivery', 'Delivery', 'Dev', 'United States', true, false
+
+
+Notepad++ Regexp Find Expression:
+(^[^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', ')([^']*)(', )([^,]*)(, )(.*)
+
+Notepad++ Regexp Replace Expression:
+insert into cranium.employee\(employee_id, emp_code, email, first_name, last_name, login_id, date_of_joining, title_id, business_unit_id, division_id, department_id, location_id, is_active, is_manager, created_on, created_by\) values\(nextval\('cranium.employee_id_sequence'\), '$1$2$3$4$5$6$7$8$9$10$11', \(select title_id from cranium.title where name = '$13'\), \(select business_unit_id from cranium.business_unit where name = '$15'\), \(select division_id from cranium.division where name = '$17'\), \(select department_id from cranium.department where name = '$19'\), \(select location_id from cranium.location where name = '$21'\), $23$24$25, now\(\), 1\);
+
+
+Result for the first record:
+insert into cranium.employee(employee_id, emp_code, email, first_name, last_name, login_id, date_of_joining, title_id, business_unit_id, division_id, department_id, location_id, is_active, is_manager, created_on, created_by) values(nextval('cranium.employee_id_sequence'), 'N0509', 'sreeram.v@tavant.com', 'Sreeram', 'Venkataramani', 'sreeram.v', '12/21/2015', (select title_id from cranium.title where name = 'Sr. Business Architect'), (select business_unit_id from cranium.business_unit where name = 'Delivery'), (select division_id from cranium.division where name = 'Delivery'), (select department_id from cranium.department where name = 'Dev'), (select location_id from cranium.location where name = 'Bangalore'), true, false, now(), 1);

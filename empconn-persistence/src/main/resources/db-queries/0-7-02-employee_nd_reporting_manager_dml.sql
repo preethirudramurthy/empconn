@@ -1,0 +1,3 @@
+update cranium.employee set nd_reporting_manager_id=(select employee_id from cranium.employee where emp_code='R0362') where department_id=(select department_id from cranium.department where name='Resource Management Group') and nd_reporting_manager_id is null;
+update cranium.employee set nd_reporting_manager_id=(select employee_id from cranium.employee where emp_code='CS475') where department_id=(select department_id from cranium.department where name='SEPG') and nd_reporting_manager_id is null;
+update cranium.employee set nd_reporting_manager_id=(select employee_id from cranium.employee where emp_code='CS475') where department_id=(select department_id from cranium.department where name='PMO') and nd_reporting_manager_id is null;

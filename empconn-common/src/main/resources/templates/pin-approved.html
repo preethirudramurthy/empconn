@@ -1,0 +1,21 @@
+<div class="content" th:fragment="pin-approved-content">
+	<tr>
+		<td><label
+			th:text="#{pin.approved.pin.document(${projectName}, ${projectInitiator})}"></label>
+		</td>
+	</tr>
+	<tr>
+		<td><label
+			th:text="#{pin.approved.clarification.contact(${projectInitiator})}"></label>
+		</td>
+	</tr>
+	<tr>
+		<td><label
+			th:text="${projectKickoffRequired} ? #{pin.approved.kickoff.meeting(${projectInitiator}, ${meetingDate})} : ''"></label>
+		</td>
+	</tr>
+	<tr>
+	   <td><label th:text="#{greetings.thanks}"></label>
+	   </td>
+	</tr>
+</div>

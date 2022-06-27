@@ -1,0 +1,90 @@
+package com.empconn.mapper;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+
+import com.google.common.base.Strings;
+import com.empconn.constants.ApplicationConstants;
+import com.empconn.dto.AllocationReportResponseDto;
+import com.empconn.persistence.entities.Allocation;
+import com.empconn.persistence.entities.Employee;
+import com.empconn.persistence.entities.EmployeeSkill;
+import com.empconn.repositories.EmployeeSkillRepository;
+
+@Mapper(componentModel = "spring", uses = {CommonQualifiedMapper.class})
+public abstract class AllocationToAllocationReportResponseDtoMapper {
+
+	@Autowired
+	private EmployeeSkillRepository employeeSkillRepository;
+
+	@Mapping(source = "allocationId", target = "allocationDetailId")
+	@Mapping(source = "project.account.name", target = "accountName")
+	@Mapping(source = "employee.empCode", target = "empCode")
+	@Mapping(source = "employee.fullName", target = "empFullName")
+	@Mapping(source = "allocation", target = "gdmFullName", qualifiedByName = "getGdmName")
+	@Mapping(source = "employee.location.name", target = "location")
+	@Mapping(source = "allocation", target = "percentage", qualifiedByName = "mergedAllocatedPercentage")
+	@Mapping(source = "employee", target = "primarySkillSet", qualifiedByName = "getPrimarySkillNames")
+	@Mapping(source = "project.name", target = "projectName")
+	@Mapping(source = "employee.primaryAllocation.reportingManagerId.fullName", target = "reportingManager")
+	@Mapping(source = "employee", target = "secondSkillSet", qualifiedByName = "getSecondarySkillNames")
+	@Mapping(source = "employee.title.name", target = "title")
+	@Mapping(source = "workGroup.name", target = "workgroup")
+	@Mapping(source = "releaseDate", target = "releaseDate", qualifiedByName = "Date_ddmmmyyyy_To_String")
+	@Mapping(source = "allocation", target = "startDate", qualifiedByName = "allocationStartDateFormatted")
+	public abstract AllocationReportResponseDto convert(Allocation allocation);
+
+	public abstract List<AllocationReportResponseDto> convert(List<Allocation> allocations);
+
+	/*@Named("getStartDate")
+	public static LocalDate getStartDate(List<AllocationDetail> allocationDetails) {
+
+		final Comparator<AllocationDetail> allocationDetailStartDateComparator = Comparator
+				.comparing(AllocationDetail::getStartDate, Date::compareTo);
+
+		final AllocationDetail allocationDetail = sortAndGetAllocationDetail(allocationDetails,
+				allocationDetailStartDateComparator);
+
+		if (null == allocationDetail)
+			return null;
+		return dateToLocalDate(allocationDetail.getStartDate());
+
+	}
+
+	private static AllocationDetail sortAndGetAllocationDetail(final List<AllocationDetail> allocationDetails,
+			final Comparator<AllocationDetail> comparator) {
+		allocationDetails.sort(comparator);
+
+		if (allocationDetails.isEmpty())
+			return null;
+		else
+			return allocationDetails.get(allocationDetails.size() - 1);
+	}*/
+
+	@Named("getGdmName")
+	public static String getGdmName(Allocation allocation) {
+		final String qeGdmId = allocation.getProject().getEmployee2() != null ? allocation.getProject().getEmployee2().getFullName() : "";
+		final String devGdmId = allocation.getProject().getEmployee1() != null ? allocation.getProject().getEmployee1().getFullName() : "";
+
+		String gdm = allocation.getWorkGroup().getName().equalsIgnoreCase(ApplicationConstants.QA_WORK_GROUP) ? qeGdmId : devGdmId;
+
+		//If it is still not assigned then assign whichever GDM is present.
+		if(Strings.isNullOrEmpty(gdm)) {
+			if(!Strings.isNullOrEmpty(devGdmId)) {
+				gdm = devGdmId;
+			}else {
+				gdm = qeGdmId;
+			}
+		}
+		return gdm;
+	}
+
+}

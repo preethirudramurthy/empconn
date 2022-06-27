@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<style>
+body {
+	font-family: Calibri, sans-serif;
+	font-size: 18px;
+}
+.cranium-tbl thead td{
+	vertical-align:middle;
+	background:#164575;
+	color:#fff;
+}
+.cranium-tbl td{
+	padding: 10px 15px;
+	font-size: 14px;
+}
+.cranium-tbl td p{
+	margin-bottom: 0px;
+}
+.cranium-header-image {
+	line-height: 1.5;
+	background-color: #ebf2f2;
+}
+.cranium-tbl tr.whiteSmokebg {
+	background: #fafafa;
+	    border: 1px solid #ddd;
+}
+.cranium-tbl table{
+	width: 100%;
+}
+.footer {
+	line-height: 1.5;
+	background-color: #000099;
+	color: white;
+	padding: 15px 20px;
+}
+.footer p{
+	margin:0px;
+}
+.cranium-tbl table td p{
+	margin: 0px;
+}
+.container {
+      width: 100%;
+}
+.wrapper {
+    width: 700px;
+}
+.header {
+    padding: 5px 20px;
+    background: #F7F9FA;
+}
+.main {
+    padding: 30px 0;
+}
+.mainTitle {
+    font-size: 18px;
+    font-weight: bold;
+}
+.projectInfo {
+    border: 1px solid #ccc;
+    box-shadow:0px 2px 4px #ccc;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.projectInfo td {
+    vertical-align:top;
+    padding: 10px 15px;
+    width:33.33%;
+}
+.projectInfo label {
+    font-size:13px;
+    color: #666;
+    line-height:normal;
+}
+.projectInfo p {
+    margin:0;
+    margin-top:2px;
+    color:#333;
+    font-weight:bold;
+    font-size:14px;
+}
+.noteText {
+    font-size:13px;
+    font-weight:normal;
+    display: block;
+}
+.success-msg-container {
+    margin: 0 70px;
+    padding: 30px 0;
+    border: 1px solid #f5ede7;
+    background: #fef8f3;
+}
+.success-msg {
+    margin: 10px 0 0 0;
+    font-weight: bolder;
+}
+</style>
+</head>
+<body>
+<table class="cranium-tbl" width="800px" cellspacing="0" cellpadding="0">
+<tr>
+<td>
+	<div class="cranium-header-image">
+		<img width="250" height="100" src="../images/cranium-logo.png"
+			th:src="|cid:cranium-logo|" alt="Cranium logo"
+			class="cranium-header-logo" />
+	</div>
+</td>
+</tr>
+<tr>
+<td>
+	<div th:insert="${contentTemplate}">
+	</div>
+</td>
+	</tr>
+<tr>
+<td>
+	<div class="footer">
+		<p align="center">This is a
+			notification mail, Please do not reply to this mail.</p>
+	</div>
+	
+	<div th:if="${displayMailAddresses == 'T'}">
+		<p> To List : </p> <p th:text="${toMailList}"> </p><br />
+		<p> Cc List : </p> <p th:text="${ccMailList}"> </p>
+	</div>
+	
+</td>
+</tr>
+</table>	
+</body>
+</html>

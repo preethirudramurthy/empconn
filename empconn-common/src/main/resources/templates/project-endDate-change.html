@@ -1,0 +1,35 @@
+
+<div class="content" th:fragment="project-endDate-change-content">
+	<!-- <p th:text="#{project.endDate.change.team.greetings}"></p> -->
+
+	<p th:text="#{project.endDate.change.document(${projectName}, ${originalDate}, ${newDate})}"></p>
+
+	<p th:text="#{project.endDate.change.clarification(${link})}"></p>
+
+	<table class="cranium-tbl" border="0" cellspacing="0" cellpadding="0">
+		<thead>
+			<tr>
+				<td style="background: transparent; color: #333; padding-left: 0px"
+					colspan="7" valign="top">ASSOCIATES INFORMATION</td>
+			</tr>
+			<tr>
+				<td valign="top">Emp ID</td>
+				<td valign="top">Emp Name</td>
+				<td valign="top">Original Release Date</td>
+				<td valign="top">New Release Date</td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="ri: ${allocation}">
+				<td valign="top"><p th:text="${ri?.empCode}"></p></td>
+				<td valign="top"><p th:text="${ri?.empName}"></p></td>
+				<td valign="top"><p th:text="${ri?.originalDate}"></p></td>
+				<td valign="top"><p th:text="${ri?.releaseDate}"></p></td>
+			</tr>
+		</tbody>
+	</table>
+	<tr>
+		<td><label th:text="#{greetings.thanks}"></label>
+		</td>
+	</tr>
+</div>

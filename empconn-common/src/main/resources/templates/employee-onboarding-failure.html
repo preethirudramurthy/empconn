@@ -1,0 +1,89 @@
+<div class="content" th:fragment="employee-onboarding-failure-content">
+		<p>This is to inform you the onboarding of employee from SF to Cranium has failed for the following:</p>
+		
+		<table class="projectInfo" style="width: 100%;">
+			<thead>
+				<tr>
+					<td>
+						<p style="font-weight: 400;">Employee Id</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">First Name</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Last Name</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Title</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Location</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Business Unit</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Division</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Department</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Reporting Manager</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">GDM</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Login id</p>
+					</td>
+					<td>
+						<p style="font-weight: 400;">Email id</p>
+					</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.empCode}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.firstName}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.lastName}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.title}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.locationGroup}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.businessUnit}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.division}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.department}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.reportingManagerId}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.gdmId}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.loginId}"></p>
+					</td>
+					<td>
+						<p style="font-weight: 400;" th:text="${employee?.email}"></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	<p>Please update the required data in SF for a successful sync</p>
+    <p>Note : Blank indicates missing data from SF</p> 
+	
+</div>

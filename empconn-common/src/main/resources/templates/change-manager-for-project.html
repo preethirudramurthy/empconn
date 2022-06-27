@@ -1,0 +1,42 @@
+
+<div class="content" th:fragment="project-status-change-content">
+			<!-- <tr>
+				<td><label th:text="#{project.status.change.team.greetings}"></label>
+				</td>
+			</tr> -->
+			<tr>
+				<td><label
+					th:text="#{project.manager.change.document(${managerName}, ${projectName}, ${startDate})}"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table class="projectInfo" style="width: 100%;">
+						<tr>
+							<td>
+								<p style="font-weight: 400;">Project</p>
+								<p th:text="#{project.project-name.change.document(${projectName})}"></p>
+							</td>
+							<td><label>Account</label>
+								<p th:text="#{project.account-name.change.document(${accountName})}"></p>
+							</td>
+							<td><label>Old Manager</label>
+								<p th:text="#{project.old.manager-name.change.document(${oldmanagerName})}"></p>
+							</td>
+						</tr>
+						<tr>
+							<td><label>New Manager</label>
+								<p th:text="#{project.manager-name.change.document(${managerName})}"></p>
+							</td>
+							<td><label>Location</label>
+								<p th:text="#{project.location-name.change.document(${location})}"></p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			 <tr>
+				<td><label th:text="#{greetings.thanks}"></label>
+				</td>
+			</tr>
+</div>

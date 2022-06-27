@@ -1,0 +1,5 @@
+<div class="content" th:fragment="auto-cancel-allocation-for-request-content">
+		<!-- <p th:text="#{auto.cancel.allocation.for.request.team.greetings}"></p> -->
+		<p th:text="#{auto.cancel.allocation.for.request.document(${resourceName}, ${projectName}, ${allocation}, ${allocStartDate}, ${TentativeReleaseEndDate})}"></p>	
+		<p th:text="#{greetings.thanks}"></p>
+</div>

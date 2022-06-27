@@ -1,0 +1,36 @@
+
+<div class="content" th:fragment="allocate-earmarked-content">
+	<!-- <tr>
+		<td><label th:text="#{allocate.earmarked.resource.greetings}"></label>
+		</td>
+	</tr> -->
+	<tr>
+		<td><label
+			th:text="#{allocate.earmarked.resource.resource.details(${employeeName}, ${employeeId}, ${employeeTitle}, ${allocationPercent}, ${projectName}, ${dateOfMovement})}"></label>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table class="projectInfo" style="width: 100%;">
+				<tr>
+					<td>
+						<p style="font-weight: 400;">Project Name</p>
+						<p th:text="#{allocate.earmarked.resource.project.name(${projectName})}"></p>
+					</td>
+					<td><label>Project Manager</label>
+						<p th:text="#{allocate.earmarked.resource.project.manager(${reportingManagerName}, ${reportingManagerId})}"></p>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td><label th:text="#{greetings.thanks}"></label>
+		</td>
+	</tr>
+	<tr>
+		<td><label th:text="#{allocate.earmarked.resource.clarification}"></label>
+		</td>
+	</tr>
+	
+</div>

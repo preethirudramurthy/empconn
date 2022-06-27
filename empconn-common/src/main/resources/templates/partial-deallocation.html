@@ -1,0 +1,12 @@
+
+<div class="content" th:fragment="partial-deallocation-content">
+
+	<!-- <p th:text="#{partial.deallocation.team.greetings}"></p> -->
+
+	<p th:text="#{partial.deallocation.document(${empName}, ${empId}, ${empTitle}, ${projectName}, ${remainingPercentage}, ${dateOfDeallocation})}"></p>
+
+	<p th:text="#{greetings.thanks}"></p>
+
+	<p th:text="#{partial.deallocation.team.clarification}"></p>
+
+</div>

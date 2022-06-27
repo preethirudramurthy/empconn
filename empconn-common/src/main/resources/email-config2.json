@@ -1,0 +1,314 @@
+{
+	"pin-approved": {
+		"to": ["pimn@tavant.com"],
+		"cc": [ ],
+		"subject": "Pin Approved attachment",
+		"template": "pin-approved", 
+		"layout": "basic-mail-layout.html",
+		"attachmentTemplate": "pin-approved-attachment",
+		"attachmentLayout": "text-attachment-layout.html",
+		"attachmentFileName": "PINDocument.html"
+	},
+	"mail-health-check": {
+		"to": [
+			"dinesh.ilangovan@tavant.com"
+		],
+		"cc": [
+			"dinesh.ilangovan@tavant.com"
+		],
+		"subject": "Mail Health Check",
+		"subjectTemplateContent": "Mail Health Check of ${environmentName} environment",
+		"layout": "basic-mail-layout.html"
+	},
+		"resource-un-earmark": {
+		"to": [],
+		"cc": [],
+		"subject": "Mail Notification for Resource Unearmark",
+		"template": "resource-un-earmark",
+		"layout": "basic-mail-layout.html"
+     },
+	"project-status-change-active": {
+		"to": [],
+		"cc": [
+			"rmg@tavant.com",
+			"finance@tavant.com"
+		],
+		"subject": "Project Status Changed",
+		"template": "project-status-change-active",
+		"layout": "basic-mail-layout.html"
+	},
+	"project-status-change-onhold": {
+		"to": [],
+		"cc": [
+			"rmg@tavant.com",
+			"finance@tavant.com"
+		],
+		"subject": "Project Status Changed",
+		"template": "project-status-change-onhold",
+		"layout": "basic-mail-layout.html"
+	},
+	"project-status-change-inactive": {
+		"to": [],
+		"cc": [
+			"rmg@tavant.com",
+			"finance@tavant.com"
+		],
+		"subject": "Project Status Changed",
+		"template": "project-status-change-inactive",
+		"layout": "basic-mail-layout.html"
+	},
+	"pin-approved-attachment": {
+		"to": [ ],
+		"cc": [ ],
+		"subject": "PIN Approved Attachment",
+		"template": "pin-approved-attachment",
+		"layout": "text-attachment-layout.html"
+	},
+	"pin-reject-email": {
+		"to": [],
+		"cc": [
+			"pmo@tavant.com"
+		],
+		"subject": "Pin reject email",
+		"template": "pin-reject-email",
+		"layout": "basic-mail-layout.html"
+	},
+	"PIN-approval-external-project-kickOff-yes": {
+		"to": [],
+		"cc": [],
+		"subject": "Pin approved email",
+		"template": "PIN-approval-external-project-kickOff-yes",
+		"layout": "basic-mail-layout.html"
+	},
+	"PIN-approval-external-project-kickOff-no": {
+		"to": [],
+		"cc": [],
+		"subject": "Pin approved email",
+		"template": "PIN-approval-external-project-kickOff-no",
+		"layout": "basic-mail-layout.html"
+	},
+	"PIN-approval-internal-project-kickOff-no-Notification-no": {
+		"to": [],
+		"cc": [],
+		"subject": "Pin approved email",
+		"template": "PIN-approval-internal-project-kickOff-no-Notification-no",
+		"layout": "basic-mail-layout.html"
+	},
+	"PIN-approval-internal-project-kickOff-yes-Notification-no": {
+		"to": [],
+		"cc": [],
+		"subject": "Pin approved email",
+		"template": "PIN-approval-internal-project-kickOff-yes-Notification-no",
+		"layout": "basic-mail-layout.html"
+	},
+	"PIN-approval-internal-project-kickOff-yes-Notification-yes": {
+		"to": [],
+		"cc": [],
+		"subject": "Pin approved email",
+		"template": "PIN-approval-internal-project-kickOff-yes-Notification-yes",
+		"layout": "basic-mail-layout.html"
+	},
+	"resource-earmark-project": {
+		"to": [ ],
+		"cc": [ ],
+		"subject": "Mail Notification for Resource earmark",
+		"template": "resource-earmark-project",
+		"layout": "basic-mail-layout.html"
+     },
+     "pin-initiated": {
+		"subject": "Pin Initiated",
+		"template": "pin-initiated",
+		"layout": "basic-mail-layout.html"
+	},
+	"pin-reviewed": {
+	"to": [
+			"pmo@tavant.com"
+		],
+		"subject": "Pin Reviewed",
+		"template": "pin-reviewed",
+		"layout": "basic-mail-layout.html"
+	},
+	"pin-rejected-gdm": {
+	"cc": [
+			"pmo@tavant.com"
+		],
+		"subject": "Pin Rejected",
+		"template": "pin-rejected-gdm",
+		"layout": "basic-mail-layout.html"
+	},
+	"pin-sentback": {
+	"cc": [
+			"pmo@tavant.com"
+		],
+		"subject": "Pin Sent back",
+		"template": "pin-sentback",
+		"layout": "basic-mail-layout.html"
+	},
+	"pin-resubmit": {
+		"subject": "Pin Re-submit",
+		"template": "pin-resubmit",
+		"layout": "basic-mail-layout.html"
+	},
+	"switch-over-to": {
+		"to": [
+			"rmg@tavant.com",
+			"serversupport@tavant.com",
+			"desktopsupport@tavant.com",
+			"facilities@tavant.com",
+			"infosec@tavant.com",
+			"networksupport@tavant.com",
+			"tools@tavant.com"
+		],
+		"cc": [
+			"pmo@tavant.com",
+			"krishnan.pp@tavant.com"
+		],
+		"subject": "Mail Notification for Employee Transfer",
+		"template": "switch-over-to",
+		"layout": "basic-mail-layout.html"
+     },
+     "partial-switch-over": {
+		"to": [
+			
+		],
+		"cc": [
+			"rmg@tavant.com",
+			"pmo@tavant.com"
+		],
+		"subject": "Mail Notification for Resource Partial Deallocation",
+		"template": "partial-switch-over",
+		"layout": "basic-mail-layout.html"
+     },
+     "switch-over-from": {
+		"to": [
+			"serversupport@tavant.com",
+			"desktopsupport@tavant.com",
+			"facilities@tavant.com",
+			"infosec@tavant.com",
+			"networksupport@tavant.com",
+			"tools@tavant.com"
+		],
+		"cc": [
+			"rmg@tavant.com",
+			"pmo@tavant.com",
+			"krishnan.pp@tavant.com"
+		],
+		"subject": "Mail Notification for Employee Transfer",
+		"template": "switch-over-from",
+		"layout": "basic-mail-layout.html"
+	},
+	"project-details-change": {
+		"to": [
+			
+		],
+		"cc": [
+			
+		],
+		"subject": "Project Details Changed",
+		"template": "project-details-change",
+		"layout": "basic-mail-layout.html"
+	},
+	"project-endDate-change": {
+		"to": [
+			
+		],
+		"cc": [
+			 "rmg@tavant.com",
+			"finance@tavant.com"
+		],
+		"subject": "Project EndDate Changed",
+		"template": "project-endDate-change",
+		"layout": "basic-mail-layout.html"
+     },
+     "allocate-earmarked-resource": {
+		"to": [
+			"rmg@mock.com", "serversupport@tavant.com", "desktopsupport@tavant.com","facilities@tavant.com", "infosec@tavant.com", "networksupport@tavant.com", "tools@tavant.com"
+		], 
+		"cc": [
+			"krishnan.pp@tavant.com", "pmo@tavant.com"
+		],
+		"subject": "Mail Notification for Employee Transfer",
+		"template": "allocate-earmarked-resource",
+		"layout": "basic-mail-layout.html"
+	},
+	"allocate-earmarked-resource-unearmarked": { 
+		"cc": [
+			 "rmg@tavant.com"
+		],
+		"subject": "Mail Notification for Resource Unearmark",
+		"template": "allocate-earmarked-resource-unearmarked",
+		"layout": "basic-mail-layout.html"
+	},
+	"nd-request-allocation":{  
+		"to": [
+			"rmg@tavant.com" 
+		],
+		"subject": "Mail Notification for Employee Request",
+		"template": "nd-request-allocation",
+		"layout": "basic-mail-layout.html"
+	},
+	 "project-manager-change": {
+		"to": [
+		],
+		"cc": [
+			"pmo@tavant.com"
+		],
+		"subject": "New <Manager> has been assigned for <Project Name>",
+		"subjectTemplateContent": "New Manager ${managerName} has been assigned for ${projectName}",
+		"template": "project-manager-change",
+		"layout": "basic-mail-layout.html"
+     },
+     "allocate-requested-nd-resource": {
+		"to": [
+		"rmg@tavant.com",
+		"serversupport@tavant.com",
+		"desktopsupport@tavant.com",
+		"facilities@tavant.com",
+		"infosec@tavant.com",
+		"networksupport@tavant.com",
+		"tools@tavant.com"
+		],
+		"cc": [
+		"pmo@tavant.com",
+		"krishnan.pp@tavant.com"
+		],
+		"subject": "Mail Notification for Resource Allocation",
+		"template": "allocate-requested-nd-resource",
+		"layout": "basic-mail-layout.html"
+	},
+	"request-for-allocation-cancel-request":{ 
+		"to": [
+			"rmg@tavant.com" 
+		],
+		"subject": "Mail Notification for Cancel of  Employee Request",
+		"template": "request-for-allocation-cancel-request",
+		"layout": "basic-mail-layout.html"
+	},
+		"auto-cancel-allocation-for-request":{ 
+		"to": [],
+		"cc": [
+		 "rmg@tavant.com"
+		],
+		"subject":  "Mail Notification for Cancel of  Employee Request",
+		"template": "auto-cancel-allocation-for-request",
+		"layout":   "basic-mail-layout.html"
+	},
+	"complete-deallocation": {
+		"to": [
+			"rmg@tavant.com",
+			"serversupport@tavant.com",
+			"desktopsupport@tavant.com",
+			"facilities@tavant.com",
+			"infosec@tavant.com",
+			"networksupport@tavant.com",
+			"tools@tavant.com"
+		],
+		"cc": [
+			"pmo@tavant.com",
+			"krishnan.pp@tavant.com"
+		],
+		"subject": "Mail Notification for Employee Transfer",
+		"template": "switch-over-to",
+		"layout": "basic-mail-layout.html"
+     }
+}

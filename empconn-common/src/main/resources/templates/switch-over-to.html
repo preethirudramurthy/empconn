@@ -1,0 +1,35 @@
+
+<div class="content" th:fragment="switch-over-to-content">
+			<!-- <tr>
+				<td><label th:text="#{switch.over.to.team.greetings}"></label>
+				</td>
+			</tr> -->
+			<tr>
+				<td><label
+					th:text="#{switch.over.to.document(${empName}, ${empId}, ${empTitle}, ${newProjectName}, ${allocationPercentage}, ${dateOfMovement})}"></label>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table class="projectInfo" style="width: 100%;">
+						<tr>
+							<td>
+								<p style="font-weight: 400;">New Project Name</p>
+								<p th:text="#{switch.over.to.team.projectName(${projectName})}"></p>
+							</td>
+							<td><label>New Project Manager </label>
+								<p th:text="#{switch.over.to.team.projectManager(${managerName},${managerId})}"></p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td><label th:text="#{greetings.thanks}"></label>
+				</td>
+			</tr>
+			<tr>
+				<td><label th:text="#{switch.over.to.team.clarification}"></label>
+				</td>
+			</tr>
+</div>
