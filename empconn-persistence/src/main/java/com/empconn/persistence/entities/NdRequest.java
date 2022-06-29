@@ -34,7 +34,7 @@ public class NdRequest extends Auditable<Long> implements Serializable {
 	private Long ndRequestId;
 
 	@Column(name = "is_active")
-	private Boolean isActive;
+	private boolean isActive;
 
 	@Column(name = "is_billable")
 	private Boolean isBillable;
@@ -64,8 +64,6 @@ public class NdRequest extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy = "ndRequest", cascade = CascadeType.ALL)
 	private List<NdRequestSalesforceIdentifier> ndRequestSalesforceIdentifiers;
 
-	public NdRequest() {
-	}
 
 	public Long getNdRequestId() {
 		return this.ndRequestId;
@@ -76,12 +74,12 @@ public class NdRequest extends Auditable<Long> implements Serializable {
 	}
 
 	@Override
-	public Boolean getIsActive() {
+	public boolean getIsActive() {
 		return this.isActive;
 	}
 
 	@Override
-	public void setIsActive(Boolean isActive) {
+	public void setIsActive(boolean isActive) {
 		this.isActive = isActive;
 	}
 

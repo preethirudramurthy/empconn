@@ -14,8 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
@@ -26,8 +24,6 @@ import com.empconn.persistence.entities.Earmark;
 
 @Mapper(componentModel = "spring", uses = {CommonQualifiedMapper.class})
 public abstract class AllocationToBenchReportRowDtoMapper {
-
-	private static final Logger logger = LoggerFactory.getLogger(AllocationToBenchReportRowDtoMapper.class);
 
 	@Autowired
 	private CommonQualifiedMapper commonQualifiedMapper;
@@ -51,46 +47,15 @@ public abstract class AllocationToBenchReportRowDtoMapper {
 	public abstract BenchReportRowDto convert(Allocation allocation);
 
 	public abstract List<BenchReportRowDto> convert(List<Allocation> allocations);
-
-	/*@Named("getStartDate")
-	public static String getStartDate(List<AllocationDetail> allocationDetails) {
-
-		final Comparator<AllocationDetail> allocationDetailStartDateComparator = Comparator
-				.comparing(AllocationDetail::getStartDate, Date::compareTo);
-
-		AllocationDetail allocationDetail;
-
-		allocationDetail = sortAndGetLatestAllocationDetail(getActiveAllocationDetails(allocationDetails),
-				allocationDetailStartDateComparator);
-
-		if (null == allocationDetail)
-			return "";
-		return DateUtils.toString(allocationDetail.getStartDate(), ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY);
-
-	}*/
-
+	
 	@Named("getBenchAge")
 	public Integer getBenchAge(Allocation allocation) {
 
-		/*		final Comparator<AllocationDetail> allocationDetailModifiedOnComparator = Comparator
-				.comparing(AllocationDetail::getStartDate, Date::compareTo);
-
-		AllocationDetail allocationDetail;
-
-		allocationDetail = sortAndGetLatestAllocationDetail(getActiveAllocationDetails(allocationDetails),
-				allocationDetailModifiedOnComparator);
-
-		if (null == allocationDetail)
-			return 0;*/
 		final Date allocationStartDate = commonQualifiedMapper.getLatestStartDate(allocation);
 
 		final long diff = new Date().getTime() - allocationStartDate.getTime();
 		return (int) (diff / (1000 * 60 * 60 * 24));
 
-	}
-
-	private static List<AllocationDetail> getActiveAllocationDetails(List<AllocationDetail> allocationDetails) {
-		return allocationDetails.stream().filter(ad -> null != ad && ad.getIsActive()).collect(Collectors.toList());
 	}
 
 	@Named("getLastProjectName")
@@ -103,7 +68,7 @@ public abstract class AllocationToBenchReportRowDtoMapper {
 		final Predicate<? super Allocation> isNonBench = a -> !benchProjects.contains(a.getProject().getName());
 		AllocationDetail allocationDetail = null;
 
-		allocationDetail = filter_Map_Sort_And_GetAllocationDetail(employeeAllocations,
+		allocationDetail = filterMapSortAndGetAllocationDetail(employeeAllocations,
 				allocationDetailDeallocatedOnComparator, isInactive, isNonBench);
 
 		if (null == allocationDetail)
@@ -112,7 +77,7 @@ public abstract class AllocationToBenchReportRowDtoMapper {
 
 	}
 
-	private static AllocationDetail filter_Map_Sort_And_GetAllocationDetail(Set<Allocation> allocations,
+	private static AllocationDetail filterMapSortAndGetAllocationDetail(Set<Allocation> allocations,
 			final Comparator<AllocationDetail> comparator, Predicate<? super AllocationDetail> filterPredicate, Predicate<? super Allocation> filterNonBenchPredicate) {
 		final List<AllocationDetail> allocationDetailsOfInactiveAllocation = allocations.stream()
 				.filter(filterNonBenchPredicate).map(Allocation::getAllocationDetails).flatMap(List::stream)

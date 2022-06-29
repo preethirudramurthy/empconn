@@ -1,5 +1,6 @@
 package com.empconn.mapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public abstract class NDRequestToGetMyRequestListResponseDtoMapper {
 		if (salesforceIdentifiers != null) {
 			return salesforceIdentifiers.stream().map(SalesforceIdentifier::getValue).collect(Collectors.toList());
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Named("allocationdata")

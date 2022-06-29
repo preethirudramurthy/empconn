@@ -44,9 +44,6 @@ public class PrimarySkill extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy="primarySkill")
 	private Set<SecondarySkill> secondarySkills;
 
-	public PrimarySkill() {
-	}
-
 	public Integer getPrimarySkillId() {
 		return this.primarySkillId;
 	}

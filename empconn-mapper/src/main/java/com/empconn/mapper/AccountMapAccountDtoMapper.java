@@ -33,10 +33,8 @@ public abstract class AccountMapAccountDtoMapper {
 
 	@Named("statusToIsClientActive")
 	public boolean statusToIsClientActive(String status) {
-		if (status.equals(AccountStatus.ACTIVE.name()))
-			return true;
-		else
-			return false;
+		return (status.equals(AccountStatus.ACTIVE.name()));
+			
 	}
 
 	@Named("accountToAllHorizontalsAndVerticals")

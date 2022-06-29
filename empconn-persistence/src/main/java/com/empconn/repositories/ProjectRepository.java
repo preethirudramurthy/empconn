@@ -70,7 +70,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 
 	@Query("SELECT p FROM Project p WHERE p.account.accountId IN (:Ids) AND p.isActive = :isActive")
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
-	public Set<Project> findByAccount(List<Integer> Ids, Boolean isActive);
+	public Set<Project> findByAccount(List<Integer> ids, Boolean isActive);
 
 	@Query("SELECT distinct(p.horizontal) FROM Project p WHERE p.employee1.employeeId = :empId OR p.employee2.employeeId = :empId OR p.employee3.employeeId = :empId")
 	public Set<Horizontal> getProjectHorizontalsWhereEmployeeIsGdmOrManager(Long empId);
@@ -107,16 +107,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 	@Query("SELECT a FROM Account a WHERE a.isActive = true")
 	public Set<Account> getMyAccountDropdown();
 
-	// @Query("SELECT p FROM Project p WHERE (p.employee1.employeeId = :empId OR
-	// p.employee2.employeeId = :empId OR p.employee3.employeeId = :empId) AND
-	// p.isActive = true")
-	// public Set<Project> getMyProjectDropdown(Long empId);
-
-	// @Query("SELECT p.account FROM Project p WHERE (p.employee1.employeeId =
-	// :empId OR p.employee2.employeeId = :empId OR p.employee3.employeeId = :empId)
-	// AND p.isActive = true")
-	// public Set<Account> getMyAccountDropdown(Long empId);
-
 	@Query("SELECT p from Project p WHERE p.projectId IN(:projectIds) AND p.currentStatus IN('PMO_APPROVED', 'PROJECT_ON_HOLD') AND p.isActive = 'TRUE'")
 	public List<Project> findProjectSummaryForManager(Set<Long> projectIds);
 
@@ -134,7 +124,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 			Integer accountId);
 
 	@Query("SELECT p FROM Project p WHERE p.employee1.employeeId IN (:Ids) OR  p.employee2.employeeId IN (:Ids)")
-	public Set<Project> findGdmForProject(List<Long> Ids);
+	public Set<Project> findGdmForProject(List<Long> ids);
 
 	@Query("SELECT p FROM Project p WHERE p.currentStatus IN('PMO_APPROVED', 'PROJECT_ON_HOLD') AND p.isActive = 'TRUE'")
 	public List<Project> getActiveAndOnHoldProjects();

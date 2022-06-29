@@ -47,9 +47,6 @@ public class SyncToTimesheetService {
 	private SyncProjectAllocationHourRepository syncProjectAllocationHourRepository;
 
 	@Autowired
-	private AllocationUtilityService allocationUtilityService;
-
-	@Autowired
 	private SecurityUtil securityUtil;
 
 	@Autowired

@@ -1,6 +1,6 @@
 package com.empconn.constants;
 
-public interface ExceptionConstants {
+public class ExceptionConstants {
 
 	public static final String ACTIVE_ACCOUNT_EXISTS = "ACTIVE_AccountExists";
 	public static final String TEMP_ACCOUNT_EXISTS = "TEMP_AccountExists";

@@ -46,9 +46,6 @@ public class WorkGroup extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy="workGroup")
 	private List<SyncProjectManager> syncProjectManagers;
 
-	public WorkGroup() {
-	}
-
 	public Integer getWorkGroupId() {
 		return this.workGroupId;
 	}

@@ -3,7 +3,6 @@ package com.empconn.persistence.entities;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,9 +36,6 @@ public class Role extends Auditable<Long> implements Serializable {
 	//bi-directional many-to-one association to EmployeeRole
 	@OneToMany(mappedBy="role")
 	private Set<EmployeeRole> employeeRoles;
-
-	public Role() {
-	}
 
 	public Integer getRoleId() {
 		return this.roleId;

@@ -44,9 +44,6 @@ public class LocationHr extends Auditable<Long> implements Serializable {
 	@JoinColumn(name="location_id")
 	private Location location;
 
-	public LocationHr() {
-	}
-
 	public Integer getLocationHrId() {
 		return this.locationHrId;
 	}

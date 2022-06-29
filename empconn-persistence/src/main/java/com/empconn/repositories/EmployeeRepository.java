@@ -15,12 +15,6 @@ import com.empconn.persistence.entities.Employee;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
 
-	/*
-	 * @Query("select e from Employee e where e.businessUnit not in(100) and ( upper(e.firstName) like concat('%', upper(?1), '%') or upper(e.lastName) like concat('%', upper(?1), '%'))"
-	 * ) public Set<Employee> findByMatchingName(@Param("partialName") String
-	 * partialName);
-	 */
-
 	@Query("select e from Employee e where (e.businessUnit.name != 'Delivery' or e.division.name != 'Delivery' or e.department.name in ('PMO','SEPG')) and (upper(e.firstName) like concat('%', upper(?1), '%') or upper(e.lastName) like concat('%', upper(?1), '%') or upper(e.empCode) like concat('%', upper(?1), '%')) and e.isActive = true")
 	public Set<Employee> findByMatchingNameForND(@Param("partialName") String partialName);
 

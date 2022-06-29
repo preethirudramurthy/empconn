@@ -6,7 +6,6 @@ public class CheckListInformationDto {
 
 	public CheckListInformationDto() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public CheckListInformationDto(String description, String comments) {

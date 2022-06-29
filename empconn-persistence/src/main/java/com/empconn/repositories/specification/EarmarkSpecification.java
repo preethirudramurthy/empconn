@@ -20,6 +20,16 @@ import com.empconn.persistence.entities.SalesforceIdentifier;
 
 public class EarmarkSpecification implements Specification<Earmark> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6221595692305551984L;
+	private static final String PROJECT = "project";
+	private static final String OPPORTUNITY = "opportunity";
+	private static final String EMPLOYEE_ID = "employeeId";
+	private static final String EMPLOYEE = "employee";
+	private static final String ALLOCATION = "allocation";
+	private static final String ACCOUNT = "account";
 	private final EarmarkSearchDto filter;
 
 	public EarmarkSpecification(EarmarkSearchDto filter) {
@@ -29,61 +39,57 @@ public class EarmarkSpecification implements Specification<Earmark> {
 
 	@Override
 	public Predicate toPredicate(Root<Earmark> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
-		finalPredicate.add(cb.equal(root.get("allocation").get("employee").get("isActive"), true));
-		finalPredicate.add(cb.equal(root.get("allocation").get("project").get("account").get("name"), "Bench"));
+		final List<Predicate> finalPredicate = new ArrayList<>();
+		finalPredicate.add(cb.equal(root.get(ALLOCATION).get(EMPLOYEE).get("isActive"), true));
+		finalPredicate.add(cb.equal(root.get(ALLOCATION).get(PROJECT).get(ACCOUNT).get("name"), "Bench"));
 		finalPredicate.add(cb.equal(root.get("isActive"), true));
 
 		if (!filter.getIsOpp()) {
 
-			finalPredicate.add(cb.isNotNull(root.get("project")));
+			finalPredicate.add(cb.isNotNull(root.get(PROJECT)));
 
 			if (filter.getAccountNameList() != null && !filter.getAccountNameList().isEmpty()) {
-				finalPredicate.add(root.get("project").get("account").get("name").in(filter.getAccountNameList()));
+				finalPredicate.add(root.get(PROJECT).get(ACCOUNT).get("name").in(filter.getAccountNameList()));
 			}
 
 			if (filter.getProjOppNameList() != null && !filter.getProjOppNameList().isEmpty()) {
-				finalPredicate.add(root.get("project").get("name").in(filter.getProjOppNameList()));
+				finalPredicate.add(root.get(PROJECT).get("name").in(filter.getProjOppNameList()));
 			}
 
 			if (filter.getVerticalIdList() != null && !filter.getVerticalIdList().isEmpty()) {
-				finalPredicate.add(root.get("project").get("account").get("vertical").get("verticalId")
+				finalPredicate.add(root.get(PROJECT).get(ACCOUNT).get("vertical").get("verticalId")
 						.in(filter.getVerticalIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 			}
 
 			if (filter.getSalesforceIdList() != null && !filter.getSalesforceIdList().isEmpty()) {
-				final Join<Earmark, SalesforceIdentifier> projectSfJoin = root.join("project")
+				final Join<Earmark, SalesforceIdentifier> projectSfJoin = root.join(PROJECT)
 						.join("salesforceIdentifiers");
 
 				final Predicate projectSfPredicate = cb.in(projectSfJoin.get("value"))
 						.value(filter.getSalesforceIdList());
 				finalPredicate.add(projectSfPredicate);
-//				final Join<Earmark, EarmarkSalesforceIdentifier> earmarkSfJoin = root
-//						.join("earmarkSalesforceIdentifiers");
-//				final Predicate sfPredicate = cb.or(projectSfJoin.get("value").in(filter.getSalesforceIdList()),
-//						earmarkSfJoin.get("value").in(filter.getSalesforceIdList()));
-//				finalPredicate.add(sfPredicate);
+
 			}
 
 			if (filter.getGdmIdList() != null && !filter.getGdmIdList().isEmpty()) {
-				finalPredicate.add(root.get("project").get("employee1").get("employeeId")
+				finalPredicate.add(root.get(PROJECT).get("employee1").get(EMPLOYEE_ID)
 						.in(filter.getGdmIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 			}
 
 		} else {
 
-			finalPredicate.add(cb.isNotNull(root.get("opportunity")));
+			finalPredicate.add(cb.isNotNull(root.get(OPPORTUNITY)));
 
 			if (filter.getAccountNameList() != null && !filter.getAccountNameList().isEmpty()) {
-				finalPredicate.add(root.get("opportunity").get("accountName").in(filter.getAccountNameList()));
+				finalPredicate.add(root.get(OPPORTUNITY).get("accountName").in(filter.getAccountNameList()));
 			}
 
 			if (filter.getProjOppNameList() != null && !filter.getProjOppNameList().isEmpty()) {
-				finalPredicate.add(root.get("opportunity").get("name").in(filter.getProjOppNameList()));
+				finalPredicate.add(root.get(OPPORTUNITY).get("name").in(filter.getProjOppNameList()));
 			}
 
 			if (filter.getVerticalIdList() != null && !filter.getVerticalIdList().isEmpty()) {
-				finalPredicate.add(root.get("opportunity").get("vertical").get("verticalId")
+				finalPredicate.add(root.get(OPPORTUNITY).get("vertical").get("verticalId")
 						.in(filter.getVerticalIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 			}
 
@@ -94,16 +100,16 @@ public class EarmarkSpecification implements Specification<Earmark> {
 			}
 
 			if (filter.getGdmIdList() != null && !filter.getGdmIdList().isEmpty()) {
-				finalPredicate.add(root.get("opportunity").get("employee1").get("employeeId")
+				finalPredicate.add(root.get(OPPORTUNITY).get("employee1").get(EMPLOYEE_ID)
 						.in(filter.getGdmIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 			}
 		}
 		if (filter.getResourceIdList() != null && !filter.getResourceIdList().isEmpty()) {
-			finalPredicate.add(root.get("allocation").get("employee").get("employeeId").in(filter.getResourceIdList()));
+			finalPredicate.add(root.get(ALLOCATION).get(EMPLOYEE).get(EMPLOYEE_ID).in(filter.getResourceIdList()));
 		}
 
 		if (filter.getPrimarySkillIdList() != null && !filter.getPrimarySkillIdList().isEmpty()) {
-			final Join<Earmark, EmployeeSkill> empSkillJoin = root.join("allocation").join("employee")
+			final Join<Earmark, EmployeeSkill> empSkillJoin = root.join(ALLOCATION).join(EMPLOYEE)
 					.join("employeeSkills");
 			final Predicate primarySkillPredicate = cb
 					.in(empSkillJoin.get("secondarySkill").get("primarySkill").get("primarySkillId"))
@@ -112,7 +118,7 @@ public class EarmarkSpecification implements Specification<Earmark> {
 		}
 
 		if (filter.getSecondarySkillIdList() != null && !filter.getSecondarySkillIdList().isEmpty()) {
-			final Join<Earmark, EmployeeSkill> empSkillJoin = root.join("allocation").join("employee")
+			final Join<Earmark, EmployeeSkill> empSkillJoin = root.join(ALLOCATION).join(EMPLOYEE)
 					.join("employeeSkills");
 			final Predicate secondarySkillPredicate = cb.in(empSkillJoin.get("secondarySkill").get("secondarySkillId"))
 					.value(filter.getSecondarySkillIdList().stream().map(Integer::parseInt)
@@ -121,7 +127,7 @@ public class EarmarkSpecification implements Specification<Earmark> {
 		}
 
 		if (filter.getManagerIdList() != null && !filter.getManagerIdList().isEmpty()) {
-			finalPredicate.add(root.get("employee2").get("employeeId")
+			finalPredicate.add(root.get("employee2").get(EMPLOYEE_ID)
 					.in(filter.getManagerIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 		}
 
@@ -130,8 +136,7 @@ public class EarmarkSpecification implements Specification<Earmark> {
 		}
 
 		query.distinct(true);
-		final Predicate and = cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
-		return and;
+		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
 	}
 
 }

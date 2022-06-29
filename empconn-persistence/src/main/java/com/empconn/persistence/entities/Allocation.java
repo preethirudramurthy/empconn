@@ -54,12 +54,6 @@ public class Allocation extends Auditable<Long> implements Serializable {
 	@Column(name = "release_date")
 	private Date releaseDate;
 
-	/*@Formula(value = "(select sum(ad.allocated_percentage) from cranium.allocation_detail ad where ad.is_active=true and ad.allocation_id = allocation_id)")
-	private Integer allocatedPercentage;
-
-	@Formula(value = "(select min(ad.start_date) from cranium.allocation_detail ad where ad.is_active=true and ad.allocation_id = allocation_id)")
-	private Date allocationStartDate;*/
-
 	// bi-directional many-to-one association to AllocationStatus
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "allocation_status_id")
@@ -124,7 +118,7 @@ public class Allocation extends Auditable<Long> implements Serializable {
 
 	// bi-directional many-to-one association to AllocationHour
 	@OneToMany(mappedBy = "allocation", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<AllocationHour> allocationHours = new ArrayList<AllocationHour>();
+	private List<AllocationHour> allocationHours = new ArrayList<>();
 
 	// bi-directional many-to-one association to SyncProjectAllocation
 	@OneToMany(mappedBy = "allocation", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -151,8 +145,8 @@ public class Allocation extends Auditable<Long> implements Serializable {
 		this.setIsActive(true);
 		this.setCreatedOn(TimeUtils.getCreatedOn());
 		this.setCreatedBy(createdBy);
-		this.allocationDetails = new ArrayList<AllocationDetail>();
-		this.earmarks = new HashSet<Earmark>();
+		this.allocationDetails = new ArrayList<>();
+		this.earmarks = new HashSet<>();
 		this.allocationStatus = allocationStatus;
 	}
 
@@ -257,14 +251,6 @@ public class Allocation extends Auditable<Long> implements Serializable {
 	public void setReleaseDate(Date releaseDate) {
 		this.releaseDate = releaseDate;
 	}
-
-	/*public Integer getAllocatedPercentage() {
-		return allocatedPercentage;
-	}
-
-	public void setAllocatedPercentage(Integer allocatedPercentage) {
-		this.allocatedPercentage = allocatedPercentage;
-	}*/
 
 	public Set<Employee> getEmployees() {
 		return this.employees;
@@ -398,14 +384,6 @@ public class Allocation extends Auditable<Long> implements Serializable {
 
 		return syncProjectAllocationHour;
 	}
-
-	/*public Date getAllocationStartDate() {
-		return allocationStartDate;
-	}
-
-	public void setAllocationStartDate(Date allocationStartDate) {
-		this.allocationStartDate = allocationStartDate;
-	}*/
 
 	public void deactivate(Employee loggedInEmployee) {
 		if (CollectionUtils.isNotEmpty(getAllocationDetails()))

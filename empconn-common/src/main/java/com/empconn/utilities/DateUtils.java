@@ -69,7 +69,7 @@ public class DateUtils {
 		return result;
 	}
 
-	public static List<LocalDate> BusinessDaysBetweenIncludingEndDate(LocalDate startDate, LocalDate endDate) {
+	public static List<LocalDate> businessDaysBetweenIncludingEndDate(LocalDate startDate, LocalDate endDate) {
 		if (startDate == null || endDate == null) {
 			throw new IllegalArgumentException(
 					"Invalid method argument(s) to countBusinessDaysBetween(" + startDate + "," + endDate + ")");
@@ -84,14 +84,14 @@ public class DateUtils {
 				.collect(Collectors.toList());
 	}
 
-	public static List<LocalDate> BusinessDaysBetweenIncludingEndDate(Date startDate, Date endDate) {
+	public static List<LocalDate> businessDaysBetweenIncludingEndDate(Date startDate, Date endDate) {
 
-		return BusinessDaysBetweenIncludingEndDate(
+		return businessDaysBetweenIncludingEndDate(
 				Instant.ofEpochMilli(startDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate(),
 				Instant.ofEpochMilli(endDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
 	}
 
-	public static List<LocalDate> BusinessDaysBetweenExcludingEndDate(LocalDate startDate, LocalDate endDate) {
+	public static List<LocalDate> businessDaysBetweenExcludingEndDate(LocalDate startDate, LocalDate endDate) {
 		if (startDate == null || endDate == null) {
 			throw new IllegalArgumentException(
 					"Invalid method argument(s) to countBusinessDaysBetween(" + startDate + "," + endDate + ")");
@@ -106,9 +106,9 @@ public class DateUtils {
 				.collect(Collectors.toList());
 	}
 
-	public static List<LocalDate> BusinessDaysBetweenExcludingEndDate(Date startDate, Date endDate) {
+	public static List<LocalDate> businessDaysBetweenExcludingEndDate(Date startDate, Date endDate) {
 
-		return BusinessDaysBetweenExcludingEndDate(
+		return businessDaysBetweenExcludingEndDate(
 				Instant.ofEpochMilli(startDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate(),
 				Instant.ofEpochMilli(endDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
 	}

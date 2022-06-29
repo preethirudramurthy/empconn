@@ -38,10 +38,8 @@ public class StringTemplateEngine {
 
 		while (true) {
 			startIndex = content.indexOf(TEMPLATE_START, startIndex);
-			if (startIndex == -1)
-				break;
 			final int endIndex = content.indexOf(TEMPLATE_END, startIndex);
-			if (endIndex == -1)
+			if (startIndex == -1 || endIndex == -1)
 				break;
 			final String placeholder = content.substring(startIndex + TEMPLATE_START.length(), endIndex);
 			placeholders.add(placeholder.trim());

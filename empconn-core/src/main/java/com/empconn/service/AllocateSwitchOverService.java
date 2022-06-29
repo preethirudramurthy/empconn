@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -78,15 +79,15 @@ public class AllocateSwitchOverService {
 						a -> String.join(",", a.getProjectLocationId(), a.getWorkgroup(), a.getReportingManagerId()),
 						Collectors.toSet())));
 
-		for (final Long employeeId : validateAllocationMap.keySet()) {
+		for (final Entry<Long, Set<String>> employee : validateAllocationMap.entrySet()) {
 
-			if (validateAllocationMap.get(employeeId).size() > 1) {
+			if (validateAllocationMap.get(employee.getKey()).size() > 1) {
 				throw new PreConditionFailedException("ResourceWrongAllocation");
 			}
 		}
 		for (final SwitchOverRequestDto request : requestDtos) {
-			final Allocation currentAllocation = allocationRepository.findById(Long.valueOf(request.getAllocationId()))
-					.get();
+			Optional<Allocation> a = allocationRepository.findById(request.getAllocationId());
+			final Allocation currentAllocation = a.isPresent()?a.get():null;
 			final Integer availablePercentage = allocationUtilityService
 					.getMergedAllocatedPercentage(currentAllocation);
 			final boolean isPartial = (request.getPercentage().intValue() < availablePercentage.intValue());
@@ -123,27 +124,30 @@ public class AllocateSwitchOverService {
 	public SwitchOverDtlsDto getSwitchOverDetailsForAllocation(Long allocationId, Long projectId) {
 		final Optional<Allocation> selectedAllocation = allocationRepository.findById(allocationId);
 		final Optional<Project> toProject = projectRepository.findById(projectId);
-		final List<AllocationSummaryDto> allocationSummary = allocationRepository
-				.getAllocationSummary(selectedAllocation.get().getEmployee().getEmployeeId());
-		final Long primaryAllocationId = selectedAllocation.get().getEmployee().getPrimaryAllocation()
-				.getAllocationId();
+		final List<AllocationSummaryDto> allocationSummary = selectedAllocation.isPresent()? allocationRepository
+				.getAllocationSummary(selectedAllocation.get().getEmployee().getEmployeeId()):null;
+		final Long primaryAllocationId = selectedAllocation.isPresent()?selectedAllocation.get().getEmployee().getPrimaryAllocation()
+				.getAllocationId():null;
 
-		final Set<Allocation> empAllocations = allocationRepository
-				.findByEmployeeEmployeeIdAndIsActive(selectedAllocation.get().getEmployee().getEmployeeId(), true);
+		final Set<Allocation> empAllocations = selectedAllocation.isPresent()?allocationRepository
+				.findByEmployeeEmployeeIdAndIsActive(selectedAllocation.get().getEmployee().getEmployeeId(), true):null;
 
-		final Map<Long, List<Allocation>> employeeAllocationMap = empAllocations.stream()
-				.collect(Collectors.groupingBy(a -> a.getProject().getProjectId()));
-
-		allocationSummary.forEach(a -> {
-			a.setReportingMangerName(a.getReportingManager().getFullName());
-			a.setIsPrimary(employeeAllocationMap.get(a.getProjectId()).stream()
-					.filter(i -> i.getAllocationId().equals(primaryAllocationId)).findAny().isPresent());
-		});
+		if (empAllocations != null && !empAllocations.isEmpty()) {
+			final Map<Long, List<Allocation>> employeeAllocationMap = empAllocations.stream()
+					.collect(Collectors.groupingBy(a -> a.getProject().getProjectId()));
+			if (allocationSummary != null && !allocationSummary.isEmpty()) {
+				allocationSummary.forEach(a -> {
+					a.setReportingMangerName(a.getReportingManager().getFullName());
+					a.setIsPrimary(employeeAllocationMap.get(a.getProjectId()).stream()
+							.filter(i -> i.getAllocationId().equals(primaryAllocationId)).findAny().isPresent());
+				});	
+			}
+		}
 
 		ExistingAllocationDto exitingAllocationDto = null;
-		final Allocation existingAllocation = allocationRepository
+		final Allocation existingAllocation = selectedAllocation.isPresent()?allocationRepository
 				.findFirstByEmployeeEmployeeIdAndProjectProjectIdAndIsActive(
-						selectedAllocation.get().getEmployee().getEmployeeId(), projectId, true);
+						selectedAllocation.get().getEmployee().getEmployeeId(), projectId, true):null;
 		if (existingAllocation != null) {
 			final String reportingManagerName = existingAllocation.getReportingManagerId().getFullName();
 
@@ -160,8 +164,8 @@ public class AllocateSwitchOverService {
 					isPrimary, CommonQualifiedMapper.dateToLocalDate(existingAllocation.getReleaseDate()));
 		}
 
-		return allocationMapper.allocationToAllocationDetailsDto(selectedAllocation.get(), toProject.get(),
-				allocationSummary, exitingAllocationDto);
+		return (selectedAllocation.isPresent() && toProject.isPresent())?allocationMapper.allocationToAllocationDetailsDto(selectedAllocation.get(), toProject.get(),
+				allocationSummary, exitingAllocationDto):null;
 	}
 
 	public ValidateSwitchOverResponseDto isValidSwitchOverAllocation(ValidateSwitchOverDto dto) {
@@ -173,25 +177,22 @@ public class AllocateSwitchOverService {
 
 		final List<Allocation> a = allocationRepository.findByEmployeeEmployeeIdAndProjectProjectIdAndIsActive(
 				Long.valueOf(dto.getResourceId()), Long.valueOf(dto.getProjectId()), true);
-		if (a.size() > 0) {
+		if (!a.isEmpty()) {
 			for (final Allocation all : a)
-				if (all.getProjectLocation().getProjectLocationId().equals((Long.valueOf(dto.getProjectLocationId())))
-						&& all.getWorkGroup().getName().equals(dto.getWorkgroup()) && all.getReportingManagerId()
-								.getEmployeeId().equals(Long.valueOf(dto.getReportingManagerId()))) {
-					responseDto.setInvalidLocationWorkgroup(false);
-				} else {
-					responseDto.setInvalidLocationWorkgroup(true);
-				}
+					responseDto.setInvalidLocationWorkgroup(!(all.getProjectLocation().getProjectLocationId().equals((Long.valueOf(dto.getProjectLocationId())))
+							&& all.getWorkGroup().getName().equals(dto.getWorkgroup()) && all.getReportingManagerId()
+							.getEmployeeId().equals(Long.valueOf(dto.getReportingManagerId()))));
 		}
 
 		Iterables.removeIf(dto.getExtraSalesforceIdList(), Predicates.isNull());
-		if (dto.getExtraSalesforceIdList().size() > 0) {
+		if (!dto.getExtraSalesforceIdList().isEmpty()) {
 			for (final SalesforceIdentifier id : salesforceIdentifierIdsList) {
 				dto.getExtraSalesforceIdList().remove(id.getValue());
 			}
 
 			for (final String id : dto.getExtraSalesforceIdList()) {
-				if (!identifierService.isValidSalesforceIdForProject(id, project.get().getProjectId())) {
+				
+				if (project.isPresent() && !identifierService.isValidSalesforceIdForProject(id, project.get().getProjectId())) {
 					responseDto.setInvalidSalesforceIdList(true);
 					break;
 				} else {
@@ -200,20 +201,14 @@ public class AllocateSwitchOverService {
 			}
 		}
 
-		if (dto.getPercentage() > allocation.get().getAllocationDetails().stream()
-				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum)) {
-			responseDto.setInvalidAllocationPercentage(true);
-		} else {
-			responseDto.setInvalidAllocationPercentage(false);
-		}
+		if (allocation.isPresent())
+			responseDto.setInvalidAllocationPercentage((dto.getPercentage() > allocation.get().getAllocationDetails().stream()
+						.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum)) );
 
 		final Date releaseDate = Date.from(dto.getReleaseDate().atZone(ZoneId.systemDefault()).toInstant());
 
-		if (project.get().getEndDate().compareTo(releaseDate) < 0) {
-			responseDto.setInvalidReleaseDateAfterProjectDate(true);
-		} else {
-			responseDto.setInvalidReleaseDateAfterProjectDate(false);
-		}
+		if (project.isPresent())
+			responseDto.setInvalidReleaseDateAfterProjectDate((project.get().getEndDate().compareTo(releaseDate) < 0));
 
 		final Predicate<LocalDate> isWeekend = date -> date.getDayOfWeek() == DayOfWeek.SATURDAY
 				|| date.getDayOfWeek() == DayOfWeek.SUNDAY;

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 @JsonFilter("map-account-filter")
 public class MapAccountDto {
 
-	private String _id;
+	private String id;
 	private Boolean isClientActive;
 	private String projectSince;
 	private String description;
@@ -17,12 +17,12 @@ public class MapAccountDto {
 	private String clientLink;
 	private String clientName;
 
-	public String get_id() {
-		return _id;
+	public String getId() {
+		return id;
 	}
 
-	public void set_id(String _id) {
-		this._id = _id;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public Boolean getIsClientActive() {

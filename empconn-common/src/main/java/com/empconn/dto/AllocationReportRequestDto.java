@@ -1,5 +1,6 @@
 package com.empconn.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -9,8 +10,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
-public class AllocationReportRequestDto {
+public class AllocationReportRequestDto implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1725897145896417407L;
 	private List<String> verticalIdList;
 	private List<String> accountIdList;
 	private List<String> projectIdList;

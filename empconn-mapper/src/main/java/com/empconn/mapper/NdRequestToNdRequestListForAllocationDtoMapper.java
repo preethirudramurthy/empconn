@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.earmark.NdRequestListForAllocationResponseDto;
 import com.empconn.persistence.entities.Allocation;
+import com.empconn.persistence.entities.AllocationDetail;
+import com.empconn.persistence.entities.Auditable;
 import com.empconn.persistence.entities.Employee;
 import com.empconn.persistence.entities.NdRequest;
 import com.empconn.repositories.AllocationRepository;
@@ -82,7 +84,7 @@ public abstract class NdRequestToNdRequestListForAllocationDtoMapper {
 		final Allocation allocation = allocationRepository.getAllocation(employeeId, ApplicationConstants.NON_DELIVERY_BENCH_PROJECT_NAME);
 		if(null == allocation)
 			return 0;
-		return allocation.getAllocationDetails().stream().filter(a -> a.getIsActive()).map(a -> a.getAllocatedPercentage()).reduce(0, Integer::sum);
+		return allocation.getAllocationDetails().stream().filter(Auditable::getIsActive).map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum);
 
 	}
 

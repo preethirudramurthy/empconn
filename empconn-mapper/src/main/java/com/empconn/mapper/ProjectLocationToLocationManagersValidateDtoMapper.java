@@ -42,7 +42,7 @@ public abstract class ProjectLocationToLocationManagersValidateDtoMapper {
 
 	@Named("locationUnitValueToLocation")
 	Location locationUnitValueToLocation(UnitValue location) {
-		if (location != null && location.getId() != null) {
+		if (location != null && location.getId() != null && locationRepository.findById(Integer.valueOf(location.getId())).isPresent()) {
 			return locationRepository.findById(Integer.valueOf(location.getId())).get();
 		}
 		return null;
@@ -51,7 +51,7 @@ public abstract class ProjectLocationToLocationManagersValidateDtoMapper {
 
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(ManagerInfoDto manager) {
-		if (manager != null && manager.getId() != null) {
+		if (manager != null && manager.getId() != null && employeeRepository.findById(Long.valueOf(manager.getId())).isPresent()) {
 			return employeeRepository.findById(Long.valueOf(manager.getId())).get();
 		}
 		return null;

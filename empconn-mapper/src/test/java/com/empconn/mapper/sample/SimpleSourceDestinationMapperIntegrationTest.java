@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-class SimpleSourceDestinationMapperIntegrationTest {
+public class SimpleSourceDestinationMapperIntegrationTest {
 
 	private SimpleSourceDestinationMapper mapper = Mappers.getMapper(SimpleSourceDestinationMapper.class);
 

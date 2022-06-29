@@ -16,6 +16,10 @@ import com.empconn.persistence.entities.Employee;
 
 public class NDResourceSpecification implements Specification<Employee> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5172555354500088939L;
 	private final ResourceDto filter;
 
 	public NDResourceSpecification(ResourceDto filter) {
@@ -26,7 +30,7 @@ public class NDResourceSpecification implements Specification<Employee> {
 	@Override
 	public Predicate toPredicate(Root<Employee> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 		root.fetch("department");
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
+		final List<Predicate> finalPredicate = new ArrayList<>();
 		finalPredicate.add(cb.equal(root.get("isActive"), true));
 
 		if (filter.getTitleIdList() != null && !filter.getTitleIdList().isEmpty()) {
@@ -51,8 +55,7 @@ public class NDResourceSpecification implements Specification<Employee> {
 
 		query.distinct(true);
 		query.orderBy(cb.asc(root.get("firstName")), cb.asc(root.get("lastName")));
-		final Predicate and = cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
-		return and;
+		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
 
 	}
 

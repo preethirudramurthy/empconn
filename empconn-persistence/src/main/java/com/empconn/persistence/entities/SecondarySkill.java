@@ -47,8 +47,6 @@ public class SecondarySkill extends Auditable<Long> implements Serializable {
 	@JoinColumn(name="primary_skill_id")
 	private PrimarySkill primarySkill;
 
-	public SecondarySkill() {
-	}
 
 	public Integer getSecondarySkillId() {
 		return this.secondarySkillId;

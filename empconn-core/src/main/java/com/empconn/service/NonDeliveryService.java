@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.AllocationDto;
 import com.empconn.dto.CancelNDRequestDto;
 import com.empconn.dto.CancelRequestNDDto;
@@ -32,7 +33,6 @@ import com.empconn.dto.ResourceDto;
 import com.empconn.dto.ResourceRequestDto;
 import com.empconn.email.EmailService;
 import com.empconn.exception.EmpConnException;
-import com.empconn.exception.ExceptionUtil;
 import com.empconn.exception.PreConditionFailedException;
 import com.empconn.mapper.EmployeeToNDResourcesDtoMapper;
 import com.empconn.mapper.NDRequestToGetMyRequestListResponseDtoMapper;
@@ -71,8 +71,6 @@ public class NonDeliveryService {
 	@Autowired
 	private EmailService emailService;
 
-	@Autowired
-	private ExceptionUtil exceptionUtil;
 
 	@Autowired
 	NDRequestRepository ndRequestRepository;
@@ -319,8 +317,8 @@ public class NonDeliveryService {
 				dto.setRequestedAccount(ndRequest.getProject().getAccount().getName());
 				dto.setRequestedProject(ndRequest.getProject().getName());
 				dto.setAllocation(ndRequest.getPercentage());
-				dto.setAllocStartDate(new SimpleDateFormat("dd-MMM-YYYY").format(ndRequest.getStartDate()));
-				dto.setTentativeReleaseEndDate(new SimpleDateFormat("dd-MMM-YYYY").format(ndRequest.getReleaseDate()));
+				dto.setAllocStartDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(ndRequest.getStartDate()));
+				dto.setTentativeReleaseEndDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(ndRequest.getReleaseDate()));
 				cancelRequestNDDtos.add(dto);
 				templateModel.put("cancelNDRequest", dto);
 

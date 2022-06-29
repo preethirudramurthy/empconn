@@ -63,11 +63,11 @@ public class EarmarkEngineersRmgReqDto {
 		this.secondarySkillIdList = secondarySkillIdList;
 	}
 
-	public Boolean getIsOpp() {
+	public boolean getIsOpp() {
 		return isOpp;
 	}
 
-	public void setIsOpp(Boolean isOpp) {
+	public void setIsOpp(boolean isOpp) {
 		this.isOpp = isOpp;
 	}
 

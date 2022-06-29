@@ -38,10 +38,7 @@ public class EmailConfiguration extends Auditable<Long> implements Serializable 
 
 	@Column(name="to_mail_ids")
 	private String toMailIds;
-
-	public EmailConfiguration() {
-	}
-
+	
 	public Integer getEmailConfigurationId() {
 		return this.emailConfigurationId;
 	}

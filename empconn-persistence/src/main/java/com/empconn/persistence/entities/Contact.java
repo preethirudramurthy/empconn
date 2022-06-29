@@ -39,10 +39,7 @@ public class Contact extends Auditable<Long> implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="client_location_id")
 	private ClientLocation clientLocation;
-
-	public Contact() {
-	}
-
+	
 	public Long getContactId() {
 		return this.contactId;
 	}

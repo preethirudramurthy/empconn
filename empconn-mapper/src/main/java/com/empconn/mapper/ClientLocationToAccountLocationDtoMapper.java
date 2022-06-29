@@ -1,7 +1,9 @@
 package com.empconn.mapper;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.mapstruct.Mapper;
@@ -49,15 +51,17 @@ public abstract class ClientLocationToAccountLocationDtoMapper {
 	Set<ClientLocation> accountLocationsDtoToClientLocations(List<AccountLocationDto> destination) {
 		final Set<ClientLocation> set = new HashSet<>();
 		for (final AccountLocationDto dto : destination) {
-			if (dto.getAccountLocationId() != null) {
-				final ClientLocation location = clientLocationRepository
-						.findById(Long.valueOf(dto.getAccountLocationId())).get();
+			if (dto.getAccountLocationId() != null && clientLocationRepository
+					.findById(Long.valueOf(dto.getAccountLocationId())).isPresent()) {
+				Optional<ClientLocation> clOpt = clientLocationRepository
+						.findById(Long.valueOf(dto.getAccountLocationId()));
+				final ClientLocation location = clOpt.isPresent()?clOpt.get():null;
 				set.add(accountLocationDtoToClientLocation(dto, location));
 			} else
 				set.add(accountLocationDtoToClientLocation(dto));
 		}
 		if (set.isEmpty())
-			return null;
+			return Collections.emptySet();
 		return set;
 	}
 

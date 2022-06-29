@@ -60,9 +60,6 @@ public class Opportunity extends Auditable<Long> implements Serializable {
 	@JoinColumn(name = "vertical_id")
 	private Vertical vertical;
 
-	public Opportunity() {
-	}
-
 	public Long getOpportunityId() {
 		return this.opportunityId;
 	}
@@ -142,7 +139,7 @@ public class Opportunity extends Auditable<Long> implements Serializable {
 	}
 
 	public Map<String, Employee> getGdms() {
-		final Map<String, Employee> gdms = new LinkedHashMap<String, Employee>();
+		final Map<String, Employee> gdms = new LinkedHashMap<>();
 		gdms.computeIfAbsent("DEV", val -> getEmployee1());
 		gdms.computeIfAbsent("QA", val -> getEmployee2());
 

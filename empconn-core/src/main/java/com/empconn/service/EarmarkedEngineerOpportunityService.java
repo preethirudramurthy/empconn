@@ -30,6 +30,10 @@ import com.empconn.vo.UnitValue;
 @Service
 public class EarmarkedEngineerOpportunityService {
 
+	private static final String VERTICAL_ID = "VERTICAL_ID";
+
+	private static final String ACCOUNT_ID = "ACCOUNT_ID";
+
 	@Autowired
 	private SecurityUtil jwtEmployeeUtil;
 
@@ -50,16 +54,16 @@ public class EarmarkedEngineerOpportunityService {
 		String value = null;
 		final boolean accountExist = o.getAccount() != null;
 		switch (unitValueType.toUpperCase()) {
-		case "ACCOUNT_ID":
+		case ACCOUNT_ID:
 			id = accountExist ? o.getAccount().getAccountId().toString() : o.getAccountName();
 			value = accountExist ? o.getAccount().getName() : o.getAccountName();
 			break;
 
-		case "VERTICAL_ID":
+		case VERTICAL_ID:
 			id = accountExist ? o.getAccount().getVertical().getVerticalId().toString()
 					: o.getVertical().getVerticalId().toString();
 			value = accountExist ? o.getAccount().getVertical().getName() : o.getVertical().getName();
-
+			break;
 		default:
 			break;
 		}
@@ -72,12 +76,13 @@ public class EarmarkedEngineerOpportunityService {
 		String id = null;
 		final boolean accountExist = o.getAccount() != null;
 		switch (idType.toUpperCase()) {
-		case "ACCOUNT_ID":
+		case ACCOUNT_ID:
 			id = accountExist ? o.getAccount().getAccountId().toString() : o.getAccountName();
 			break;
-		case "VERTICAL_ID":
+		case VERTICAL_ID:
 			id = accountExist ? o.getAccount().getVertical().getVerticalId().toString()
 					: o.getVertical().getVerticalId().toString();
+			break;
 		default:
 			break;
 		}
@@ -123,11 +128,10 @@ public class EarmarkedEngineerOpportunityService {
 				.findOpportunityIdsForTheGdm(jwtEmployeeUtil.getLoggedInEmployeeId());
 		final List<Earmark> earmarksForOpportunities = earmarkRepository
 				.findByProjectIsNullAndOpportunityIsNotNullAndIsActiveIsTrue();
-		final List<Earmark> earmarksByRmgForGdm = earmarksForOpportunities.stream()
+		return earmarksForOpportunities.stream()
 				.filter(e -> RolesUtil.isRMG(employeeRepository.findByEmployeeId(e.getCreatedBy()))
 						&& opportunityIdsForGdm.contains(e.getOpportunity().getOpportunityId()))
 				.collect(Collectors.toList());
-		return earmarksByRmgForGdm;
 	}
 
 	private List<Opportunity> getOpportunitiesForEarmarkedByMe() {
@@ -170,16 +174,16 @@ public class EarmarkedEngineerOpportunityService {
 
 	public List<Opportunity> getEarmarkedEngineersOpportunities(EarmarkedDropdownReqDto dto) {
 		final List<Opportunity> opportunityList = new ArrayList<>();
-		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+		if (dto.getEarmarkedByMe()) {
 			opportunityList.addAll(getOpportunitiesForEarmarkedByMe());
 		}
-		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+		if (dto.getEarmarkedByGdm()) {
 			opportunityList.addAll(getOpportunitiesForEarmarkedByGdm());
 		}
-		if (dto.getEarmarkedForOthers() != null && dto.getEarmarkedForOthers() == true) {
+		if (dto.getEarmarkedForOthers()) {
 			opportunityList.addAll(getOpportunitiesForEarmarkedForOtherManagers());
 		}
-		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+		if (dto.getEarmarkedByRmg()) {
 			opportunityList.addAll(getOpportunitiesForEarmarkedByRmgForManager());
 			if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee())) {
 				opportunityList.addAll(getOpportunitiesForEarmarkedByRmgForGdm());
@@ -189,51 +193,48 @@ public class EarmarkedEngineerOpportunityService {
 	}
 
 	public List<UnitValue> getEarmarkedOpportunityDropdown(EarmarkedDropdownReqDto dto) {
-		List<Opportunity> opportunities = new ArrayList<>();
+		List<Opportunity> opportunities = null;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			opportunities = getAllEarmarkedOpportunities();
 		else
 			opportunities = getEarmarkedEngineersOpportunities(dto);
 		if (!CollectionUtils.isEmpty(dto.getVerticalIdList())) {
 			opportunities = opportunities.stream()
-					.filter(o -> dto.getVerticalIdList().contains(getCheckedId(o, "VERTICAL_ID")))
+					.filter(o -> dto.getVerticalIdList().contains(getCheckedId(o, VERTICAL_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getAccountIdList())) {
 			opportunities = opportunities.stream()
-					.filter(o -> dto.getAccountIdList().contains(getCheckedId(o, "ACCOUNT_ID")))
+					.filter(o -> dto.getAccountIdList().contains(getCheckedId(o, ACCOUNT_ID)))
 					.collect(Collectors.toList());
 		}
-		final List<UnitValue> resultSet = opportunities.stream()
+		return opportunities.stream()
 				.map(o -> new UnitValue(o.getOpportunityId(), o.getName())).distinct().collect(Collectors.toList());
-		return resultSet;
 	}
 
 	public List<UnitValue> getEarmarkedAccountDropdown(EarmarkedDropdownReqDto dto) {
-		List<Opportunity> opportunities = new ArrayList<>();
+		List<Opportunity> opportunities = null;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			opportunities = getAllEarmarkedOpportunities();
 		else
 			opportunities = getEarmarkedEngineersOpportunities(dto);
 		if (!CollectionUtils.isEmpty(dto.getVerticalIdList())) {
 			opportunities = opportunities.stream()
-					.filter(o -> dto.getVerticalIdList().contains(getCheckedId(o, "VERTICAL_ID")))
+					.filter(o -> dto.getVerticalIdList().contains(getCheckedId(o, VERTICAL_ID)))
 					.collect(Collectors.toList());
 		}
-		final List<UnitValue> resultSet = opportunities.stream().map(o -> getCheckedUnitValue(o, "ACCOUNT_ID"))
+		return opportunities.stream().map(o -> getCheckedUnitValue(o, ACCOUNT_ID))
 				.distinct().collect(Collectors.toList());
-		return resultSet;
 	}
 
 	public List<UnitValue> getEarmarkedVerticalDropdown(EarmarkedDropdownReqDto dto) {
-		List<Opportunity> opportunities = new ArrayList<>();
+		List<Opportunity> opportunities = null;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			opportunities = getAllEarmarkedOpportunities();
 		else
 			opportunities = getEarmarkedEngineersOpportunities(dto);
-		final List<UnitValue> resultSet = opportunities.stream().map(o -> getCheckedUnitValue(o, "VERTICAL_ID"))
+		return opportunities.stream().map(o -> getCheckedUnitValue(o, VERTICAL_ID))
 				.distinct().collect(Collectors.toList());
-		return resultSet;
 	}
 
 	public List<String> getEarmarkedSalesforceSearch(EarmarkedDropdownReqDto dto) {
@@ -242,17 +243,16 @@ public class EarmarkedEngineerOpportunityService {
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			earmarks = earmarkRepository.findByProjectIsNullAndOpportunityIsNotNullAndIsActiveIsTrue();
 		else {
-			if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+			if (dto.getEarmarkedByMe()) {
 				earmarks.addAll(getEarmarkedByMe());
 			}
-			if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+			if (dto.getEarmarkedByGdm()) {
 				earmarks.addAll(getEarmarkedByGdm());
 			}
-			if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee()) && dto.getEarmarkedForOthers() != null
-					&& dto.getEarmarkedForOthers() == true) {
+			if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee()) && dto.getEarmarkedForOthers()) {
 				earmarks.addAll(getEarmarkedForOtherManagers());
 			}
-			if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+			if (dto.getEarmarkedByRmg()) {
 				earmarks.addAll(getEarmarkedByRmgForManager());
 				if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee()))
 					earmarks.addAll(getEarmarkedByRmgForGdm());
@@ -273,12 +273,12 @@ public class EarmarkedEngineerOpportunityService {
 		final List<ManagerInfoDto> earmarkGdms = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(dto.getVerticalIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), "VERTICAL_ID")))
+					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), VERTICAL_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getAccountIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), "ACCOUNT_ID")))
+					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), ACCOUNT_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getProjectIdList())) {
@@ -307,12 +307,12 @@ public class EarmarkedEngineerOpportunityService {
 		final List<ManagerInfoDto> earmarkManagers = new ArrayList<>();
 		if (!CollectionUtils.isEmpty(dto.getVerticalIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), "VERTICAL_ID")))
+					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), VERTICAL_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getAccountIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), "ACCOUNT_ID")))
+					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), ACCOUNT_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getProjectIdList())) {
@@ -331,13 +331,13 @@ public class EarmarkedEngineerOpportunityService {
 
 	public List<EarmarkItemDto> getEarmarkListAsManager(EarmarkEngineersManagerReqDto dto) {
 		List<Earmark> earmarks = new ArrayList<>();
-		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+		if (dto.getEarmarkedByMe()) {
 			earmarks.addAll(getEarmarkedByMe());
 		}
-		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+		if (dto.getEarmarkedByGdm()) {
 			earmarks.addAll(getEarmarkedByGdm());
 		}
-		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+		if (dto.getEarmarkedByRmg()) {
 			earmarks.addAll(getEarmarkedByRmgForManager());
 		}
 		if (!CollectionUtils.isEmpty(dto.getProjectIdList())) {
@@ -356,27 +356,27 @@ public class EarmarkedEngineerOpportunityService {
 
 	public List<EarmarkItemDto> getEarmarkListAsGdmManager(EarmarkEngineersGdmReqDto dto) {
 		List<Earmark> earmarks = new ArrayList<>();
-		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe()) {
 			earmarks.addAll(getEarmarkedByMe());
 		}
-		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm()) {
 			earmarks.addAll(getEarmarkedByGdm());
 		}
-		if (dto.getEarmarkedForOthers() != null && dto.getEarmarkedForOthers() == true) {
+		if (dto.getEarmarkedForOthers() != null && dto.getEarmarkedForOthers()) {
 			earmarks.addAll(getEarmarkedForOtherManagers());
 		}
-		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg()) {
 			earmarks.addAll(getEarmarkedByRmgForManager());
 			earmarks.addAll(getEarmarkedByRmgForGdm());
 		}
 		if (!CollectionUtils.isEmpty(dto.getVerticalIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), "VERTICAL_ID")))
+					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), VERTICAL_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getAccountIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), "ACCOUNT_ID")))
+					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), ACCOUNT_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getProjectIdList())) {
@@ -397,12 +397,12 @@ public class EarmarkedEngineerOpportunityService {
 		List<Earmark> earmarks = earmarkRepository.findByProjectIsNullAndOpportunityIsNotNullAndIsActiveIsTrue();
 		if (!CollectionUtils.isEmpty(dto.getVerticalIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), "VERTICAL_ID")))
+					.filter(e -> dto.getVerticalIdList().contains(getCheckedId(e.getOpportunity(), VERTICAL_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getAccountIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), "ACCOUNT_ID")))
+					.filter(e -> dto.getAccountIdList().contains(getCheckedId(e.getOpportunity(), ACCOUNT_ID)))
 					.collect(Collectors.toList());
 		}
 		if (!CollectionUtils.isEmpty(dto.getProjectIdList())) {

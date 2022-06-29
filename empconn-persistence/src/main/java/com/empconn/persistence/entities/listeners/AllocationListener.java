@@ -11,7 +11,7 @@ import com.empconn.constants.ApplicationConstants;
 import com.empconn.persistence.entities.Allocation;
 import com.empconn.util.AllocationUtil;
 import com.empconn.utilities.BeanUtil;
-import com.empconn.utilities.CommonUtil;;
+import com.empconn.utilities.CommonUtil;
 
 public class AllocationListener {
 
@@ -57,10 +57,6 @@ public class AllocationListener {
 
 	private String employeeLoginMailId(Allocation allocation) {
 		return CommonUtil.loginIdToMailId(allocation.getEmployee().getLoginId());
-	}
-
-	private Long allocationId(Allocation allocation) {
-		return allocation.getAllocationId();
 	}
 
 }

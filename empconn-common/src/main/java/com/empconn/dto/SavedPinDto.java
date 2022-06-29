@@ -2,19 +2,19 @@ package com.empconn.dto;
 
 public class SavedPinDto {
 
-	private String ProjectId;
+	private String projectId;
 
 	public SavedPinDto(Long projectId) {
 		super();
-		ProjectId = Long.toString(projectId);
+		this.projectId = Long.toString(projectId);
 	}
 
 	public String getProjectId() {
-		return ProjectId;
+		return projectId;
 	}
 
 	public void setProjectId(String projectId) {
-		ProjectId = projectId;
+		this.projectId = projectId;
 	}
 
 }

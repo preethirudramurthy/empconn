@@ -54,9 +54,8 @@ public class CommonBenchService {
 
 	public ProjectLocation getGlobalBenchProjectLocation(final Project bench) {
 		final Location location = locationRepository.findByName(ApplicationConstants.LOCATION_GLOBAL);
-		final ProjectLocation globalBenchProjectLocation = projectLocationRespository
+		return projectLocationRespository
 				.findByProjectProjectIdAndLocationLocationId(bench.getProjectId(), location.getLocationId()).get(0);
-		return globalBenchProjectLocation;
 	}
 
 	public List<String> getBenchProjectNames() {

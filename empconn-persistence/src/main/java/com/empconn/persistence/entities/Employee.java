@@ -208,9 +208,6 @@ public class Employee extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy = "employee")
 	private List<SyncEmployee> syncEmployees;
 
-	public Employee() {
-	}
-
 	public Long getEmployeeId() {
 		return this.employeeId;
 	}

@@ -23,10 +23,5 @@ public class CraniumSftpCronJob {
 		changeProjectOrAccountCron.processRequests();
 	}
 
-	@Scheduled(cron="${cron2.schedule.sftp.job}", zone = "${cron.timezone}")
-	public void processRequestsForCron2() {
-		changeGDMCron.processRequests();
-		changeManagerCron.processRequests();
-		changeProjectOrAccountCron.processRequests();
-	}
+	
 }

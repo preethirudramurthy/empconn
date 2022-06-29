@@ -324,15 +324,15 @@ public class MasterService {
 										|| (p.getEmployee2() != null
 										&& p.getEmployee2().getEmployeeId().equals(employee.getEmployeeId()))))
 								.filter(p -> p.getAccount().getStatus().equals("ACTIVE")
-										&& p.getIsActive().equals(Boolean.TRUE)
-										&& p.getAccount().getIsActive().equals(Boolean.TRUE))
+										&& p.getIsActive()
+										&& p.getAccount().getIsActive())
 								.map(Project::getProjectId).collect(Collectors.toSet());
 						projectIds.addAll(projectLocationRespository.findAll().stream()
 								.filter(a -> a.getAllManagers().values().stream()
 										.anyMatch(e -> e.getEmployeeId().equals(employee.getEmployeeId())))
 								.filter(p -> p.getProject().getAccount().getStatus().equals("ACTIVE")
-										&& p.getIsActive().equals(Boolean.TRUE)
-										&& p.getProject().getAccount().getIsActive().equals(Boolean.TRUE))
+										&& p.getIsActive()
+										&& p.getProject().getAccount().getIsActive())
 								.map(p -> p.getProject().getProjectId()).collect(Collectors.toSet()));
 					} else if (RolesUtil.isGDM(employee)) {
 						projectIds = projectRepository.findAll().stream()
@@ -341,16 +341,16 @@ public class MasterService {
 										|| (p.getEmployee2() != null
 										&& p.getEmployee2().getEmployeeId().equals(employee.getEmployeeId()))))
 								.filter(p -> p.getAccount().getStatus().equals("ACTIVE")
-										&& p.getIsActive().equals(Boolean.TRUE)
-										&& p.getAccount().getIsActive().equals(Boolean.TRUE))
+										&& p.getIsActive()
+										&& p.getAccount().getIsActive())
 								.map(Project::getProjectId).collect(Collectors.toSet());
 					} else if (RolesUtil.isAManager(employee)) {
 						projectIds = projectLocationRespository.findAll().stream()
 								.filter(a -> a.getAllManagers().values().stream()
 										.anyMatch(e -> e.getEmployeeId().equals(employee.getEmployeeId())))
 								.filter(p -> p.getProject().getAccount().getStatus().equals("ACTIVE")
-										&& p.getIsActive().equals(Boolean.TRUE)
-										&& p.getProject().getAccount().getIsActive().equals(Boolean.TRUE))
+										&& p.getIsActive()
+										&& p.getProject().getAccount().getIsActive())
 								.map(p -> p.getProject().getProjectId()).collect(Collectors.toSet());
 					}
 				}
@@ -414,10 +414,10 @@ public class MasterService {
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList)
 											|| verticalIdList.contains(p.getAccount().getVertical().getVerticalId()))
 											&& p.getAccount().getStatus().equals("ACTIVE")
-											&& p.getIsActive().equals(Boolean.TRUE)
+											&& p.getIsActive()
 											&& Arrays.asList(ProjectStatus.PMO_APPROVED.name(),
 													ProjectStatus.PROJECT_ON_HOLD.name()).contains(p.getCurrentStatus())
-											&& p.getAccount().getIsActive().equals(Boolean.TRUE))
+											&& p.getAccount().getIsActive())
 									.map(Project::getAccount).collect(Collectors.toSet());
 							accounts.addAll(projectLocationRespository.findAll().stream()
 									.filter(a -> a.getAllManagers().values().stream()
@@ -425,12 +425,12 @@ public class MasterService {
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList) || verticalIdList
 											.contains(p.getProject().getAccount().getVertical().getVerticalId()))
 											&& p.getProject().getAccount().getStatus().equals("ACTIVE")
-											&& p.getIsActive().equals(Boolean.TRUE)
+											&& p.getIsActive()
 											&& Arrays
 											.asList(ProjectStatus.PMO_APPROVED.name(),
 													ProjectStatus.PROJECT_ON_HOLD.name())
 											.contains(p.getProject().getCurrentStatus())
-											&& p.getProject().getAccount().getIsActive().equals(Boolean.TRUE))
+											&& p.getProject().getAccount().getIsActive())
 									.map(p -> p.getProject().getAccount()).collect(Collectors.toSet()));
 						} else if (RolesUtil.isGDM(employee)) {
 							accounts = projectRepository.findAll().stream()
@@ -441,10 +441,10 @@ public class MasterService {
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList)
 											|| verticalIdList.contains(p.getAccount().getVertical().getVerticalId()))
 											&& p.getAccount().getStatus().equals("ACTIVE")
-											&& p.getIsActive().equals(Boolean.TRUE)
+											&& p.getIsActive()
 											&& Arrays.asList(ProjectStatus.PMO_APPROVED.name(),
 													ProjectStatus.PROJECT_ON_HOLD.name()).contains(p.getCurrentStatus())
-											&& p.getAccount().getIsActive().equals(Boolean.TRUE))
+											&& p.getAccount().getIsActive())
 									.map(Project::getAccount).collect(Collectors.toSet());
 						} else if (RolesUtil.isAManager(employee)) {
 							accounts = projectLocationRespository.findAll().stream()
@@ -453,12 +453,12 @@ public class MasterService {
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList) || verticalIdList
 											.contains(p.getProject().getAccount().getVertical().getVerticalId()))
 											&& p.getProject().getAccount().getStatus().equals("ACTIVE")
-											&& p.getIsActive().equals(Boolean.TRUE)
+											&& p.getIsActive()
 											&& Arrays
 											.asList(ProjectStatus.PMO_APPROVED.name(),
 													ProjectStatus.PROJECT_ON_HOLD.name())
 											.contains(p.getProject().getCurrentStatus())
-											&& p.getProject().getAccount().getIsActive().equals(Boolean.TRUE))
+											&& p.getProject().getAccount().getIsActive())
 									.map(p -> p.getProject().getAccount()).collect(Collectors.toSet());
 						} else {
 							if (CollectionUtils.isEmpty(verticalIdList)) {

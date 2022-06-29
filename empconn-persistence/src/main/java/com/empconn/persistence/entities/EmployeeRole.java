@@ -40,9 +40,6 @@ public class EmployeeRole extends Auditable<Long> implements Serializable {
 	@JoinColumn(name="role_id")
 	private Role role;
 
-	public EmployeeRole() {
-	}
-
 	public Long getEmployeeRolesId() {
 		return this.employeeRolesId;
 	}

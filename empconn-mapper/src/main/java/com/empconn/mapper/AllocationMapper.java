@@ -72,7 +72,7 @@ public abstract class AllocationMapper {
 
 	@Named("allocationToResourceAvailSummaryDtoList")
 	List<ResourceAvailabilitySummaryDto> allocationToResourceAvailSummaryDtoList(Allocation allocation) {
-		final List<ResourceAvailabilitySummaryDto> resourceAvailabilitySummaryDtoList = new ArrayList<ResourceAvailabilitySummaryDto>();
+		final List<ResourceAvailabilitySummaryDto> resourceAvailabilitySummaryDtoList = new ArrayList<>();
 		resourceAvailabilitySummaryDtoList.add(allocationToResourceAvailabilitySummaryDto(allocation));
 		return resourceAvailabilitySummaryDtoList;
 	}
@@ -162,7 +162,7 @@ public abstract class AllocationMapper {
 
 	@Named("projectToSalesForceIdList")
 	List<String> projectToSalesForceIdList(Project project) {
-		List<String> salesForceIdentifierIdList = new ArrayList<String>();
+		List<String> salesForceIdentifierIdList = new ArrayList<>();
 		if (project.getSalesforceIdentifiers() != null) {
 			salesForceIdentifierIdList = project.getSalesforceIdentifiers().stream()
 					.filter(SalesforceIdentifier::getIsActive).map(SalesforceIdentifier::getValue)
@@ -178,11 +178,11 @@ public abstract class AllocationMapper {
 	}
 
 	Function<ProjectLocation, List<Map<String, String>>> getProjectManagers = projectLocation -> {
-		final List<Map<String, String>> locationManagerList = new ArrayList<Map<String, String>>();
+		final List<Map<String, String>> locationManagerList = new ArrayList<>();
 		final Map<String, Employee> allManagers = projectLocation.getAllManagers();
 		allManagers.entrySet().stream().forEach(y -> {
 			if (y.getValue() != null) {
-				final Map<String, String> locationManagerMap = new HashMap<String, String>();
+				final Map<String, String> locationManagerMap = new HashMap<>();
 				locationManagerMap.put("projectLocationName", projectLocation.getLocation().getName());
 				locationManagerMap.put("workgroup", y.getKey());
 				locationManagerMap.put("mangerName", y.getValue().getFullName());
@@ -231,9 +231,6 @@ public abstract class AllocationMapper {
 	@Named("opportunity")
 	Boolean opportunity(Earmark earmark) {
 		Boolean flag = false;
-		if (earmark.getProject() != null) {
-			flag = false;
-		}
 		if (earmark.getOpportunity() != null) {
 			flag = true;
 		}

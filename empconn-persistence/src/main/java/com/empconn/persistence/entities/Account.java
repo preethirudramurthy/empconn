@@ -87,10 +87,7 @@ public class Account extends Auditable<Long> implements Serializable {
 	//bi-directional many-to-one association to SyncAccount
 	@OneToMany(mappedBy="account", cascade = CascadeType.ALL)
 	private List<SyncAccount> syncAccounts;
-
-	public Account() {
-	}
-
+	
 	public Integer getAccountId() {
 		return this.accountId;
 	}
@@ -225,7 +222,7 @@ public class Account extends Auditable<Long> implements Serializable {
 
 	public List<SyncAccount> getSyncAccounts() {
 		if (this.syncAccounts == null) {
-			return new ArrayList<SyncAccount>();
+			return new ArrayList<>();
 		}
 		return this.syncAccounts;
 	}

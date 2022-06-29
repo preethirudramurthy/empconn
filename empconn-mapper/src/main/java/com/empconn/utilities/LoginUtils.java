@@ -9,9 +9,10 @@ import com.empconn.persistence.entities.Role;
 
 public class LoginUtils {
 
-	public static Employee loginUser = null;
+	@SuppressWarnings("unused")
+	private static Employee loginUser = null;
 
-	public static Set<Employee> dummyUsers = new HashSet<>();
+	protected static final Set<Employee> dummyUsers = new HashSet<>();
 
 	public static void assignMockLogin(String loginId) {
 		if (dummyUsers != null) {
@@ -41,9 +42,6 @@ public class LoginUtils {
 		final Employee pmo2 = new Employee();
 		final Employee rmg1 = new Employee();
 		final Employee rmg2 = new Employee();
-		final Employee benchManager = new Employee();
-		final Employee sa1 = new Employee();
-		final Employee sa2 = new Employee();
 
 		final EmployeeRole employeeManager1Role = new EmployeeRole();
 		final EmployeeRole employeeManager2Role = new EmployeeRole();
@@ -261,9 +259,6 @@ public class LoginUtils {
 		mockUsers.add(pmo2);
 		mockUsers.add(rmg1);
 		mockUsers.add(rmg2);
-//		mockUsers.add(benchManager);
-//		mockUsers.add(sa1);
-//		mockUsers.add(sa2);
 
 		dummyUsers.clear();
 		dummyUsers.addAll(mockUsers);

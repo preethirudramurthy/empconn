@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.empconn.dto.BenchReportRowDto;
 
 @Component
-public class ExcelBenchReportGenerator extends ExcelReportGenerator {
+public class ExcelBenchReportGenerator implements ExcelReportGenerator {
 
 	@Override
 	public List<String> headers() {

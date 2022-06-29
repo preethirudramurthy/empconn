@@ -75,7 +75,7 @@ public class MapService {
 			Long projectId) {
 		try {
 			final ImmutablePair<HttpMethod, FilterProvider> requestMethodFilter = getMapRequestMethodFilter(
-					mapAccountDto.get_id(), "map-account-filter");
+					mapAccountDto.getId(), "map-account-filter");
 
 			final HttpMethod requestMethod = requestMethodFilter.getLeft();
 			final FilterProvider filters = requestMethodFilter.getRight();
@@ -87,9 +87,9 @@ public class MapService {
 			final MapAccountDto responseDto = mapper.readValue(responseBody, MapAccountDto.class);
 
 			if (requestMethod.equals(HttpMethod.POST))
-				accountRepository.updateMapAccountId(responseDto.get_id(), accountId);
+				accountRepository.updateMapAccountId(responseDto.getId(), accountId);
 
-			mapProjectDto.setClientId(responseDto.get_id());
+			mapProjectDto.setClientId(responseDto.getId());
 			saveProject(mapProjectDto, projectId);
 
 		} catch (final Exception e) {
@@ -102,7 +102,7 @@ public class MapService {
 	public void saveAccount(MapAccountDto mapAccountDto, Integer accountId) {
 		try {
 			final ImmutablePair<HttpMethod, FilterProvider> requestMethodFilter = getMapRequestMethodFilter(
-					mapAccountDto.get_id(), "map-account-filter");
+					mapAccountDto.getId(), "map-account-filter");
 
 			final HttpMethod requestMethod = requestMethodFilter.getLeft();
 			final FilterProvider filters = requestMethodFilter.getRight();
@@ -113,7 +113,7 @@ public class MapService {
 
 			final MapAccountDto responseDto = mapper.readValue(responseBody, MapAccountDto.class);
 			if (requestMethod.equals(HttpMethod.POST))
-				accountRepository.updateMapAccountId(responseDto.get_id(), accountId);
+				accountRepository.updateMapAccountId(responseDto.getId(), accountId);
 
 		} catch (final Exception e) {
 			logger.error("Exception in Map saveAccount : " + e.getMessage());
@@ -124,7 +124,7 @@ public class MapService {
 	public void saveProject(MapProjectDto mapProjectDto, Long projectId) {
 		try {
 			final ImmutablePair<HttpMethod, FilterProvider> requestMethodFilter = getMapRequestMethodFilter(
-					mapProjectDto.get_id(), "map-project-filter");
+					mapProjectDto.getId(), "map-project-filter");
 
 			final HttpMethod requestMethod = requestMethodFilter.getLeft();
 			final FilterProvider filters = requestMethodFilter.getRight();
@@ -135,7 +135,7 @@ public class MapService {
 
 			final MapProjectDto responseDto = mapper.readValue(responseBody, MapProjectDto.class);
 			if (requestMethod.equals(HttpMethod.POST))
-				projectRepository.updateMapProjectId(responseDto.get_id(), projectId);
+				projectRepository.updateMapProjectId(responseDto.getId(), projectId);
 
 		} catch (final Exception e) {
 			logger.error("Exception in Map saveProject : " + e.getMessage());
@@ -213,7 +213,7 @@ public class MapService {
 		logger.info("Response from asynchronous process - save-account-migration" + responseBody);
 
 		final MapAccountDto responseDto = mapper.readValue(responseBody, MapAccountDto.class);
-		final String mapAccountId = responseDto.get_id();
+		final String mapAccountId = responseDto.getId();
 		accountRepository.updateMapAccountId(mapAccountId, account.getAccountId());
 
 		final List<String> allowedProjectStatus = Arrays.asList(ProjectStatus.PMO_APPROVED.name(),
@@ -243,7 +243,7 @@ public class MapService {
 		logger.info("Response from asynchronous process - save-project-migration" + responseBody);
 
 		final MapProjectDto responseDto = mapper.readValue(responseBody, MapProjectDto.class);
-		final String mapProjecttId = responseDto.get_id();
+		final String mapProjecttId = responseDto.getId();
 		projectRepository.updateMapProjectId(mapProjecttId, project.getProjectId());
 
 		return mapProjecttId;

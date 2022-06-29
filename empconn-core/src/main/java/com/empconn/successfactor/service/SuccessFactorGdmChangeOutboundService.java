@@ -29,7 +29,7 @@ public class SuccessFactorGdmChangeOutboundService extends SuccessFactorOutbound
 	public Boolean syncGdmChanges(Set<GdmChangeDto> gdmsDto) {
 		final Object object = gdmsDto;
 		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) object;
-		return syncChanges(object2,ApplicationConstants.SF_FTP.Gdm.name());
+		return syncChanges(object2,ApplicationConstants.SF_FTP.GDM.name());
 	}
 
 }

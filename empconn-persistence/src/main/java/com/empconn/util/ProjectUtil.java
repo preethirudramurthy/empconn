@@ -20,7 +20,7 @@ public class ProjectUtil {
 	private EmployeeRepository employeeRepository;
 
 	public List<String> getEmployeeLoginMailIdsOfPrimaryAllocationProjects(Long projectId, String projectName) {
-		if(null != projectId && projectRepository.findById(projectId).get().getIsActive()) {
+		if(null != projectId && projectRepository.findById(projectId).isPresent() && projectRepository.findById(projectId).get().getIsActive()) {
 			return employeeRepository.getEmployeeLoginIdsOfPrimaryAllocationProjects(projectId, StringUtils.trim(projectName));
 		}
 

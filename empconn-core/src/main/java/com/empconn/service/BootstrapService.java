@@ -151,11 +151,11 @@ public class BootstrapService {
 				final List<EmployeeSkill> employeeSkillsList = employeeSkillRepository
 						.findByEmployeeAndSecondarySkillPrimarySkillNameIgnoreCase(employee,
 								skills.getPrimarySkill().toLowerCase().trim());
-				final List<String> alreadyPresentSkills = new ArrayList<String>();
+				final List<String> alreadyPresentSkills = new ArrayList<>();
 				if (!CollectionUtils.isEmpty(employeeSkillsList)) {
-					employeeSkillsList.stream().forEach(es -> {
+					employeeSkillsList.stream().forEach(es -> 
 						alreadyPresentSkills.add(es.getSecondarySkill().getName().toLowerCase());
-					});
+					);
 				}
 				if (!CollectionUtils.isEmpty(skills.getSecondarySkills())) {
 					for (final String skill : skills.getSecondarySkills()) {
@@ -179,8 +179,6 @@ public class BootstrapService {
 		final SecondarySkill secondarySkill = secondarySkillRepository
 				.findByNameIgnoreCaseAndPrimarySkillNameIgnoreCaseAndIsActiveTrue(secondarySkillName, primarySkillName);
 		if (secondarySkill == null) {
-			logger.debug(
-					"Primary/Secondary skill not available in db :- " + primarySkillName + "or" + secondarySkillName);
 			throw new EmpConnException(ExceptionConstants.SKILL_NOT_AVAILABLE);
 		}
 		populateAndSaveEntity(employee, secondarySkill);
@@ -248,19 +246,15 @@ public class BootstrapService {
 
 	public Set<String> getVertical() {
 		final Set<Vertical> verticals = verticalRepository.findByIsActiveTrue();
-		final Set<String> verticalSet = new HashSet<String>();
-		verticals.stream().forEach(v -> {
-			verticalSet.add(v.getName());
-		});
+		final Set<String> verticalSet = new HashSet<>();
+		verticals.stream().forEach(v -> verticalSet.add(v.getName()));
 		return verticalSet;
 	}
 
 	public Set<String> getHorizontal() {
 		final Set<Horizontal> horizontals = horizontalRepository.findByIsActiveTrue();
-		final Set<String> horizontalSet = new HashSet<String>();
-		horizontals.stream().forEach(h -> {
-			horizontalSet.add(h.getName());
-		});
+		final Set<String> horizontalSet = new HashSet<>();
+		horizontals.stream().forEach(h -> horizontalSet.add(h.getName()));
 		return horizontalSet;
 	}
 

@@ -45,9 +45,6 @@ public class Location extends NamedAuditable<Long> implements Serializable {
 	@OneToMany(mappedBy="location")
 	private Set<LocationHr> locationHrs;
 
-	public Location() {
-	}
-
 	public Integer getLocationId() {
 		return this.locationId;
 	}

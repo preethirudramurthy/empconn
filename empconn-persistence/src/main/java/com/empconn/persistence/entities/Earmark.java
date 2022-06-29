@@ -50,14 +50,14 @@ public class Earmark extends Auditable<Long> implements Serializable {
 	private Long earmarkId;
 
 	@Column(name = "billable")
-	private Boolean billable;
+	private boolean billable;
 
 	@Temporal(TemporalType.DATE)
 	@Column(name = "end_date")
 	private Date endDate;
 
 	@Column(name = "is_client_interview_needed")
-	private Boolean isClientInterviewNeeded;
+	private boolean isClientInterviewNeeded;
 
 	@Column(name = "percentage")
 	private Integer percentage;
@@ -107,11 +107,11 @@ public class Earmark extends Auditable<Long> implements Serializable {
 		this.earmarkId = earmarkId;
 	}
 
-	public Boolean getBillable() {
+	public boolean getBillable() {
 		return this.billable;
 	}
 
-	public void setBillable(Boolean billable) {
+	public void setBillable(boolean billable) {
 		this.billable = billable;
 	}
 

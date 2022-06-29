@@ -32,8 +32,6 @@ public class Division extends NamedAuditable<Long> implements Serializable {
 	@OneToMany(mappedBy="division")
 	private Set<Employee> employees;
 
-	public Division() {
-	}
 
 	public Integer getDivisionId() {
 		return this.divisionId;

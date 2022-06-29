@@ -1,5 +1,6 @@
 package com.empconn.mapper;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +77,7 @@ public abstract class ProjectResourceDtoMapper {
 	public Set<ProjectResource> resourceItemListToProjectResources(List<ResourceItemDto> resourceItemList) {
 		final Set<ProjectResource> set = new HashSet<>();
 		for (final ResourceItemDto dto : resourceItemList) {
-			if (dto.getRrId() != null) {
+			if (dto.getRrId() != null && projectResourceRepository.findById(Long.valueOf(dto.getRrId())).isPresent()) {
 				final ProjectResource projectResource = projectResourceRepository.findById(Long.valueOf(dto.getRrId()))
 						.get();
 				set.add(resourceItemDtoToProjectResource(dto, projectResource));
@@ -101,7 +102,7 @@ public abstract class ProjectResourceDtoMapper {
 		if (locationId != null) {
 			final Optional<ProjectLocation> projectLocation = projectLocationRespository
 					.findById(Long.parseLong(locationId));
-			return projectLocation.get();
+			if (projectLocation.isPresent()) return projectLocation.get();
 		}
 		return null;
 
@@ -111,7 +112,7 @@ public abstract class ProjectResourceDtoMapper {
 	public Title titleIdToTitle(String titleId) {
 		if (titleId != null) {
 			final Optional<Title> title = titleRepository.findById(Integer.parseInt(titleId));
-			return title.get();
+			if (title.isPresent() )return title.get();
 		}
 		return null;
 
@@ -122,7 +123,7 @@ public abstract class ProjectResourceDtoMapper {
 		if (primarySkillId != null) {
 			final Optional<PrimarySkill> primarySkill = primarySkillRepository
 					.findById(Integer.parseInt(primarySkillId));
-			return primarySkill.get();
+			if (primarySkill.isPresent()) return primarySkill.get();
 		}
 		return null;
 
@@ -131,7 +132,7 @@ public abstract class ProjectResourceDtoMapper {
 	public Set<ProjectResourcesSecondarySkill> secondarySkillIdsToProjectResourcesSecondarySkills(
 			List<String> secondarySkillIdList, ProjectResource projectResource) {
 		if (CollectionUtils.isEmpty(secondarySkillIdList))
-			return null;
+			return Collections.emptySet();
 		final Set<ProjectResourcesSecondarySkill> set = new HashSet<>();
 		final List<Integer> secondarySkillIds = secondarySkillIdList.stream().map(Integer::parseInt)
 				.collect(Collectors.toList());
@@ -145,7 +146,7 @@ public abstract class ProjectResourceDtoMapper {
 		} else {
 			for (final SecondarySkill secondarySkill : secondarySkills) {
 				final Optional<ProjectResourcesSecondarySkill> skillExist = projectResource
-						.getProjectResourcesSecondarySkills().stream().filter(s -> s.getIsActive() == true && s
+						.getProjectResourcesSecondarySkills().stream().filter(s -> s.getIsActive() && s
 								.getSecondarySkill().getSecondarySkillId().equals(secondarySkill.getSecondarySkillId()))
 						.findFirst();
 				if (skillExist.isPresent())

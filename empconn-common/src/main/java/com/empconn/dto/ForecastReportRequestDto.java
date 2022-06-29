@@ -11,7 +11,7 @@ public class ForecastReportRequestDto {
 	private List<String> orgLocationIdList;
 	private List<String> verticalIdList;
 	private String title;
-	private String inside_monthYear;
+	private String insideMonthYear;
 
 	public String getMonthYear() {
 		return monthYear;
@@ -55,10 +55,10 @@ public class ForecastReportRequestDto {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public String getInside_monthYear() {
-		return inside_monthYear;
+	public String getInsideMonthYear() {
+		return insideMonthYear;
 	}
-	public void setInside_monthYear(String inside_monthYear) {
-		this.inside_monthYear = inside_monthYear;
+	public void setInsideMonthYear(String insideMonthYear) {
+		this.insideMonthYear = insideMonthYear;
 	}
 }

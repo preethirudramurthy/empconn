@@ -1,9 +1,14 @@
 package com.empconn.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BenchReportRequestDto {
+public class BenchReportRequestDto implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6476483903460502968L;
 	private List<String> benchProjectIdList;
 	private List<String> orgLocationIdList;
 	private List<String> titleIdList;

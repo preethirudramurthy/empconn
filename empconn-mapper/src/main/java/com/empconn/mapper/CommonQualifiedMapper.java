@@ -50,8 +50,6 @@ import com.empconn.vo.UnitValue;
 @Mapper(componentModel = "spring")
 public abstract class CommonQualifiedMapper {
 
-	private static final String DD_MMM_YYYY = "dd-MMM-yyyy";
-
 	@Autowired
 	private EmployeeSkillRepository employeeSkillRepository;
 
@@ -145,7 +143,7 @@ public abstract class CommonQualifiedMapper {
 		if (commaString != null) {
 			return Stream.of(commaString.split(",", -1)).collect(Collectors.toList());
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Named("DateToLocalDate")
@@ -199,26 +197,26 @@ public abstract class CommonQualifiedMapper {
 	}
 
 	@Named("DateToFormattedDate")
-	public static String DateToFormattedDate(Date date) {
+	public static String dateToFormattedDate(Date date) {
 		if (null == date)
 			return null;
-		return new SimpleDateFormat("dd-MMM-YYYY").format(date);
+		return new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(date);
 	}
 
 	@Named("localDateTimeToFormattedDate")
 	public static String localDateTimeToFormattedDate(LocalDateTime localDateTime) {
 		if (null == localDateTime)
 			return null;
-		return new SimpleDateFormat("dd-MMM-YYYY")
+		return new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY)
 				.format(java.util.Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 	}
 
 	@Named("TimestampToFormattedDate")
-	public static String TimestampToFormattedDate(Timestamp timestamp) {
+	public static String timestampToFormattedDate(Timestamp timestamp) {
 		if (null == timestamp)
 			return null;
 		final Date date = timestamp;
-		return new SimpleDateFormat("dd-MMM-YYYY").format(date);
+		return new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(date);
 	}
 
 	@Named("latestCommentForProjectStatus")
@@ -297,9 +295,8 @@ public abstract class CommonQualifiedMapper {
 	@Named("getAllocationStartDateForND")
 	Date getAllocationStartDateForND(Allocation allocation) {
 		if (allocation.getAllocationDetails() != null && !allocation.getAllocationDetails().isEmpty()) {
-			final Date minStartDate = Collections.min(allocation.getAllocationDetails().stream()
+			return Collections.min(allocation.getAllocationDetails().stream()
 					.map(AllocationDetail::getStartDate).collect(Collectors.toList()));
-			return minStartDate;
 		} else {
 			return null;
 		}
@@ -406,7 +403,7 @@ public abstract class CommonQualifiedMapper {
 
 	@Named("Date_ddmmmyyyy_To_String")
 	public static String dateToStringForReport(Date input) {
-		return DateUtils.toString(input, DD_MMM_YYYY);
+		return DateUtils.toString(input, ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY);
 	}
 
 	@Named("allocationStartDateFormatted")

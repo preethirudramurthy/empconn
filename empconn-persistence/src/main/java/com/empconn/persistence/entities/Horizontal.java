@@ -38,9 +38,6 @@ public class Horizontal extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy="horizontal")
 	private Set<Project> projects;
 
-	public Horizontal() {
-	}
-
 	public Integer getHorizontalId() {
 		return this.horizontalId;
 	}

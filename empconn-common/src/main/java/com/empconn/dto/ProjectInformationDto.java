@@ -22,7 +22,6 @@ public class ProjectInformationDto {
 	private Set<CheckListInformationDto> checklist;
 	public ProjectInformationDto() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public ProjectInformationDto(String projectName, String vertical, String subCategory, String customerName,
 			String businessManagerName, String projectManagerName, String scope, String initialMeetingDate,

@@ -29,7 +29,7 @@ public class SuccessFactorProjectChangeOutboundService extends SuccessFactorOutb
 	public Boolean syncProjectChanges(Set<ProjectChangeDto> projectsDto) {
 		final Object object = projectsDto;
 		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) object;
-		return syncChanges(object2,ApplicationConstants.SF_FTP.Project.name());
+		return syncChanges(object2,ApplicationConstants.SF_FTP.PROJECT.name());
 	}
 
 }

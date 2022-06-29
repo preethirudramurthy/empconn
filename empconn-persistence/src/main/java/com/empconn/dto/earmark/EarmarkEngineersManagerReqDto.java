@@ -1,15 +1,18 @@
 package com.empconn.dto.earmark;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class EarmarkEngineersManagerReqDto {
+public class EarmarkEngineersManagerReqDto implements Serializable {
 
+	
+	private static final long serialVersionUID = 4490322096045522377L;
 	private List<String> projectIdList;
 	private List<String> salesforceIdList;
 	private boolean isOpp;
-	private Boolean earmarkedByMe;
-	private Boolean earmarkedByGdm;
-	private Boolean earmarkedByRmg;
+	private boolean earmarkedByMe;
+	private boolean earmarkedByGdm;
+	private boolean earmarkedByRmg;
 
 	public List<String> getProjectIdList() {
 		return projectIdList;
@@ -27,35 +30,35 @@ public class EarmarkEngineersManagerReqDto {
 		this.salesforceIdList = salesforceIdList;
 	}
 
-	public Boolean getIsOpp() {
+	public boolean getIsOpp() {
 		return isOpp;
 	}
 
-	public void setIsOpp(Boolean isOpp) {
+	public void setIsOpp(boolean isOpp) {
 		this.isOpp = isOpp;
 	}
 
-	public Boolean getEarmarkedByMe() {
+	public boolean getEarmarkedByMe() {
 		return earmarkedByMe;
 	}
 
-	public void setEarmarkedByMe(Boolean earmarkedByMe) {
+	public void setEarmarkedByMe(boolean earmarkedByMe) {
 		this.earmarkedByMe = earmarkedByMe;
 	}
 
-	public Boolean getEarmarkedByGdm() {
+	public boolean getEarmarkedByGdm() {
 		return earmarkedByGdm;
 	}
 
-	public void setEarmarkedByGdm(Boolean earmarkedByGdm) {
+	public void setEarmarkedByGdm(boolean earmarkedByGdm) {
 		this.earmarkedByGdm = earmarkedByGdm;
 	}
 
-	public Boolean getEarmarkedByRmg() {
+	public boolean getEarmarkedByRmg() {
 		return earmarkedByRmg;
 	}
 
-	public void setEarmarkedByRmg(Boolean earmarkedByRmg) {
+	public void setEarmarkedByRmg(boolean earmarkedByRmg) {
 		this.earmarkedByRmg = earmarkedByRmg;
 	}
 

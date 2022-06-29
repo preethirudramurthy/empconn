@@ -46,11 +46,11 @@ public class EarmarkEngineersGdmReqDto {
 		this.salesforceIdList = salesforceIdList;
 	}
 
-	public Boolean getIsOpp() {
+	public boolean getIsOpp() {
 		return isOpp;
 	}
 
-	public void setIsOpp(Boolean isOpp) {
+	public void setIsOpp(boolean isOpp) {
 		this.isOpp = isOpp;
 	}
 

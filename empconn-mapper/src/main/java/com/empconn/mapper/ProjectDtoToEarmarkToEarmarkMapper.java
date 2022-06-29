@@ -1,6 +1,7 @@
 package com.empconn.mapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,7 +54,7 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 	ProjectRepository projectRepository;
 
 	public List<Earmark> earmarkProjectDtoToEarmarkList(EarmarkProjectDto earmarkProjectDto) {
-		final List<Earmark> earmarks = new ArrayList<Earmark>();
+		final List<Earmark> earmarks = new ArrayList<>();
 		final Project project = projectRepository.findByProjectId(Long.valueOf(earmarkProjectDto.getProjectId()));
 
 		if (!CollectionUtils.isEmpty(earmarkProjectDto.getSalesforceIdList())) {
@@ -63,7 +64,7 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 		}
 
 		Employee manager = null;
-		if (earmarkProjectDto.getManagerId() != null)
+		if (earmarkProjectDto.getManagerId() != null && employeeRepository.findById(Long.parseLong(earmarkProjectDto.getManagerId())).isPresent())
 			manager = employeeRepository.findById(Long.parseLong(earmarkProjectDto.getManagerId())).get();
 		else
 			manager = jwtEmployeeUtil.getLoggedInEmployee();
@@ -113,10 +114,10 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 	public List<Earmark> earmarkOppurtunityDtoToEarmarkList(EarmarkOppurtunityDto earmarkOppurtunityDto,
 			Opportunity opportunity) {
 
-		final List<Earmark> earmarks = new ArrayList<Earmark>();
+		final List<Earmark> earmarks = new ArrayList<>();
 
 		Employee manager = null;
-		if (earmarkOppurtunityDto.getManagerId() != null)
+		if (earmarkOppurtunityDto.getManagerId() != null && employeeRepository.findById(Long.parseLong(earmarkOppurtunityDto.getManagerId())).isPresent())
 			manager = employeeRepository.findById(Long.parseLong(earmarkOppurtunityDto.getManagerId())).get();
 		else
 			manager = jwtEmployeeUtil.getLoggedInEmployee();
@@ -144,7 +145,7 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(String employeeId) {
-		if (employeeId != null) {
+		if (employeeId != null && employeeRepository.findById(Long.valueOf(employeeId)).isPresent()) {
 			return employeeRepository.findById(Long.valueOf(employeeId)).get();
 		}
 		return null;
@@ -183,6 +184,6 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 			}
 			return list;
 		}
-		return null;
+		return Collections.emptyList();
 	}
 }

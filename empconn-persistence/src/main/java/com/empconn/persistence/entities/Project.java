@@ -179,9 +179,6 @@ public class Project extends Auditable<Long> implements Serializable {
 	private List<SyncProjectManager> syncProjectManagers;
 
 
-	public Project() {
-	}
-
 	public Long getProjectId() {
 		return this.projectId;
 	}
@@ -551,7 +548,7 @@ public class Project extends Auditable<Long> implements Serializable {
 	}
 
 	public Map<String, Employee> getGdms() {
-		final Map<String, Employee> gdms = new LinkedHashMap<String, Employee>();
+		final Map<String, Employee> gdms = new LinkedHashMap<>();
 		gdms.computeIfAbsent("DEV", val -> getEmployee1());
 		gdms.computeIfAbsent("QA", val -> getEmployee2());
 
@@ -560,7 +557,7 @@ public class Project extends Auditable<Long> implements Serializable {
 
 	public List<SyncProject> getSyncProjects() {
 		if (this.syncProjects == null) {
-			return new ArrayList<SyncProject>();
+			return new ArrayList<>();
 		}
 		return this.syncProjects;
 	}

@@ -57,9 +57,9 @@ public abstract class AccountToSaveAccountDtoMapper {
 			account.getClientLocations().stream().forEach(cl -> {
 				cl.setAccount(account);
 				if(cl.getContacts()!=null) {
-					cl.getContacts().stream().forEach(c -> {
-						c.setClientLocation(cl);
-					});
+					cl.getContacts().stream().forEach(c -> 
+						c.setClientLocation(cl)
+					);
 				}
 			});
 		}

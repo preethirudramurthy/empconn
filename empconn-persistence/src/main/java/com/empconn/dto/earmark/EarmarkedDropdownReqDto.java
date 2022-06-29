@@ -7,10 +7,10 @@ import javax.validation.constraints.Size;
 public class EarmarkedDropdownReqDto {
 
 	private boolean isOpp;
-	private Boolean earmarkedByMe;
-	private Boolean earmarkedByGdm;
-	private Boolean earmarkedByRmg;
-	private Boolean earmarkedForOthers;
+	private boolean earmarkedByMe;
+	private boolean earmarkedByGdm;
+	private boolean earmarkedByRmg;
+	private boolean earmarkedForOthers;
 	private List<String> accountIdList;
 	private List<String> verticalIdList;
 	@Size(min = 3)
@@ -24,35 +24,35 @@ public class EarmarkedDropdownReqDto {
 		this.isOpp = isOpp;
 	}
 
-	public Boolean getEarmarkedByMe() {
+	public boolean getEarmarkedByMe() {
 		return earmarkedByMe;
 	}
 
-	public void setEarmarkedByMe(Boolean earmarkedByMe) {
+	public void setEarmarkedByMe(boolean earmarkedByMe) {
 		this.earmarkedByMe = earmarkedByMe;
 	}
 
-	public Boolean getEarmarkedByGdm() {
+	public boolean getEarmarkedByGdm() {
 		return earmarkedByGdm;
 	}
 
-	public void setEarmarkedByGdm(Boolean earmarkedByGdm) {
+	public void setEarmarkedByGdm(boolean earmarkedByGdm) {
 		this.earmarkedByGdm = earmarkedByGdm;
 	}
 
-	public Boolean getEarmarkedByRmg() {
+	public boolean getEarmarkedByRmg() {
 		return earmarkedByRmg;
 	}
 
-	public void setEarmarkedByRmg(Boolean earmarkedByRmg) {
+	public void setEarmarkedByRmg(boolean earmarkedByRmg) {
 		this.earmarkedByRmg = earmarkedByRmg;
 	}
 
-	public Boolean getEarmarkedForOthers() {
+	public boolean getEarmarkedForOthers() {
 		return earmarkedForOthers;
 	}
 
-	public void setEarmarkedForOthers(Boolean earmarkedForOthers) {
+	public void setEarmarkedForOthers(boolean earmarkedForOthers) {
 		this.earmarkedForOthers = earmarkedForOthers;
 	}
 

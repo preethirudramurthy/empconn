@@ -51,9 +51,6 @@ public class ClientLocation extends Auditable<Long> implements Serializable {
 	@Where(clause = "is_active = true")
 	private Set<Contact> contacts;
 
-	public ClientLocation() {
-	}
-
 	public Long getClientLocationId() {
 		return this.clientLocationId;
 	}

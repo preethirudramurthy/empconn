@@ -38,9 +38,6 @@ public class ProjectComment extends Auditable<Long> implements Serializable {
 	@JoinColumn(name = "project_id")
 	private Project project;
 
-	public ProjectComment() {
-	}
-
 	public Long getProjectCommentId() {
 		return this.projectCommentId;
 	}

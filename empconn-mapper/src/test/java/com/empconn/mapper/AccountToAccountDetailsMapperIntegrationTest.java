@@ -1,7 +1,7 @@
 package com.empconn.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -14,13 +14,13 @@ class AccountToAccountDetailsMapperIntegrationTest {
 	private final AccountAccountDetailsMapper mapper = Mappers.getMapper(AccountAccountDetailsMapper.class);
 
 	@Test
-	public void givenSourceToDestination_whenMaps_thenCorrect() {
+	void givenSourceToDestination_whenMaps_thenCorrect() {
 		final Account source = new Account();
 		source.setCategory("Client");
-		assertTrue(null != mapper);
+		assertNotNull(mapper);
 		final AccountDetailsDto destination = mapper.accountToAccountDetailsDto(source);
 
-		assertEquals(source.getAccountId(), destination.getAccountId());
+		assertEquals(source.getAccountId(), Integer.valueOf(destination.getAccountId()));
 		assertEquals(source.getCategory(), destination.getCategory().getValue());
 	}
 

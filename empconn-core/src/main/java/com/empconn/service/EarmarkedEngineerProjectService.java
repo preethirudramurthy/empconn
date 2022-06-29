@@ -86,11 +86,10 @@ public class EarmarkedEngineerProjectService {
 
 		final List<Earmark> earmarksForProjects = earmarkRepository
 				.findByProjectIsNotNullAndOpportunityIsNullAndIsActiveIsTrue();
-		final List<Earmark> earmarksByRmgForGdm = earmarksForProjects.stream()
+		return earmarksForProjects.stream()
 				.filter(e -> RolesUtil.isRMG(employeeRepository.findByEmployeeId(e.getCreatedBy()))
 						&& projectIdsForGdm.contains(e.getProject().getProjectId()))
 				.collect(Collectors.toList());
-		return earmarksByRmgForGdm;
 	}
 
 	private List<Project> getProjectsForEarmarkedByMe() {
@@ -133,16 +132,16 @@ public class EarmarkedEngineerProjectService {
 
 	public List<Project> getEarmarkedEngineersProjects(EarmarkedDropdownReqDto dto) {
 		final List<Project> projectList = new ArrayList<>();
-		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+		if (dto.getEarmarkedByMe()) {
 			projectList.addAll(getProjectsForEarmarkedByMe());
 		}
-		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+		if (dto.getEarmarkedByGdm()) {
 			projectList.addAll(getProjectsForEarmarkedByGdm());
 		}
-		if (dto.getEarmarkedForOthers() != null && dto.getEarmarkedForOthers() == true) {
+		if (dto.getEarmarkedForOthers()) {
 			projectList.addAll(getProjectsForEarmarkedForOtherManagers());
 		}
-		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+		if (dto.getEarmarkedByRmg()) {
 			projectList.addAll(getProjectsForEarmarkedByRmgForManager());
 			if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee())) {
 				projectList.addAll(getProjectsForEarmarkedByRmgForGdm());
@@ -152,7 +151,7 @@ public class EarmarkedEngineerProjectService {
 	}
 
 	public List<UnitValue> getEarmarkedProjectDropdown(EarmarkedDropdownReqDto dto) {
-		List<Project> projects = new ArrayList<>();
+		List<Project> projects = null;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			projects = getAllEarmarkedProjects();
 		else
@@ -167,13 +166,12 @@ public class EarmarkedEngineerProjectService {
 					.filter(p -> dto.getAccountIdList().contains(p.getAccount().getAccountId().toString()))
 					.collect(Collectors.toList());
 		}
-		final List<UnitValue> resultSet = projects.stream().map(p -> new UnitValue(p.getProjectId(), p.getName()))
+		return projects.stream().map(p -> new UnitValue(p.getProjectId(), p.getName()))
 				.distinct().collect(Collectors.toList());
-		return resultSet;
 	}
 
 	public List<UnitValue> getEarmarkedAccountDropdown(EarmarkedDropdownReqDto dto) {
-		List<Project> projects = new ArrayList<>();
+		List<Project> projects = null;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			projects = getAllEarmarkedProjects();
 		else
@@ -183,23 +181,21 @@ public class EarmarkedEngineerProjectService {
 					p -> dto.getVerticalIdList().contains(p.getAccount().getVertical().getVerticalId().toString()))
 					.collect(Collectors.toList());
 		}
-		final List<UnitValue> resultSet = projects.stream()
+		return projects.stream()
 				.map(p -> new UnitValue(p.getAccount().getAccountId(), p.getAccount().getName())).distinct()
 				.collect(Collectors.toList());
-		return resultSet;
 	}
 
 	public List<UnitValue> getEarmarkedVerticalDropdown(EarmarkedDropdownReqDto dto) {
-		List<Project> projects = new ArrayList<>();
+		List<Project> projects = null;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			projects = getAllEarmarkedProjects();
 		else
 			projects = getEarmarkedEngineersProjects(dto);
-		final List<UnitValue> resultSet = projects.stream()
+		return projects.stream()
 				.map(p -> new UnitValue(p.getAccount().getVertical().getVerticalId(),
 						p.getAccount().getVertical().getName()))
 				.distinct().collect(Collectors.toList());
-		return resultSet;
 	}
 
 	public List<String> getEarmarkedSalesforceSearch(EarmarkedDropdownReqDto dto) {
@@ -208,17 +204,17 @@ public class EarmarkedEngineerProjectService {
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			earmarks = earmarkRepository.findByProjectIsNotNullAndOpportunityIsNullAndIsActiveIsTrue();
 		else {
-			if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+			if (dto.getEarmarkedByMe()) {
 				earmarks.addAll(getEarmarkedByMe());
 			}
-			if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+			if (dto.getEarmarkedByGdm()) {
 				earmarks.addAll(getEarmarkedByGdm());
 			}
-			if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee()) && dto.getEarmarkedForOthers() != null
-					&& dto.getEarmarkedForOthers() == true) {
+			if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee()) 
+					&& dto.getEarmarkedForOthers()) {
 				earmarks.addAll(getEarmarkedForOtherManagers());
 			}
-			if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+			if (dto.getEarmarkedByRmg()) {
 				earmarks.addAll(getEarmarkedByRmgForManager());
 				if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee()))
 					earmarks.addAll(getEarmarkedByRmgForGdm());
@@ -306,13 +302,13 @@ public class EarmarkedEngineerProjectService {
 
 	public List<EarmarkItemDto> getEarmarkListAsManager(EarmarkEngineersManagerReqDto dto) {
 		List<Earmark> earmarks = new ArrayList<>();
-		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+		if (dto.getEarmarkedByMe()) {
 			earmarks.addAll(getEarmarkedByMe());
 		}
-		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+		if (dto.getEarmarkedByGdm()) {
 			earmarks.addAll(getEarmarkedByGdm());
 		}
-		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+		if (dto.getEarmarkedByRmg()) {
 			earmarks.addAll(getEarmarkedByRmgForManager());
 		}
 		if (!CollectionUtils.isEmpty(dto.getProjectIdList())) {
@@ -333,16 +329,16 @@ public class EarmarkedEngineerProjectService {
 
 	public List<EarmarkItemDto> getEarmarkListAsGdmManager(EarmarkEngineersGdmReqDto dto) {
 		List<Earmark> earmarks = new ArrayList<>();
-		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe() == true) {
+		if (dto.getEarmarkedByMe() != null && dto.getEarmarkedByMe()) {
 			earmarks.addAll(getEarmarkedByMe());
 		}
-		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm() == true) {
+		if (dto.getEarmarkedByGdm() != null && dto.getEarmarkedByGdm()) {
 			earmarks.addAll(getEarmarkedByGdm());
 		}
-		if (dto.getEarmarkedForOthers() != null && dto.getEarmarkedForOthers() == true) {
+		if (dto.getEarmarkedForOthers() != null && dto.getEarmarkedForOthers()) {
 			earmarks.addAll(getEarmarkedForOtherManagers());
 		}
-		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg() == true) {
+		if (dto.getEarmarkedByRmg() != null && dto.getEarmarkedByRmg()) {
 			earmarks.addAll(getEarmarkedByRmgForManager());
 			earmarks.addAll(getEarmarkedByRmgForGdm());
 		}

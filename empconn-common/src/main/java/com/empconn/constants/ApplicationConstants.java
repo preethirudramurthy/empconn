@@ -1,6 +1,6 @@
 package com.empconn.constants;
 
-public interface ApplicationConstants {
+public class ApplicationConstants {
 
 	public static final String EMAIL_TO = "EmailTo";
 	public static final String EMAIL_CC = "EmailCc";
@@ -27,7 +27,7 @@ public interface ApplicationConstants {
 	public static final String ACTIVE = "ACTIVE";
 	public static final String INACTIVE = "INACTIVE";
 
-	public static final String pinlink = "http://empconnect#";
+	public static final String PINKLINK = "http://empconnect#";
 
 	public static final int PROJECT_INIT_DEADLINE_BY = 12;
 
@@ -95,8 +95,8 @@ public interface ApplicationConstants {
 	public static final String FORECAST_FIRSTDAY_OF_MONTH = "1";
 	public static final String FORECAST_NEXT_MONTH = "1";
 
-	enum SF_FTP {
-		Gdm, Manager, Project
+	public enum SF_FTP {
+		GDM, MANAGER, PROJECT
 	}
 
 }

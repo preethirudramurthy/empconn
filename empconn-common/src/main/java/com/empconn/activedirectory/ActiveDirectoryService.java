@@ -26,8 +26,6 @@ public class ActiveDirectoryService {
 	@Autowired
 	private ActiveDirectoryConnectionProvider activeDirectoryConnectionProvider;
 
-	//public abstract DirContext ldapContext();
-
 	public SearchResult getUserByEmailId(String emailId) {
 		final String searchFilter = "(&(objectCategory=Person)(objectClass=user)" + "(userPrincipalName=" + emailId
 				+ "))";
@@ -38,10 +36,9 @@ public class ActiveDirectoryService {
 		logger.debug("Email id of the user to be read from Active Directory is {}", emailId);
 		SearchResult result = null;
 		try {
-			final NamingEnumeration users = activeDirectoryConnectionProvider.getADConnection().search(activeDirectorySearchOrg, searchFilter, controls);
+			final NamingEnumeration<SearchResult> users = activeDirectoryConnectionProvider.getADConnection().search(activeDirectorySearchOrg, searchFilter, controls);
 			while (users.hasMore()) {
-				result = (SearchResult) users.next();
-				final String nameInNamespace = result.getNameInNamespace();
+				result = users.next();
 				final Attributes attr = result.getAttributes();
 
 				final String displayName = attr.get("displayName").toString();

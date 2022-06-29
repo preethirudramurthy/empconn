@@ -13,7 +13,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.empconn.constants.ApplicationConstants;
@@ -22,13 +21,26 @@ import com.empconn.persistence.entities.Allocation;
 import com.empconn.persistence.entities.Employee;
 import com.empconn.persistence.entities.Project;
 import com.empconn.persistence.entities.WorkGroup;
-import com.empconn.repositories.ProjectLocationRespository;
 import com.empconn.util.RolesUtil;
 
 public class EditReleaseDateSpecification implements Specification<Allocation> {
 
-	@Autowired
-	private ProjectLocationRespository projectLocationRespository;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5518200208353405284L;
+
+	private static final String WORK_GROUP = "workGroup";
+
+	private static final String PROJECT_ID = "projectId";
+
+	private static final String PROJECT = "project";
+
+	private static final String EMPLOYEE_ID = "employeeId";
+
+	private static final String EMPLOYEE = "employee";
+
+	private static final String ALLOCATION_MANAGER_ID = "allocationManagerId";
 
 	private final EditReleaseDateResourceListRequestDto filter;
 	private final Employee loggedInEmployee;
@@ -42,41 +54,41 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 	@Override
 	public Predicate toPredicate(Root<Allocation> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
-		root.fetch("employee");
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
+		root.fetch(EMPLOYEE);
+		final List<Predicate> finalPredicate = new ArrayList<>();
 		finalPredicate.add(cb.equal(root.get("isActive"), true));
-		finalPredicate.add(cb.equal(root.get("employee").get("isActive"), true));
-		finalPredicate.add(cb.not(root.get("project").get("name").in(Arrays.asList("Central Bench", "NDBench"))));
+		finalPredicate.add(cb.equal(root.get(EMPLOYEE).get("isActive"), true));
+		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Arrays.asList("Central Bench", "NDBench"))));
 
 		if (filter.getVerticalIdList() != null && !filter.getVerticalIdList().isEmpty()) {
-			finalPredicate.add(root.get("project").get("account").get("vertical").get("verticalId")
+			finalPredicate.add(root.get(PROJECT).get("account").get("vertical").get("verticalId")
 					.in(filter.getVerticalIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 		}
 
 		if (filter.getTitleIdList() != null && !filter.getTitleIdList().isEmpty()) {
-			finalPredicate.add(root.get("employee").get("title").get("titleId")
+			finalPredicate.add(root.get(EMPLOYEE).get("title").get("titleId")
 					.in(filter.getTitleIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 		}
 
 		if (filter.getProjectIdList() != null && !filter.getProjectIdList().isEmpty()) {
-			finalPredicate.add(root.get("project").get("projectId")
+			finalPredicate.add(root.get(PROJECT).get(PROJECT_ID)
 					.in(filter.getProjectIdList().stream().map(Long::parseLong).collect(Collectors.toList())));
 		}
 
 		if (filter.getAccountIdList() != null && !filter.getAccountIdList().isEmpty()) {
-			finalPredicate.add(root.get("project").get("account").get("accountId")
+			finalPredicate.add(root.get(PROJECT).get("account").get("accountId")
 					.in(filter.getAccountIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 		}
 
 		if (filter.getOrgLocationIdList() != null && !filter.getOrgLocationIdList().isEmpty()) {
-			final Predicate locationPredicate = cb.in(root.get("employee").get("location").get("locationId"))
+			final Predicate locationPredicate = cb.in(root.get(EMPLOYEE).get("location").get("locationId"))
 					.value(filter.getOrgLocationIdList().stream().map(Integer::parseInt).collect(Collectors.toList()));
 			finalPredicate.add(locationPredicate);
 		}
 
 		if (filter.getWorkgroup() != null && !filter.getWorkgroup().isEmpty()) {
 			finalPredicate.add(
-					root.get("workGroup").get("name").in(filter.getWorkgroup().stream().collect(Collectors.toList())));
+					root.get(WORK_GROUP).get("name").in(filter.getWorkgroup().stream().collect(Collectors.toList())));
 		}
 
 		if (filter.getBillable() != null) {
@@ -84,14 +96,14 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 		}
 
 		if (filter.getManagerId() != null && !filter.getManagerId().isEmpty()) {
-			finalPredicate.add(root.get("allocationManagerId").get("employeeId")
+			finalPredicate.add(root.get(ALLOCATION_MANAGER_ID).get(EMPLOYEE_ID)
 					.in(filter.getManagerId().stream().map(Long::parseLong).collect(Collectors.toList())));
 		}
 
 		if (filter.getReporteeType() != null && !filter.getReporteeType().isEmpty()) {
 			if (filter.getReporteeType().equalsIgnoreCase("direct")) {
 				finalPredicate.add(
-						root.get("allocationManagerId").get("employeeId").in(this.loggedInEmployee.getEmployeeId()));
+						root.get(ALLOCATION_MANAGER_ID).get(EMPLOYEE_ID).in(this.loggedInEmployee.getEmployeeId()));
 			} else if (filter.getReporteeType().equalsIgnoreCase("indirect")) {
 				final List<Predicate> gdmPredicate = gdmSpecification(root, cb);
 				finalPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[gdmPredicate.size()])));
@@ -111,19 +123,18 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 		}
 
 		query.distinct(true);
-		query.orderBy(cb.asc(root.get("employee").get("firstName")), cb.asc(root.get("employee").get("lastName")));
-		final Predicate and = cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
-		return and;
+		query.orderBy(cb.asc(root.get(EMPLOYEE).get("firstName")), cb.asc(root.get(EMPLOYEE).get("lastName")));
+		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
 
 	}
 
 	private List<Predicate> gdmPredicate(Root<Allocation> root, CriteriaBuilder cb) {
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
+		final List<Predicate> finalPredicate = new ArrayList<>();
 		if (RolesUtil.isGDMAndManager(this.loggedInEmployee)) {
 
-			final List<Predicate> gdmAndManagerPredicate = new ArrayList<Predicate>();
+			final List<Predicate> gdmAndManagerPredicate = new ArrayList<>();
 			gdmAndManagerPredicate
-			.add(root.get("allocationManagerId").get("employeeId").in(this.loggedInEmployee.getEmployeeId()));
+			.add(root.get(ALLOCATION_MANAGER_ID).get(EMPLOYEE_ID).in(this.loggedInEmployee.getEmployeeId()));
 
 			final List<Predicate> gdmPredicate = gdmSpecification(root, cb);
 			gdmAndManagerPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[gdmPredicate.size()])));
@@ -132,7 +143,7 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 
 		} else if (RolesUtil.isAManager(this.loggedInEmployee)) {
 			finalPredicate
-			.add(root.get("allocationManagerId").get("employeeId").in(this.loggedInEmployee.getEmployeeId()));
+			.add(root.get(ALLOCATION_MANAGER_ID).get(EMPLOYEE_ID).in(this.loggedInEmployee.getEmployeeId()));
 		} else if (RolesUtil.isOnlyGDM(this.loggedInEmployee)) {
 
 			final List<Predicate> gdmPredicate = gdmSpecification(root, cb);
@@ -142,9 +153,9 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 	}
 
 	private List<Predicate> gdmSpecification(Root<Allocation> root, CriteriaBuilder cb) {
-		final List<Predicate> gdmPredicate = new ArrayList<Predicate>();
+		final List<Predicate> gdmPredicate = new ArrayList<>();
 
-		gdmPredicate.add(root.get("project").get("projectId").in(allWorkgroupSpec()));
+		gdmPredicate.add(root.get(PROJECT).get(PROJECT_ID).in(allWorkgroupSpec()));
 
 		final List<Predicate> nonQAWorkgroupPredicate = nonQAWorkgroupSpec(root);
 
@@ -158,7 +169,7 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 	}
 
 	private List<Predicate> qaWorkgroupSpec(Root<Allocation> root) {
-		final List<Predicate> qAWorkgroupPredicate = new ArrayList<Predicate>();
+		final List<Predicate> qAWorkgroupPredicate = new ArrayList<>();
 
 		// For projects with both DEV GDM and QA GDM, if the logged in user id QE GDM
 		// Then can deallocate all employees under only QA workgroups
@@ -168,9 +179,9 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 				&& a.getEmployee1() != null))
 				.map(Project::getProjectId).collect(Collectors.toSet());
 
-		qAWorkgroupPredicate.add(root.get("project").get("projectId").in(qAWorkGroups));
+		qAWorkgroupPredicate.add(root.get(PROJECT).get(PROJECT_ID).in(qAWorkGroups));
 
-		qAWorkgroupPredicate.add(root.get("workGroup").get("workGroupId")
+		qAWorkgroupPredicate.add(root.get(WORK_GROUP).get("workGroupId")
 				.in(filter.getAllWorkgroups().stream()
 						.filter(w -> w.getName().equalsIgnoreCase(ApplicationConstants.QA_WORK_GROUP))
 						.map(WorkGroup::getWorkGroupId).collect(Collectors.toList())));
@@ -178,7 +189,7 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 	}
 
 	private List<Predicate> nonQAWorkgroupSpec(Root<Allocation> root) {
-		final List<Predicate> nonQAWorkgroupPredicate = new ArrayList<Predicate>();
+		final List<Predicate> nonQAWorkgroupPredicate = new ArrayList<>();
 
 		// For projects with both DEV GDM and QA GDM, if the logged in user id DEV GDM
 		// Then can deallocate all employees under all NON QA workgroups
@@ -188,9 +199,9 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 				&& a.getEmployee2() != null))
 				.map(Project::getProjectId).collect(Collectors.toSet());
 
-		nonQAWorkgroupPredicate.add(root.get("project").get("projectId").in(nonQAWorkGroups));
+		nonQAWorkgroupPredicate.add(root.get(PROJECT).get(PROJECT_ID).in(nonQAWorkGroups));
 
-		nonQAWorkgroupPredicate.add(root.get("workGroup").get("workGroupId")
+		nonQAWorkgroupPredicate.add(root.get(WORK_GROUP).get("workGroupId")
 				.in(filter.getAllWorkgroups().stream()
 						.filter(w -> !w.getName().equalsIgnoreCase(ApplicationConstants.QA_WORK_GROUP))
 						.map(WorkGroup::getWorkGroupId).collect(Collectors.toList())));
@@ -208,10 +219,9 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 				&& a.getEmployee2().getEmployeeId().equals(this.loggedInEmployee.getEmployeeId())
 				&& a.getEmployee1() == null);
 
-		final Set<Long> allWorkgroups = filter.getAllProjects().stream()
+		return filter.getAllProjects().stream()
 				.filter(a -> (hasOnlyDEVGDM.test(a) || hasOnlyQEGDM.test(a))).map(Project::getProjectId)
 				.collect(Collectors.toSet());
-		return allWorkgroups;
 	}
 
 }

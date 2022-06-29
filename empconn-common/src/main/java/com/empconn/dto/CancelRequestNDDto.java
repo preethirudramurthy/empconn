@@ -1,7 +1,5 @@
 package com.empconn.dto;
 
-import java.util.Date;
-
 public class CancelRequestNDDto {
 	
 	private String empId;

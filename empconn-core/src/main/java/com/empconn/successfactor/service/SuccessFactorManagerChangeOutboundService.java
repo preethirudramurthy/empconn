@@ -29,7 +29,7 @@ public class SuccessFactorManagerChangeOutboundService extends SuccessFactorOutb
 	public Boolean syncManagerChanges(Set<ManagerChangeDto> managersDto) {
 		final Object object = managersDto;
 		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) object;
-		return syncChanges(object2,ApplicationConstants.SF_FTP.Manager.name());
+		return syncChanges(object2,ApplicationConstants.SF_FTP.MANAGER.name());
 	}
 
 }

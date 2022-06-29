@@ -21,11 +21,8 @@ public class TimeUtils {
 			// you can change format of date
 			Date date = formatter.parse(strDate);
 
-			Timestamp timeStampDate = new Timestamp(date.getTime());
-
-			return timeStampDate;
+			return new Timestamp(date.getTime());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

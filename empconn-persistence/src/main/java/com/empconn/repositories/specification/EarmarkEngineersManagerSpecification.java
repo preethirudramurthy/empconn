@@ -23,6 +23,18 @@ import com.empconn.persistence.entities.SalesforceIdentifier;
 
 public class EarmarkEngineersManagerSpecification implements Specification<Earmark> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3848005676056590933L;
+	private static final String VALUE = "value";
+	private static final String PROJECT_ID = "projectId";
+	private static final String PROJECT = "project";
+	private static final String OPPORTUNITY_ID = "opportunityId";
+	private static final String OPPORTUNITY = "opportunity";
+	private static final String EMPLOYEE_ROLES = "employeeRoles";
+	private static final String EMPLOYEE_ID = "employeeId";
+	private static final String CREATED_BY = "createdBy";
 	private final EarmarkEngineersManagerReqDto filter;
 	private final Long loginEmpId;
 
@@ -34,31 +46,31 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 
 	@Override
 	public Predicate toPredicate(Root<Earmark> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
+		final List<Predicate> finalPredicate = new ArrayList<>();
 		finalPredicate.add(cb.equal(root.get("isActive"), true));
 
-		final Predicate managerPredicate = cb.equal(root.get("employee2").get("employeeId"), loginEmpId);
-		final Predicate createdByPredicate = cb.equal(root.get("createdBy"), loginEmpId);
-		final Predicate notCreatedByPredicate = cb.notEqual(root.get("createdBy"), loginEmpId);
+		final Predicate managerPredicate = cb.equal(root.get("employee2").get(EMPLOYEE_ID), loginEmpId);
+		final Predicate createdByPredicate = cb.equal(root.get(CREATED_BY), loginEmpId);
+		final Predicate notCreatedByPredicate = cb.notEqual(root.get(CREATED_BY), loginEmpId);
 
-		if (filter.getIsOpp() != null && filter.getIsOpp()) {
-			if (filter.getEarmarkedByMe() != null && filter.getEarmarkedByMe() == true) {
-				finalPredicate.add(cb.and(cb.isNotNull(root.get("opportunity")), cb.isNull(root.get("project"))));
+		if (filter.getIsOpp()) {
+			if (filter.getEarmarkedByMe()) {
+				finalPredicate.add(cb.and(cb.isNotNull(root.get(OPPORTUNITY)), cb.isNull(root.get(PROJECT))));
 				final Predicate earmarkByMePredicate = cb.and(managerPredicate, createdByPredicate);
 				if (!CollectionUtils.isEmpty(filter.getProjectIdList())) {
-					final Predicate opportunityIdPredicate = cb.in(root.get("opportunity").get("opportunityId")).value(
+					final Predicate opportunityIdPredicate = cb.in(root.get(OPPORTUNITY).get(OPPORTUNITY_ID)).value(
 							filter.getProjectIdList().stream().map(Long::parseLong).collect(Collectors.toList()));
 					finalPredicate.add(cb.and(opportunityIdPredicate, earmarkByMePredicate));
 				} else
 					finalPredicate.add(earmarkByMePredicate);
 			}
-			if (filter.getEarmarkedByGdm() != null && filter.getEarmarkedByGdm() == true) {
+			if (filter.getEarmarkedByGdm()) {
 				final Subquery<Long> subquery = query.subquery(Long.class);
 				final Root<Earmark> sqEmp = subquery.correlate(root);
 				final Root<Employee> subqueryRoot = subquery.from(Employee.class);
-				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join("employeeRoles");
+				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join(EMPLOYEE_ROLES);
 				final Predicate gdmCreatedPredicate = cb.and(
-						cb.equal(subqueryRoot.get("employeeId"), sqEmp.get("createdBy")),
+						cb.equal(subqueryRoot.get(EMPLOYEE_ID), sqEmp.get(CREATED_BY)),
 						cb.equal(subqueryRootRoleJoin.get("role").get("name"), "GDM"));
 				final Predicate isGdmCreatedPredicate = cb.ge(
 						subquery.where(gdmCreatedPredicate).select(cb.countDistinct(subqueryRootRoleJoin.get("role"))),
@@ -67,20 +79,20 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 						isGdmCreatedPredicate);
 
 				if (!CollectionUtils.isEmpty(filter.getProjectIdList())) {
-					final Predicate opportunityIdPredicate = cb.in(root.get("opportunity").get("opportunityId")).value(
+					final Predicate opportunityIdPredicate = cb.in(root.get(OPPORTUNITY).get(OPPORTUNITY_ID)).value(
 							filter.getProjectIdList().stream().map(Long::parseLong).collect(Collectors.toList()));
 					finalPredicate.add(cb.and(opportunityIdPredicate,
 							cb.and(managerPredicate, isNotManagerAndGdmCreatedPredicate)));
 				} else
 					finalPredicate.add(cb.and(managerPredicate, isNotManagerAndGdmCreatedPredicate));
 			}
-			if (filter.getEarmarkedByRmg() != null && filter.getEarmarkedByRmg() == true) {
+			if (filter.getEarmarkedByRmg()) {
 				final Subquery<Long> subquery = query.subquery(Long.class);
 				final Root<Earmark> sqEmp = subquery.correlate(root);
 				final Root<Employee> subqueryRoot = subquery.from(Employee.class);
-				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join("employeeRoles");
+				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join(EMPLOYEE_ROLES);
 				final Predicate rmgCreatedPredicate = cb.and(
-						cb.equal(subqueryRoot.get("employeeId"), sqEmp.get("createdBy")),
+						cb.equal(subqueryRoot.get(EMPLOYEE_ID), sqEmp.get(CREATED_BY)),
 						cb.equal(subqueryRootRoleJoin.get("role").get("name"), "RMG"));
 				final Predicate isERmgCreatedPredicate = cb.ge(
 						subquery.where(rmgCreatedPredicate).select(cb.countDistinct(subqueryRootRoleJoin.get("role"))),
@@ -89,7 +101,7 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 						isERmgCreatedPredicate);
 
 				if (!CollectionUtils.isEmpty(filter.getProjectIdList())) {
-					final Predicate opportunityIdPredicate = cb.in(root.get("opportunity").get("opportunityId")).value(
+					final Predicate opportunityIdPredicate = cb.in(root.get(OPPORTUNITY).get(OPPORTUNITY_ID)).value(
 							filter.getProjectIdList().stream().map(Long::parseLong).collect(Collectors.toList()));
 					finalPredicate.add(cb.and(opportunityIdPredicate,
 							cb.and(managerPredicate, isNotManagerAndRmgCreatedPredicate)));
@@ -101,32 +113,32 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 				final Root<EarmarkSalesforceIdentifier> subqueryRootEsf = subqueryEsf
 						.from(EarmarkSalesforceIdentifier.class);
 
-				subqueryEsf.select(subqueryRootEsf.get("earmark").get("opportunity").get("opportunityId"))
-						.distinct(true).where(cb.in(subqueryRootEsf.get("value")).value(filter.getSalesforceIdList()));
+				subqueryEsf.select(subqueryRootEsf.get("earmark").get(OPPORTUNITY).get(OPPORTUNITY_ID))
+						.distinct(true).where(cb.in(subqueryRootEsf.get(VALUE)).value(filter.getSalesforceIdList()));
 
-				finalPredicate.add(cb.in(root.get("opportunity").get("opportunityId")).value(subqueryEsf));
+				finalPredicate.add(cb.in(root.get(OPPORTUNITY).get(OPPORTUNITY_ID)).value(subqueryEsf));
 			}
 		}
 
 		else {
-			finalPredicate.add(cb.and(cb.isNotNull(root.get("project")), cb.isNull(root.get("opportunity"))));
-			if (filter.getEarmarkedByMe() != null && filter.getEarmarkedByMe() == true) {
+			finalPredicate.add(cb.and(cb.isNotNull(root.get(PROJECT)), cb.isNull(root.get(OPPORTUNITY))));
+			if (filter.getEarmarkedByMe()) {
 				final Predicate earmarkByMePredicate = cb.and(managerPredicate, createdByPredicate);
 
 				if (!CollectionUtils.isEmpty(filter.getProjectIdList())) {
-					final Predicate projectIdPredicate = cb.in(root.get("project").get("projectId")).value(
+					final Predicate projectIdPredicate = cb.in(root.get(PROJECT).get(PROJECT_ID)).value(
 							filter.getProjectIdList().stream().map(Long::parseLong).collect(Collectors.toList()));
 					finalPredicate.add(cb.and(earmarkByMePredicate, projectIdPredicate));
 				} else
 					finalPredicate.add(earmarkByMePredicate);
 			}
-			if (filter.getEarmarkedByGdm() != null && filter.getEarmarkedByGdm() == true) {
+			if (filter.getEarmarkedByGdm()) {
 				final Subquery<Long> subquery = query.subquery(Long.class);
 				final Root<Earmark> sqEmp = subquery.correlate(root);
 				final Root<Employee> subqueryRoot = subquery.from(Employee.class);
-				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join("employeeRoles");
+				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join(EMPLOYEE_ROLES);
 				final Predicate gdmCreatedPredicate = cb.and(
-						cb.equal(subqueryRoot.get("employeeId"), sqEmp.get("createdBy")),
+						cb.equal(subqueryRoot.get(EMPLOYEE_ID), sqEmp.get(CREATED_BY)),
 						cb.equal(subqueryRootRoleJoin.get("role").get("name"), "GDM"));
 				final Predicate isGdmCreatedPredicate = cb.ge(
 						subquery.where(gdmCreatedPredicate).select(cb.countDistinct(subqueryRootRoleJoin.get("role"))),
@@ -135,20 +147,20 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 						isGdmCreatedPredicate);
 
 				if (!CollectionUtils.isEmpty(filter.getProjectIdList())) {
-					final Predicate projectIdPredicate = cb.in(root.get("project").get("projectId")).value(
+					final Predicate projectIdPredicate = cb.in(root.get(PROJECT).get(PROJECT_ID)).value(
 							filter.getProjectIdList().stream().map(Long::parseLong).collect(Collectors.toList()));
 					finalPredicate.add(
 							cb.and(cb.and(managerPredicate, isNotManagerAndGdmCreatedPredicate), projectIdPredicate));
 				} else
 					finalPredicate.add(cb.and(managerPredicate, isNotManagerAndGdmCreatedPredicate));
 			}
-			if (filter.getEarmarkedByRmg() != null && filter.getEarmarkedByRmg() == true) {
+			if (filter.getEarmarkedByRmg()) {
 				final Subquery<Long> subquery = query.subquery(Long.class);
 				final Root<Earmark> sqEmp = subquery.correlate(root);
 				final Root<Employee> subqueryRoot = subquery.from(Employee.class);
-				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join("employeeRoles");
+				final Join<Employee, EmployeeRole> subqueryRootRoleJoin = subqueryRoot.join(EMPLOYEE_ROLES);
 				final Predicate rmgCreatedPredicate = cb.and(
-						cb.equal(subqueryRoot.get("employeeId"), sqEmp.get("createdBy")),
+						cb.equal(subqueryRoot.get(EMPLOYEE_ID), sqEmp.get(CREATED_BY)),
 						cb.equal(subqueryRootRoleJoin.get("role").get("name"), "RMG"));
 				final Predicate isERmgCreatedPredicate = cb.ge(
 						subquery.where(rmgCreatedPredicate).select(cb.countDistinct(subqueryRootRoleJoin.get("role"))),
@@ -157,7 +169,7 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 						isERmgCreatedPredicate);
 
 				if (!CollectionUtils.isEmpty(filter.getProjectIdList())) {
-					final Predicate projectIdPredicate = cb.in(root.get("project").get("projectId")).value(
+					final Predicate projectIdPredicate = cb.in(root.get(PROJECT).get(PROJECT_ID)).value(
 							filter.getProjectIdList().stream().map(Long::parseLong).collect(Collectors.toList()));
 					finalPredicate.add(
 							cb.and(cb.and(managerPredicate, isNotManagerAndRmgCreatedPredicate), projectIdPredicate));
@@ -170,20 +182,19 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 				final Root<SalesforceIdentifier> subqueryRootSf = subquerySf.from(SalesforceIdentifier.class);
 				final Root<EarmarkSalesforceIdentifier> subqueryRootEsf = subqueryEsf
 						.from(EarmarkSalesforceIdentifier.class);
-				subquerySf.select(subqueryRootSf.get("project").get("projectId")).distinct(true)
-						.where(cb.in(subqueryRootSf.get("value")).value(filter.getSalesforceIdList()));
+				subquerySf.select(subqueryRootSf.get(PROJECT).get(PROJECT_ID)).distinct(true)
+						.where(cb.in(subqueryRootSf.get(VALUE)).value(filter.getSalesforceIdList()));
 
-				subqueryEsf.select(subqueryRootEsf.get("earmark").get("project").get("projectId")).distinct(true)
-						.where(cb.in(subqueryRootEsf.get("value")).value(filter.getSalesforceIdList()));
+				subqueryEsf.select(subqueryRootEsf.get("earmark").get(PROJECT).get(PROJECT_ID)).distinct(true)
+						.where(cb.in(subqueryRootEsf.get(VALUE)).value(filter.getSalesforceIdList()));
 
-				finalPredicate.add(cb.or(cb.in(root.get("project").get("projectId")).value(subquerySf),
-						cb.in(root.get("project").get("projectId")).value(subqueryEsf)));
+				finalPredicate.add(cb.or(cb.in(root.get(PROJECT).get(PROJECT_ID)).value(subquerySf),
+						cb.in(root.get(PROJECT).get(PROJECT_ID)).value(subqueryEsf)));
 			}
 		}
 
 		query.distinct(true);
-		final Predicate and = cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
-		return and;
+		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
 	}
 
 }

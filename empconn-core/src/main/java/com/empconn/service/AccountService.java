@@ -6,19 +6,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.empconn.controller.PinController;
 import com.empconn.dto.AccountDetailsDto;
 import com.empconn.dto.AccountStatusChangeDto;
 import com.empconn.dto.AccountSummaryDto;
@@ -52,7 +50,6 @@ import com.empconn.vo.UnitValue;
 
 @Service
 public class AccountService {
-	private static final Logger logger = LoggerFactory.getLogger(PinController.class);
 
 	@Autowired
 	private AccountRepository accountRepository;
@@ -101,7 +98,7 @@ public class AccountService {
 
 	public IsValidStatusDto isValidNewAccount(String accountName) {
 		final Set<Account> accounts = accountRepository.findByNameIgnoreCaseAndIsActiveIsTrue(accountName);
-		if (accounts.size() == 0)
+		if (accounts.isEmpty())
 			return new IsValidStatusDto(true, null);
 
 		return new IsValidStatusDto(false, accounts.iterator().next().getStatus());
@@ -118,10 +115,9 @@ public class AccountService {
 
 	private void validateSaveAccount(SaveAccountDto dto) {
 
-		if (dto.getAccountId() == null && !isValidNewAccount(dto.getName()).getIsValid())
-			throw new EmpConnException("AccountExists");
-		else if (dto.getAccountId() != null
-				&& !isValidNewNameForAccount(dto.getName(), Integer.valueOf(dto.getAccountId())))
+		if ((dto.getAccountId() == null && !isValidNewAccount(dto.getName()).getIsValid()) ||
+		(dto.getAccountId() != null
+		&& !isValidNewNameForAccount(dto.getName(), Integer.valueOf(dto.getAccountId()))))
 			throw new EmpConnException("AccountExists");
 
 	}
@@ -129,9 +125,7 @@ public class AccountService {
 	private boolean isValidNewNameForAccount(String name, Integer accountId) {
 		final Set<Account> accounts = accountRepository.findByAccountIdNotAndNameIgnoreCaseAndIsActiveIsTrue(accountId,
 				name);
-		if (accounts.size() == 0)
-			return true;
-		return false;
+		return (accounts.isEmpty());
 	}
 
 	private SavedAccountDto saveAccountSaveProject(SaveAccountDto dto) {
@@ -146,10 +140,11 @@ public class AccountService {
 	}
 
 	private SavedAccountDto updateAccountSaveProject(SaveAccountDto dto) {
-		final Account existAccount = accountRepository.findById(Integer.valueOf(dto.getAccountId())).get();
+		Optional<Account> a = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
+		final Account existAccount = a.isPresent()? a.get():null;
 
 		final Account account = accountToSaveAccountDtoMapper.saveAccountDtoToAccount(dto, existAccount);
-		if (existAccount.getStatus().equals(AccountStatus.TEMP.name()))
+		if (existAccount != null && existAccount.getStatus().equals(AccountStatus.TEMP.name()))
 			account.setStatus(AccountStatus.ACTIVE.name());
 		final Account savedAccount = accountRepository.save(account);
 		final Project project = projectToSaveAccountDtoMapper.saveAccountDtoMapperToProject(dto);
@@ -160,12 +155,15 @@ public class AccountService {
 	}
 
 	private SavedAccountDto updateAccountUpdateProject(SaveAccountDto dto) {
-		final Account existAccount = accountRepository.findById(Integer.valueOf(dto.getAccountId())).get();
+		
+		Optional<Account> a = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
+		final Account existAccount = a.isPresent()? a.get(): null;
 		final Account account = accountToSaveAccountDtoMapper.saveAccountDtoToAccount(dto, existAccount);
-		account.setStatus(existAccount.getStatus());
+		if (existAccount != null)
+			account.setStatus(existAccount.getStatus());
 		final Account savedAccount = accountRepository.save(account);
 		softDeleteOnSaveAccount(savedAccount);
-		return new SavedAccountDto(savedAccount.getAccountId().toString(), dto.getProjectId().toString());
+		return new SavedAccountDto(savedAccount.getAccountId().toString(), dto.getProjectId());
 	}
 
 	public void softDeleteOnSaveAccount(Account account) {
@@ -186,7 +184,7 @@ public class AccountService {
 				else
 					return null;
 
-			}).filter(r -> r != null).flatMap(Collection::stream).collect(Collectors.toSet());
+			}).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toSet());
 			contactRepository.softDeleteContactsForClientLocations(savedContactIds,
 					Stream.of(savedLocationIds, deletedLocationIds).flatMap(Set::stream).collect(Collectors.toSet()));
 		}
@@ -201,7 +199,7 @@ public class AccountService {
 
 	// Added for CRAN-12
 	public List<AccountSummaryDto> getAccountSummaryList(final Date fromStartDate, final Date toStartDate) {
-		List<Account> dataListFromDB = new ArrayList<>();
+		List<Account> dataListFromDB = null;
 		if (fromStartDate != null && toStartDate == null) {
 			dataListFromDB = accountRepository.findByStartDateGreaterThanEqualOrderByStartDateDesc(fromStartDate);
 		} else if (fromStartDate == null && toStartDate != null) {
@@ -224,9 +222,9 @@ public class AccountService {
 
 		final Employee loggedInUser = jwtEmployeeUtil.getLoggedInEmployee();
 
-		final List<Predicate<Account>> accountPredicate = new ArrayList<Predicate<Account>>();
+		final List<Predicate<Account>> accountPredicate = new ArrayList<>();
 
-		final Predicate<Project> activeProject = p -> p.getIsActive() == true
+		final Predicate<Project> activeProject = p -> p.getIsActive()
 				&& (p.getCurrentStatus().equalsIgnoreCase(ProjectStatus.PMO_APPROVED.toString()));
 
 		final Predicate<Project> gdmPredicate = p -> ((p.getEmployee1() != null
@@ -270,19 +268,24 @@ public class AccountService {
 
 	public void activateAccount(AccountStatusChangeDto dto) {
 		Account account = null;
-		if (dto.getAccountId() != null)
-			account = accountRepository.findById(Integer.valueOf(dto.getAccountId())).get();
+		if (dto.getAccountId() != null) {
+			Optional<Account> a = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
+			account = a.isPresent()? a.get():null;
+		}
+			
 		else if (dto.getAccountName() != null)
 			account = accountRepository.findByNameIgnoreCase(dto.getAccountName());
 
-		if (!account.getStatus().equals(AccountStatus.INACTIVE.name()))
-			throw new PreConditionFailedException("CheckAcccountStatusInactive");
+		if (account != null) {
+			if (!account.getStatus().equals(AccountStatus.INACTIVE.name()))
+				throw new PreConditionFailedException("CheckAcccountStatusInactive");
 
-		account.setStatus(AccountStatus.ACTIVE.name());
-		if (account.getEndDate() != null && account.getEndDate().before(new Date()))
-			account.setEndDate(null);
-		accountRepository.save(account);
-		// TODO update account status in Map to be done in release 2
+			account.setStatus(AccountStatus.ACTIVE.name());
+			if (account.getEndDate() != null && account.getEndDate().before(new Date()))
+				account.setEndDate(null);
+			accountRepository.save(account);
+
+		}
 	}
 
 }

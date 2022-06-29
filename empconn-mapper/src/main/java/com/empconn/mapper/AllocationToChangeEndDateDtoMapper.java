@@ -15,7 +15,5 @@ public interface AllocationToChangeEndDateDtoMapper {
 	@Mapping(source = "a.releaseDate", target = "releaseDate", qualifiedByName="DateToLocalDate")
 	@Mapping(source = "dto.endDate", target = "originalDate")
 	public abstract ChangeEndDateDto allocationToChangeEndDateDtoMapper(Allocation a, ProjectEndDateChangeDto dto);
-	
-	//public abstract Set<ChangeEndDateDto> allocationToChangeEndDateDtos(Set<Allocation> a, ProjectEndDateChangeDto dto);
 
 }

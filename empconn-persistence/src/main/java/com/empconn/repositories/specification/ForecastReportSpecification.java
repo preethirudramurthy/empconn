@@ -26,6 +26,12 @@ import com.empconn.persistence.entities.Allocation;
 
 public class ForecastReportSpecification implements Specification<Allocation>{
 
+	private static final String RELEASE_DATE = "releaseDate";
+
+	private static final String EMPLOYEE = "employee";
+
+	private static final String PROJECT = "project";
+
 	private static final long serialVersionUID = 1L;
 
 	private final ForecastReportRequestDto filter;
@@ -40,11 +46,10 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 	@Override
 	public Predicate toPredicate(Root<Allocation> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
-		root.fetch("employee");
-		//root.fetch("allocationDetails");
-		root.fetch("employee").fetch("primaryAllocation").fetch("reportingManagerId");
+		root.fetch(EMPLOYEE);
+		root.fetch(EMPLOYEE).fetch("primaryAllocation").fetch("reportingManagerId");
 
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
+		final List<Predicate> finalPredicate = new ArrayList<>();
 		finalPredicate.add(cb.equal(root.get("isActive"), true));
 
 		final List<Integer> titleIds = convertToIntegers(filter.getTitleIdList());
@@ -55,7 +60,7 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 		final String monthYear = filter.getMonthYear();
 
 		// Prep the specification
-		final Join<Object, Object> employeeJoin = root.join("employee");
+		final Join<Object, Object> employeeJoin = root.join(EMPLOYEE);
 		final Join<Object, Object> employeeSkillsJoin = employeeJoin.join("employeeSkills", JoinType.LEFT);
 		final Path<Object> titleId = employeeJoin.get("title").get("titleId");
 		final Path<Object> primarySkillId = employeeSkillsJoin.get("secondarySkill").get("primarySkill")
@@ -63,17 +68,16 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 		final Path<Object> secondarySkillId = employeeSkillsJoin.get("secondarySkill").get("secondarySkillId");
 		final Path<Object> locationId = employeeJoin.get("location").get("locationId");
 
-		//final Join<Object, Object> allocationDetailsJoin = root.join("allocationDetails", JoinType.LEFT);
-		final Predicate benchProjects = cb.equal(root.get("project").get("name"), ApplicationConstants.DELIVERY_BENCH_PROJECT_NAME);
+		final Predicate benchProjects = cb.equal(root.get(PROJECT).get("name"), ApplicationConstants.DELIVERY_BENCH_PROJECT_NAME);
 
 		// Define and add the predicates
 		finalPredicate.add(cb.equal(employeeJoin.get("isActive"), true));
-		finalPredicate.add(cb.not(root.get("project").get("name").in(Arrays.asList(ApplicationConstants.NON_DELIVERY_BENCH_PROJECT_NAME))));
+		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Arrays.asList(ApplicationConstants.NON_DELIVERY_BENCH_PROJECT_NAME))));
 
-		final List<Predicate> predicate = new ArrayList<Predicate>();
+		final List<Predicate> predicate = new ArrayList<>();
 
-		final LocalDate current_date = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().getValue(), Integer.parseInt(ApplicationConstants.FORECAST_FIRSTDAY_OF_MONTH));
-		final Date startDate = Date.from(current_date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		final LocalDate currentDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().getValue(), Integer.parseInt(ApplicationConstants.FORECAST_FIRSTDAY_OF_MONTH));
+		final Date startDate = Date.from(currentDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
 		if(Strings.isNullOrEmpty(monthYear)) {
 			final LocalDate date = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().getValue(), forecastReportDays);
@@ -82,11 +86,11 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 
 			predicate.add(benchProjects);
 
-			final List<Predicate> insidePredicate = new ArrayList<Predicate>();
+			final List<Predicate> insidePredicate = new ArrayList<>();
 			insidePredicate.add(
-					cb.greaterThanOrEqualTo(root.get("releaseDate"), startDate));
+					cb.greaterThanOrEqualTo(root.get(RELEASE_DATE), startDate));
 			insidePredicate
-			.add(cb.lessThanOrEqualTo(root.get("releaseDate"), endDate));
+			.add(cb.lessThanOrEqualTo(root.get(RELEASE_DATE), endDate));
 			predicate.add(cb.and(insidePredicate.toArray(new Predicate[insidePredicate.size()])));
 
 		}else {
@@ -96,11 +100,11 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 
 			predicate.add(benchProjects);
 
-			final List<Predicate> insidePredicate = new ArrayList<Predicate>();
+			final List<Predicate> insidePredicate = new ArrayList<>();
 			insidePredicate.add(
-					cb.greaterThanOrEqualTo(root.get("releaseDate"), startDate));
+					cb.greaterThanOrEqualTo(root.get(RELEASE_DATE), startDate));
 			insidePredicate
-			.add(cb.lessThanOrEqualTo(root.get("releaseDate"), endDate));
+			.add(cb.lessThanOrEqualTo(root.get(RELEASE_DATE), endDate));
 			predicate.add(cb.and(insidePredicate.toArray(new Predicate[insidePredicate.size()])));
 		}
 
@@ -120,11 +124,10 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 
 		if (!CollectionUtils.isEmpty(verticalIds))
 			finalPredicate.add(getInPredicate(cb, verticalIds,
-					root.get("project").get("account").get("vertical").get("verticalId")));
+					root.get(PROJECT).get("account").get("vertical").get("verticalId")));
 
 		query.distinct(true);
-		final Predicate and = cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
-		return and;
+		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
 	}
 
 	private List<Integer> convertToIntegers(final List<String> input) {
@@ -135,8 +138,7 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 
 	private Predicate getInPredicate(CriteriaBuilder cb, List<? extends Number> ids,
 			Path<Object> id) {
-		final Predicate predicate = cb.in(id).value(ids);
-		return predicate;
+		return cb.in(id).value(ids);
 	}
 
 

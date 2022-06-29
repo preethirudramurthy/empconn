@@ -36,9 +36,6 @@ public class EarmarkSalesforceIdentifier extends Auditable<Long> implements Seri
 	@JoinColumn(name = "earmark_id")
 	private Earmark earmark;
 
-	public EarmarkSalesforceIdentifier() {
-	}
-
 	public Long getEarmarkSalesforceIdentifierId() {
 		return this.earmarkSalesforceIdentifierId;
 	}

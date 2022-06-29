@@ -17,13 +17,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider{
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		final String username = authentication.getName();
-		//		TODO: Password is not taken from Authentication since auth will not be handled by server and only token verification is planned in future
 		final String password = "";
 
 		final List<GrantedAuthority> authorities = new ArrayList<>();
 		authorities.add(new SimpleGrantedAuthority("ROLE_PMO"));
-		//		authorities.add(new SimpleGrantedAuthority("PMO_ADMIN"));
-		//		authorities.add(new SimpleGrantedAuthority("MANAGER"));
 
 		return new UsernamePasswordAuthenticationToken(username, password, authorities);
 	}

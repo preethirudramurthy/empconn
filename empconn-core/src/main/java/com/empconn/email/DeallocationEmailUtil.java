@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.deallocation.DeallocateDto;
 import com.empconn.persistence.entities.Allocation;
 import com.empconn.persistence.entities.AllocationDetail;
@@ -19,7 +20,7 @@ public class DeallocationEmailUtil {
 		templateModel.put("remainingPercentage", oldAllocation.getAllocationDetails().stream().filter(AllocationDetail::getIsActive)
 				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum));
 		templateModel.put("deallocatedPercentage", request.getPercentage());
-		templateModel.put("dateOfDeallocation", new SimpleDateFormat("dd-MMM-YYYY").format(TimeUtils.getToday()));
+		templateModel.put("dateOfDeallocation", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(TimeUtils.getToday()));
 		templateModel.put("projectName", a.getProject().getName());
 		return templateModel;
 
@@ -29,8 +30,7 @@ public class DeallocationEmailUtil {
 		final Map<String, Object> templateModel = commonParameters(a);
 
 		templateModel.put("oldProjectName", a.getProject().getName());
-		templateModel.put("dateOfDeallocation", new SimpleDateFormat("dd-MMM-YYYY").format(TimeUtils.getToday()));
-		templateModel.put("oldProjectName", a.getProject().getName());
+		templateModel.put("dateOfDeallocation", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(TimeUtils.getToday()));
 		templateModel.put("oldManagerName",
 				a.getReportingManagerId().getFirstName() + " " + a.getReportingManagerId().getLastName());
 		templateModel.put("oldManagerId", a.getReportingManagerId().getEmpCode());

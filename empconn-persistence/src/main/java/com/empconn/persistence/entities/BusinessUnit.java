@@ -33,10 +33,7 @@ public class BusinessUnit extends NamedAuditable<Long> implements Serializable {
 	//bi-directional many-to-one association to Employee
 	@OneToMany(mappedBy="businessUnit")
 	private Set<Employee> employees;
-
-	public BusinessUnit() {
-	}
-
+	
 	public Integer getBusinessUnitId() {
 		return this.businessUnitId;
 	}

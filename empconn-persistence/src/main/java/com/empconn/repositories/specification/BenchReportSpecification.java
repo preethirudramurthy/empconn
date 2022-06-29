@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -18,7 +17,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 
@@ -29,6 +27,12 @@ import com.empconn.persistence.entities.Allocation;
 import com.empconn.persistence.entities.AllocationDetail;
 
 public class BenchReportSpecification implements Specification<Allocation> {
+
+	private static final String IS_ACTIVE = "isActive";
+
+	private static final String ALLOCATED_PERCENTAGE = "allocatedPercentage";
+
+	private static final String PROJECT = "project";
 
 	private static final long serialVersionUID = -3763123808668118215L;
 
@@ -43,11 +47,9 @@ public class BenchReportSpecification implements Specification<Allocation> {
 	public Predicate toPredicate(Root<Allocation> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
 		root.fetch("employee");
-		//		root.fetch("employee").fetch("employeeAllocations");
-		//root.fetch("project");
-		//root.fetch("allocationDetails");
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
-		finalPredicate.add(cb.equal(root.get("isActive"), true));
+		
+		final List<Predicate> finalPredicate = new ArrayList<>();
+		finalPredicate.add(cb.equal(root.get(IS_ACTIVE), true));
 
 		// Retrieve the filter values
 		final List<Integer> primarySkillIds = convertToIntegers(filter.getPrimarySkillIdList());
@@ -61,34 +63,32 @@ public class BenchReportSpecification implements Specification<Allocation> {
 
 		final Path<Object> titleId = employeeJoin.get("title").get("titleId");
 		final Path<Object> locationId = employeeJoin.get("location").get("locationId");
-		//final Join<Allocation, AllocationDetail> allocationDetailsJoin = root.join("allocationDetails", JoinType.LEFT);
-		final Predicate benchProjects = cb.equal(root.get("project").get("account").get("name"), "Bench");
-		final Path<Object> projectId = root.get("project").get("projectId");
+		final Predicate benchProjects = cb.equal(root.get(PROJECT).get("account").get("name"), "Bench");
+		final Path<Object> projectId = root.get(PROJECT).get("projectId");
 
 		// Fetch only active allocation details
-		//finalPredicate.add(cb.equal(allocationDetailsJoin.get("isActive"), true));
-		finalPredicate.add(cb.equal(employeeJoin.get("isActive"), true));
-		finalPredicate.add(cb.not(root.get("project").get("name").in(Arrays.asList("NDBench"))));
+		finalPredicate.add(cb.equal(employeeJoin.get(IS_ACTIVE), true));
+		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Arrays.asList("NDBench"))));
 
 		if (!CollectionUtils.isEmpty(filter.getAvailablePercentage())) {
 			final Subquery<Integer> sq = query.subquery(Integer.class);
 			final Root<Allocation> sqEmp = sq.correlate(root);
 			final Join<Allocation, AllocationDetail> details = sqEmp.join("allocationDetails");
-			final Predicate predicateForActiveDetails = cb.equal(details.get("isActive"), true);
+			final Predicate predicateForActiveDetails = cb.equal(details.get(IS_ACTIVE), true);
 
 
-			final List<Predicate> predicate = new ArrayList<Predicate>();
+			final List<Predicate> predicate = new ArrayList<>();
 			for (final AvailablePercentageDto a : filter.getAvailablePercentage()) {
 				if (a.getLow().equals(a.getHigh())) {
-					predicate.add(cb.equal(sq.where(predicateForActiveDetails).select(cb.sum(details.get("allocatedPercentage"))), Integer.parseInt(a.getHigh())));
+					predicate.add(cb.equal(sq.where(predicateForActiveDetails).select(cb.sum(details.get(ALLOCATED_PERCENTAGE))), Integer.parseInt(a.getHigh())));
 
 
 				} else {
-					final List<Predicate> insidePredicate = new ArrayList<Predicate>();
+					final List<Predicate> insidePredicate = new ArrayList<>();
 					insidePredicate.add(
-							cb.greaterThanOrEqualTo(sq.where(predicateForActiveDetails).select(cb.sum(details.get("allocatedPercentage"))), Integer.parseInt(a.getLow())));
+							cb.greaterThanOrEqualTo(sq.where(predicateForActiveDetails).select(cb.sum(details.get(ALLOCATED_PERCENTAGE))), Integer.parseInt(a.getLow())));
 					insidePredicate
-					.add(cb.lessThanOrEqualTo(sq.where(predicateForActiveDetails).select(cb.sum(details.get("allocatedPercentage"))), Integer.parseInt(a.getHigh())));
+					.add(cb.lessThanOrEqualTo(sq.where(predicateForActiveDetails).select(cb.sum(details.get(ALLOCATED_PERCENTAGE))), Integer.parseInt(a.getHigh())));
 					predicate.add(cb.and(insidePredicate.toArray(new Predicate[insidePredicate.size()])));
 				}
 			}
@@ -98,11 +98,11 @@ public class BenchReportSpecification implements Specification<Allocation> {
 
 		if (!CollectionUtils.isEmpty(filter.getBenchAge())) {
 
-			final List<Predicate> predicate = new ArrayList<Predicate>();
+			final List<Predicate> predicate = new ArrayList<>();
 			final Subquery<Date> sq = query.subquery(Date.class);
 			final Root<Allocation> sqEmp = sq.correlate(root);
 			final Join<Allocation, AllocationDetail> details = sqEmp.join("allocationDetails");
-			final Predicate predicateForActiveDetails = cb.equal(details.get("isActive"), true);
+			final Predicate predicateForActiveDetails = cb.equal(details.get(IS_ACTIVE), true);
 
 			for (final BenchAgeDto b : filter.getBenchAge()) {
 
@@ -149,15 +149,13 @@ public class BenchReportSpecification implements Specification<Allocation> {
 			finalPredicate.add(benchProjects);
 
 		query.distinct(true);
-		final Predicate and = cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
-		return and;
+		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
 
 	}
 
 	private Predicate getInPredicate(CriteriaBuilder cb, List<? extends Number> primarySkillIds,
 			Path<Object> primarySkillId) {
-		final Predicate primarySkillsPredicate = cb.in(primarySkillId).value(primarySkillIds);
-		return primarySkillsPredicate;
+		return cb.in(primarySkillId).value(primarySkillIds);
 	}
 
 	private List<Long> convertToLong(List<String> input) {
@@ -165,23 +163,11 @@ public class BenchReportSpecification implements Specification<Allocation> {
 			return new ArrayList<>();
 		return input.stream().map(Long::parseLong).collect(Collectors.toList());
 	}
-
-	private List<Integer> convertToIntegers(final String primarySkillId) {
-		return convertToIntegers(convertToStringList(primarySkillId));
-	}
-
+	
 	private List<Integer> convertToIntegers(final List<String> input) {
 		if (CollectionUtils.isEmpty(input))
 			return new ArrayList<>();
 		return input.stream().map(Integer::parseInt).collect(Collectors.toList());
-	}
-
-	private List<String> convertToStringList(String commaSeparatedString) {
-		if (StringUtils.isEmpty(StringUtils.trim(commaSeparatedString)))
-			return new ArrayList<>();
-
-		return Stream.of(commaSeparatedString.split(",")).map(String::trim).collect(Collectors.toList());
-
 	}
 
 	public Date getDateBeforeToday(String count) {

@@ -14,7 +14,6 @@ public class IsValidDto {
 
 	public IsValidDto() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Boolean getIsValid() {

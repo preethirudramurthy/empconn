@@ -1,7 +1,10 @@
 package com.empconn.dto;
 
-public class BenchAgeDto {
+import java.io.Serializable;
 
+public class BenchAgeDto implements Serializable{
+	
+	private static final long serialVersionUID = 132887244488721411L;
 	private String from;
 	private String to;
 

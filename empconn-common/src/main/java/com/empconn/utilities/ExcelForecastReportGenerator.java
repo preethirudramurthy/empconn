@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.empconn.dto.ForecastDataDto;
 
 @Component
-public class ExcelForecastReportGenerator extends ExcelReportGenerator {
+public class ExcelForecastReportGenerator implements ExcelReportGenerator {
 
 	@Override
 	public List<String> headers() {

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,8 @@ import com.empconn.utilities.CommonUtil;
 @Service
 @Transactional
 public class ChangeManagerService {
+	private static final String PROJECT_NAME = "projectName";
+
 	private static final Logger logger = LoggerFactory.getLogger(ChangeManagerService.class);
 
 	@Autowired
@@ -89,8 +92,6 @@ public class ChangeManagerService {
 	@Autowired
 	private SyncToTimesheetService syncToTimesheetService;
 
-	@Autowired
-	private ProjectService projectService;
 
 	@Autowired
 	private ResourceService resourceService;
@@ -112,8 +113,8 @@ public class ChangeManagerService {
 	public List<GetPossibleRepMgrChangeResponseDto> getPossibleReportingManagerChange(Long projectId, Long devGdmId,
 			Long qaGdmId) {
 
-		final Project project = projectRepository.findByProjectId(Long.valueOf(projectId));
-		final List<GetPossibleRepMgrChangeResponseDto> responseDtos = new ArrayList<GetPossibleRepMgrChangeResponseDto>();
+		final Project project = projectRepository.findByProjectId(projectId);
+		final List<GetPossibleRepMgrChangeResponseDto> responseDtos = new ArrayList<>();
 
 		if (devGdmId != null) {
 			final Employee oldDevGDM = project.getEmployee1();
@@ -124,7 +125,7 @@ public class ChangeManagerService {
 
 				// get all allocations which have old GDM as the Reporting manager
 				final Set<Allocation> allocations = allocationRepository
-						.findByProjectProjectIdAndReportingManagerIdEmployeeIdAndIsActive(Long.valueOf(projectId),
+						.findByProjectProjectIdAndReportingManagerIdEmployeeIdAndIsActive(projectId,
 								oldDevGDM.getEmployeeId(), true);
 				for (final Allocation allocation : allocations) {
 					// If there are such allocations, check if the location/workgroup is same as the
@@ -133,14 +134,10 @@ public class ChangeManagerService {
 					// updated.
 					final ProjectLocation projectLocation = allocation.getProjectLocation();
 					final WorkGroup workgroup = allocation.getWorkGroup();
-					if (oldGdmAsManager.get(projectLocation.getProjectLocationId()) == null) {
-						responseDtos.add(new GetPossibleRepMgrChangeResponseDto(Long.valueOf(devGdmId),
-								allocation.getAllocationId(), allocation.getEmployee().getFullName(),
-								projectLocation.getLocation().getName(), workgroup.getName(),
-								allocation.getReportingManagerId().getFullName()));
-					} else if (oldGdmAsManager.get(projectLocation.getProjectLocationId()) != null && oldGdmAsManager
-							.get(projectLocation.getProjectLocationId()).get(workgroup.getName()) == null) {
-						responseDtos.add(new GetPossibleRepMgrChangeResponseDto(Long.valueOf(devGdmId),
+					if (oldGdmAsManager.get(projectLocation.getProjectLocationId()) == null || 
+							(oldGdmAsManager.get(projectLocation.getProjectLocationId()) != null && oldGdmAsManager
+							.get(projectLocation.getProjectLocationId()).get(workgroup.getName()) == null)) {
+						responseDtos.add(new GetPossibleRepMgrChangeResponseDto(devGdmId,
 								allocation.getAllocationId(), allocation.getEmployee().getFullName(),
 								projectLocation.getLocation().getName(), workgroup.getName(),
 								allocation.getReportingManagerId().getFullName()));
@@ -160,7 +157,7 @@ public class ChangeManagerService {
 								ProjectLocation::getAllManagers));
 
 				// is the old GDM defined as a manager for any location/workgroup combination
-				final Map<Long, Map<String, Employee>> oldGdmAsManager = new HashMap<Long, Map<String, Employee>>();
+				final Map<Long, Map<String, Employee>> oldGdmAsManager = new HashMap<>();
 
 				existingAllManagers.entrySet().stream().forEach(e -> {
 					final Map<String, Employee> m = e.getValue();
@@ -175,7 +172,7 @@ public class ChangeManagerService {
 
 				// get all allocations which have old GDM as the Reporting manager
 				final Set<Allocation> allocations = allocationRepository
-						.findByProjectProjectIdAndReportingManagerIdEmployeeIdAndIsActive(Long.valueOf(projectId),
+						.findByProjectProjectIdAndReportingManagerIdEmployeeIdAndIsActive(projectId,
 								oldQAGDM.getEmployeeId(), true);
 				for (final Allocation allocation : allocations) {
 					// If there are such allocations, check if the location/workgroup is same as the
@@ -184,14 +181,10 @@ public class ChangeManagerService {
 					// updated.
 					final ProjectLocation projectLocation = allocation.getProjectLocation();
 					final WorkGroup workgroup = allocation.getWorkGroup();
-					if (oldGdmAsManager.get(projectLocation.getProjectLocationId()) == null) {
-						responseDtos.add(new GetPossibleRepMgrChangeResponseDto(Long.valueOf(qaGdmId),
-								allocation.getAllocationId(), allocation.getEmployee().getFullName(),
-								projectLocation.getLocation().getName(), workgroup.getName(),
-								allocation.getReportingManagerId().getFullName()));
-					} else if (oldGdmAsManager.get(projectLocation.getProjectLocationId()) != null && oldGdmAsManager
-							.get(projectLocation.getProjectLocationId()).get(workgroup.getName()) == null) {
-						responseDtos.add(new GetPossibleRepMgrChangeResponseDto(Long.valueOf(qaGdmId),
+					if (oldGdmAsManager.get(projectLocation.getProjectLocationId()) == null || 
+							(oldGdmAsManager.get(projectLocation.getProjectLocationId()) != null && oldGdmAsManager
+							.get(projectLocation.getProjectLocationId()).get(workgroup.getName()) == null)) {
+						responseDtos.add(new GetPossibleRepMgrChangeResponseDto(qaGdmId,
 								allocation.getAllocationId(), allocation.getEmployee().getFullName(),
 								projectLocation.getLocation().getName(), workgroup.getName(),
 								allocation.getReportingManagerId().getFullName()));
@@ -208,7 +201,7 @@ public class ChangeManagerService {
 				.collect(Collectors.toMap(ProjectLocation::getProjectLocationId, ProjectLocation::getAllManagers));
 
 		// is the old GDM defined as a manager for any location/workgroup combination
-		final Map<Long, Map<String, Employee>> oldGdmAsManager = new HashMap<Long, Map<String, Employee>>();
+		final Map<Long, Map<String, Employee>> oldGdmAsManager = new HashMap<>();
 
 		existingAllManagers.entrySet().stream().forEach(e -> {
 			final Map<String, Employee> m = e.getValue();
@@ -283,7 +276,7 @@ public class ChangeManagerService {
 
 	private void updateAutoAllocationManager(final Project project, final Employee oldGDM) {
 		final Set<Allocation> allocations = allocationRepository
-				.findByProjectProjectIdAndReportingManagerIdEmployeeIdAndIsActive(Long.valueOf(project.getProjectId()),
+				.findByProjectProjectIdAndReportingManagerIdEmployeeIdAndIsActive(project.getProjectId(),
 						oldGDM.getEmployeeId(), true);
 
 		if (allocations != null && !allocations.isEmpty()) {
@@ -307,7 +300,7 @@ public class ChangeManagerService {
 
 	private void sfCallForGdmChange(Employee newDevGdm, Employee newQaGdm, Long projectId, Employee oldDevGDM,
 			Employee oldQAGDM) {
-		final List<GdmChangeDto> gdmChangeDtos = new ArrayList<GdmChangeDto>();
+		final List<GdmChangeDto> gdmChangeDtos = new ArrayList<>();
 		final Set<Allocation> allocationSet = allocationRepository.findByProjectId(projectId);
 
 		for (final Allocation a : allocationSet) {
@@ -347,11 +340,12 @@ public class ChangeManagerService {
 	}
 
 	private void changeReportingManager(final ChangeReportingManagerDto changReportingManagerDto) {
-		final Allocation allocation = allocationRepository
-				.findByAllocationIdAndIsActive(changReportingManagerDto.getAllocationId(), true).get();
-		final Employee oldReportingManager = allocation.getReportingManagerId();
+		Optional<Allocation> alloc = allocationRepository
+				.findByAllocationIdAndIsActive(changReportingManagerDto.getAllocationId(), true);
+		final Allocation allocation = alloc.isPresent()? alloc.get():null;
+		final Employee oldReportingManager = allocation != null? allocation.getReportingManagerId():null;
 		final Employee newReportingManager = employeeRepository
-				.findByEmployeeId(Long.valueOf(changReportingManagerDto.getNewReportingMangerId()));
+				.findByEmployeeId(changReportingManagerDto.getNewReportingMangerId());
 		allocation.setReportingManagerId(newReportingManager);
 
 		final Employee allocationManager = allocationUtilityService.getAllocationManagerId(
@@ -497,7 +491,7 @@ public class ChangeManagerService {
 			// Workgroup manager is updated
 			final Employee oldManager = existingManagers.get(workgroup);
 			final Employee newManager = employeeRepository.findByEmployeeId(Long.valueOf(managerId));
-			final List<Long> processedAllocationIds = new ArrayList<Long>();
+			final List<Long> processedAllocationIds = new ArrayList<>();
 			final Set<Allocation> allocationsForRM = allocationRepository
 					.findByProjectLocationProjectLocationIdAndReportingManagerIdEmployeeIdAndIsActive(
 							projectLocation.getProjectLocationId(), oldManager.getEmployeeId(), true);
@@ -569,55 +563,59 @@ public class ChangeManagerService {
 	public void changeReportingAndPrimaryMangers(ChangeManagerWrapperDto request) {
 		logger.info("ChangeManagerService - changeReportingAndPrimaryMangers - starts.");
 		for (final ChangeManagerDto changeManagerDto : request.getChangeManagerList()) {
-			final Allocation allocation = allocationRepository.findById(changeManagerDto.getAllocationId()).get();
-			final Employee oldReportingManager = allocation.getReportingManagerId();
+			Optional<Allocation> alloc = allocationRepository.findById(changeManagerDto.getAllocationId());
+			final Allocation allocation = alloc.isPresent() ? alloc.get() : null;
+			final Employee oldReportingManager = allocation != null ? allocation.getReportingManagerId() : null;
 			Employee newManager = null;
-			if (changeManagerDto.getNewReportingMangerId() != null) {
-				newManager = employeeRepository.findByEmployeeId(changeManagerDto.getNewReportingMangerId());
+			if (allocation != null) {
+				if (changeManagerDto.getNewReportingMangerId() != null) {
+					newManager = employeeRepository.findByEmployeeId(changeManagerDto.getNewReportingMangerId());
 
-				allocation.setReportingManagerId(newManager);
+					allocation.setReportingManagerId(newManager);
 
-				final Employee allocationManager = allocationUtilityService.getAllocationManagerId(
-						allocation.getProjectLocation().getProject(), allocation.getProjectLocation(), newManager,
-						allocation.getWorkGroup().getName());
-				if (!allocation.getAllocationManagerId().getEmployeeId().equals(allocationManager.getEmployeeId())) {
-					allocation.setAllocationManagerId(allocationManager);
-					syncToTimesheetService.syncProjectAllocation(allocation);
+					final Employee allocationManager = allocationUtilityService.getAllocationManagerId(
+							allocation.getProjectLocation().getProject(), allocation.getProjectLocation(), newManager,
+							allocation.getWorkGroup().getName());
+					if (!allocation.getAllocationManagerId().getEmployeeId()
+							.equals(allocationManager.getEmployeeId())) {
+						allocation.setAllocationManagerId(allocationManager);
+						syncToTimesheetService.syncProjectAllocation(allocation);
+					}
+					mailForChangeReportingManagerForResource(newManager, oldReportingManager, allocation, false);
 				}
-				mailForChangeReportingManagerForResource(newManager, oldReportingManager, allocation, false);
-			}
-			if (changeManagerDto.getIsPrimary()) {
-				allocation.getEmployee().setPrimaryAllocation(allocation);
-				final ManagerChangeDto managerChangeDto = new ManagerChangeDto(
-						allocation.getEmployee().getEmployeeId().toString(),
-						allocation.getReportingManagerId().getEmployeeId().toString(), new Date());
-				sfIntegrationService.changeManager(managerChangeDto);
-				final ProjectChangeDto projectChangeDto = new ProjectChangeDto(
-						String.valueOf(allocation.getEmployee().getEmployeeId()), new Date(),
-						String.valueOf(allocation.getProject().getProjectId()),
-						String.valueOf(allocation.getProject().getAccount().getAccountId()));
-				sfIntegrationService.changeProjectOrAccount(projectChangeDto);
+				if (changeManagerDto.getIsPrimary()) {
+					allocation.getEmployee().setPrimaryAllocation(allocation);
+					final ManagerChangeDto managerChangeDto = new ManagerChangeDto(
+							allocation.getEmployee().getEmployeeId().toString(),
+							allocation.getReportingManagerId().getEmployeeId().toString(), new Date());
+					sfIntegrationService.changeManager(managerChangeDto);
+					final ProjectChangeDto projectChangeDto = new ProjectChangeDto(
+							String.valueOf(allocation.getEmployee().getEmployeeId()), new Date(),
+							String.valueOf(allocation.getProject().getProjectId()),
+							String.valueOf(allocation.getProject().getAccount().getAccountId()));
+					sfIntegrationService.changeProjectOrAccount(projectChangeDto);
 
-				final Long gdmId = sfIntegrationService.getGdmIdForSFIntegration(allocation.getProject().getProjectId(),
-						allocation.getWorkGroup().getName());
+					final Long gdmId = sfIntegrationService.getGdmIdForSFIntegration(
+							allocation.getProject().getProjectId(), allocation.getWorkGroup().getName());
 
-				final GdmChangeDto gdmChangeDto = new GdmChangeDto(
-						String.valueOf(allocation.getEmployee().getEmployeeId()), "GDM", String.valueOf(gdmId),
-						new Date());
-				sfIntegrationService.changeGDM(gdmChangeDto);
+					final GdmChangeDto gdmChangeDto = new GdmChangeDto(
+							String.valueOf(allocation.getEmployee().getEmployeeId()), "GDM", String.valueOf(gdmId),
+							new Date());
+					sfIntegrationService.changeGDM(gdmChangeDto);
 
-				activeDirectoryDeltaUpdateService.update(
-						CommonUtil.loginIdToMailId(allocation.getEmployee().getLoginId()),
-						CommonUtil.loginIdToMailId(allocation.getReportingManagerId().getLoginId()),
-						allocation.getProject().getName());
-			}
+					activeDirectoryDeltaUpdateService.update(
+							CommonUtil.loginIdToMailId(allocation.getEmployee().getLoginId()),
+							CommonUtil.loginIdToMailId(allocation.getReportingManagerId().getLoginId()),
+							allocation.getProject().getName());
+				}
 
-			allocationRepository.save(allocation);
+				allocationRepository.save(allocation);
 
-			final Allocation primaryAllocation = allocation.getEmployee().getPrimaryAllocation();
-			if (primaryAllocation.getAllocationId().equals(allocation.getAllocationId())) {
-				mailForChangeReportingManagerForResource(primaryAllocation.getReportingManagerId(), oldReportingManager,
-						allocation, true);
+				final Allocation primaryAllocation = allocation.getEmployee().getPrimaryAllocation();
+				if (primaryAllocation.getAllocationId().equals(allocation.getAllocationId())) {
+					mailForChangeReportingManagerForResource(primaryAllocation.getReportingManagerId(),
+							oldReportingManager, allocation, true);
+				}
 			}
 		}
 
@@ -641,8 +639,8 @@ public class ChangeManagerService {
 		final Map<String, Object> templateModel = new HashMap<>();
 		templateModel.put("managerName", newManager.getFullName());
 		templateModel.put("oldmanagerName", oldManager != null ? oldManager.getFullName() : "");
-		templateModel.put("startDate", new SimpleDateFormat("dd-MMM-YYYY").format(new Date()));
-		templateModel.put("projectName", projectLoca.getProject().getName());
+		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(new Date()));
+		templateModel.put(PROJECT_NAME, projectLoca.getProject().getName());
 		templateModel.put("accountName", projectLoca.getProject().getAccount().getName());
 		templateModel.put("location", projectLoca.getLocation().getName());
 		final String[] emailToList = new String[] { newManager.getEmail(),
@@ -653,13 +651,12 @@ public class ChangeManagerService {
 	}
 
 	public void mailForChangeGdmForProject(Employee newManager, Employee oldManager, Project project) {
-		logger.debug("Test Mail for mailForProjectManagerChange");
+		logger.debug("Test Mail for mail For GDM Change");
 		final Map<String, Object> templateModel = new HashMap<>();
 		templateModel.put("gdmName", newManager.getFullName());
 		templateModel.put("oldgdmName", oldManager != null ? oldManager.getFullName() : "");
 		templateModel.put("startDate", LocalDate.now().toString());
-		templateModel.put("projectName", project.getName());
-		templateModel.put("startDate", LocalDate.now().toString());
+		templateModel.put(PROJECT_NAME, project.getName());
 		templateModel.put("accountName", project.getAccount().getName());
 		final Set<ProjectLocation> projectLocations = project.getProjectLocations();
 		final String allLocationManagerEmails = projectLocations.stream().map(this::getEmails)
@@ -672,9 +669,7 @@ public class ChangeManagerService {
 	public String getEmails(ProjectLocation proLoc) {
 		final Map<String, Employee> allManagers = proLoc.getAllManagers();
 		final Collection<Employee> values = allManagers.values();
-		final String collect = values.stream().map(Employee::getEmail).collect(Collectors.joining(","));
-
-		return collect;
+		return values.stream().map(Employee::getEmail).collect(Collectors.joining(","));
 
 	}
 
@@ -694,7 +689,7 @@ public class ChangeManagerService {
 		templateModel.put("employeeName", a.getEmployee().getFullName());
 		templateModel.put("empCode", a.getEmployee().getEmpCode());
 		templateModel.put("title", a.getEmployee().getTitle().getName());
-		templateModel.put("projectName", a.getProject().getName());
+		templateModel.put(PROJECT_NAME, a.getProject().getName());
 
 		final String[] emailToList = new String[] { reportingManger.getEmail(),
 				oldManager != null ? oldManager.getEmail() : "" };

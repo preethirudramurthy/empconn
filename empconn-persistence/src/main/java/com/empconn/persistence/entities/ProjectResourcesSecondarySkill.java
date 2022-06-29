@@ -40,8 +40,6 @@ public class ProjectResourcesSecondarySkill extends Auditable<Long> implements S
 	@JoinColumn(name="secondary_skill_id")
 	private SecondarySkill secondarySkill;
 
-	public ProjectResourcesSecondarySkill() {
-	}
 
 	public Long getProjectResourcesSecondarySkillId() {
 		return this.projectResourcesSecondarySkillId;

@@ -57,8 +57,8 @@ public class AllocationUtilityService {
 	@Autowired
 	private EarmarkService earmarkService;
 
-	public Allocation getPrimaryManager(Allocation currentAllocation, Long employeeId, Boolean isPrimary,
-			Boolean isPartial, Allocation toAllocation, boolean isNew, Integer percentage) {
+	public Allocation getPrimaryManager(Allocation currentAllocation, Long employeeId, boolean isPrimary,
+			boolean isPartial, Allocation toAllocation, boolean isNew) {
 		final Set<Allocation> existingActiveAllocations = allocationRepository
 				.findByEmployeeEmployeeIdAndIsActive(employeeId, true);
 
@@ -75,7 +75,7 @@ public class AllocationUtilityService {
 		existingActiveAllocations.removeIf(x -> benchProjects.contains(x.getProject().getName()));
 		final Optional<Employee> employee = employeeRepository.findById(employeeId);
 
-		if (!existingActiveAllocations.isEmpty()) {
+		if (!existingActiveAllocations.isEmpty() && employee.isPresent()) {
 			if (!isBenchManager(employee.get().getPrimaryAllocation().getReportingManagerId())
 					&& !employee.get().getPrimaryAllocation().getReportingManagerId().getEmployeeId()
 					.equals(currentAllocation.getReportingManagerId().getEmployeeId())) {
@@ -107,7 +107,8 @@ public class AllocationUtilityService {
 			final List<Allocation> sortedAllocations = existingActiveAllocations.stream()
 					.sorted(sortByPercentageAndStartDate).collect(Collectors.toList());
 
-			return sortedAllocations.stream().findFirst().get();
+			Optional<Allocation> a = sortedAllocations.stream().findFirst();
+			return a.isPresent()?a.get():null;
 
 		}
 		return null;
@@ -119,22 +120,13 @@ public class AllocationUtilityService {
 		final List<Employee> allManagers = project.getProjectLocations().stream().map(p -> p.getAllManagers().values())
 				.flatMap(Collection::stream).collect(Collectors.toList());
 
-		// final Collection<Employee> gdms = project.getGdms().values();
-
 		final Optional<Employee> managerInsideProject = allManagers.stream()
 				.filter(e -> e.getEmployeeId().equals(reportingManagerId.getEmployeeId())).findAny();
 
 		if (managerInsideProject.isPresent()) {
 			return reportingManagerId;
 		}
-
-		/*
-		 * final Optional<Employee> gdmIsManager = gdms.stream() .filter(e ->
-		 * e.getEmployeeId().equals(reportingManagerId.getEmployeeId())).findAny();
-		 *
-		 * if (gdmIsManager.isPresent()) { return reportingManagerId; }
-		 */
-
+		
 		if (projectLocation.getAllManagers().get(workgroup) != null) {
 			return (projectLocation.getAllManagers().get(workgroup));
 		}
@@ -143,7 +135,7 @@ public class AllocationUtilityService {
 				.filter(p -> (!p.getProjectLocationId().equals(projectLocation.getProjectLocationId())
 						&& p.getAllManagers().get(workgroup) != null))
 				.collect(Collectors.toList());
-		if (otherLocationsWorkgroupManagers.size() > 0) {
+		if (!otherLocationsWorkgroupManagers.isEmpty()) {
 			final Comparator<ProjectLocation> sortByLocationHierarchy = ((ProjectLocation a, ProjectLocation b) -> a
 					.getLocation().getHierarchy().compareTo(b.getLocation().getHierarchy()));
 
@@ -152,11 +144,12 @@ public class AllocationUtilityService {
 			return (otherLocationsWorkgroupManagers.get(0).getAllManagers().get(workgroup));
 		}
 
-		return projectLocation.getAllManagers().values().stream().findFirst().get();
+		Optional<Employee> managerOpt = projectLocation.getAllManagers().values().stream().findFirst();
+		return managerOpt.isPresent()? managerOpt.get():null;
 
 	}
 
-	public Boolean isBenchManager(Employee employee) {
+	public boolean isBenchManager(Employee employee) {
 		final Project bench = projectRepository.findByAccountCategoryAndName("Internal", "Central Bench");
 		final List<Employee> allManagers = bench.getProjectLocations().stream().map(p -> p.getAllManagers().values())
 				.flatMap(Collection::stream).collect(Collectors.toList());
@@ -169,11 +162,11 @@ public class AllocationUtilityService {
 	}
 
 	Function<ProjectLocation, List<Map<String, String>>> getProjectManagers = projectLocation -> {
-		final List<Map<String, String>> locationManagerList = new ArrayList<Map<String, String>>();
+		final List<Map<String, String>> locationManagerList = new ArrayList<>();
 		final Map<String, Employee> allManagers = projectLocation.getAllManagers();
 		allManagers.entrySet().stream().forEach(y -> {
 			if (y.getValue() != null) {
-				final Map<String, String> locationManagerMap = new HashMap<String, String>();
+				final Map<String, String> locationManagerMap = new HashMap<>();
 				locationManagerMap.put("projectLocationName", projectLocation.getLocation().getName());
 				locationManagerMap.put("workgroup", y.getKey());
 				locationManagerMap.put("mangerName", y.getValue().getFirstName());
@@ -243,8 +236,8 @@ public class AllocationUtilityService {
 	public GetResourcesResponseDto getAutoReportingManagerId(AutoRMSearchDto request) {
 
 		final Project project = projectRepository.findByProjectId(request.getProjectId());
-		final ProjectLocation projectLocation = projectLocationRepository.findById(request.getProjectLocationId())
-				.get();
+		Optional<ProjectLocation> pl = projectLocationRepository.findById(request.getProjectLocationId());
+		final ProjectLocation projectLocation = pl.isPresent()?pl.get():null;
 
 		final Employee autoReportingManager = getAutoReportingManagerId(project, projectLocation,
 				request.getWorkgroup());
@@ -264,7 +257,7 @@ public class AllocationUtilityService {
 				.filter(p -> (!p.getProjectLocationId().equals(projectLocation.getProjectLocationId())
 						&& p.getAllManagers().get(workgroup) != null))
 				.collect(Collectors.toList());
-		if (otherLocationsWorkgroupManagers.size() > 0) {
+		if (!otherLocationsWorkgroupManagers.isEmpty()) {
 			final Comparator<ProjectLocation> sortByLocationHierarchy = ((ProjectLocation a, ProjectLocation b) -> a
 					.getLocation().getHierarchy().compareTo(b.getLocation().getHierarchy()));
 
@@ -273,7 +266,8 @@ public class AllocationUtilityService {
 			return (otherLocationsWorkgroupManagers.get(0).getAllManagers().get(workgroup));
 		}
 
-		return projectLocation.getAllManagers().values().stream().findFirst().get();
+		Optional<Employee> e = projectLocation.getAllManagers().values().stream().findFirst();
+		return e.isPresent()?e.get():null;
 
 	}
 }

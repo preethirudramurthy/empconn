@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 @JsonFilter("map-project-filter")
 public class MapProjectDto {
 
-	private String _id;
+	private String id;
 	private String projectDescription;
 	private String clientId;
 	private String account;
@@ -20,12 +20,12 @@ public class MapProjectDto {
 	private String projectName;
 	private String horizontal;
 
-	public String get_id() {
-		return _id;
+	public String getId() {
+		return id;
 	}
 
-	public void set_id(String _id) {
-		this._id = _id;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getProjectDescription() {

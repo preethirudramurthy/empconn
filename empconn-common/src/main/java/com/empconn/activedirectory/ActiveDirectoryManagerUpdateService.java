@@ -8,10 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ActiveDirectoryManagerUpdateService extends ActiveDirectoryUpdateService {
 
-	/*
-	 * @Autowired(required = false) private DirContext ldapContext;
-	 */
-
 	@Override
 	public String attributeName() {
 		return "manager";
@@ -22,7 +18,4 @@ public class ActiveDirectoryManagerUpdateService extends ActiveDirectoryUpdateSe
 		return new BasicAttribute(attributeName(), getUserByEmailId(value).getNameInNamespace());
 	}
 
-	/*
-	 * @Override public DirContext ldapContext() { return ldapContext; }
-	 */
 }

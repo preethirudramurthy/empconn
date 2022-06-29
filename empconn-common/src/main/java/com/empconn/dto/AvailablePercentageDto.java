@@ -1,6 +1,8 @@
 package com.empconn.dto;
 
-public class AvailablePercentageDto {
+import java.io.Serializable;
+
+public class AvailablePercentageDto implements Serializable{
 
 	private String low;
 	private String high;

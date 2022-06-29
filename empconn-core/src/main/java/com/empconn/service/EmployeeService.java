@@ -13,7 +13,7 @@ public class EmployeeService {
 	private static final String DIVISION_DELIVERY = "Delivery";
 	private static final String BU_DELIVERY = "Delivery";
 
-	public Boolean isDelivery(Employee employee) {
+	public boolean isDelivery(Employee employee) {
 
 		return ((StringUtils.equalsIgnoreCase(BU_DELIVERY, getBusinessUnitName(employee))
 				&& StringUtils.equalsIgnoreCase(DIVISION_DELIVERY, getDivisionName(employee)))

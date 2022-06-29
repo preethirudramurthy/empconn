@@ -29,10 +29,10 @@ public class SwitchOverEmailUtil {
 	public Map<String, Object> computePartialSwitchOverTemplate(Allocation a, LocalDate dateOfMovement, Allocation newAllocation) {
 		final Map<String, Object> templateModel = commonParameters(a, dateOfMovement);
 		templateModel.put("existingProject", a.getProject().getName());
-		templateModel.put("existingProjectPercentage", a.getAllocationDetails().stream().filter(x-> x.getIsActive().equals(true))
+		templateModel.put("existingProjectPercentage", a.getAllocationDetails().stream().filter(x-> x.getIsActive())
 				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum));
 		templateModel.put("newProject", newAllocation.getProject().getName());
-		templateModel.put("newProjectPercentage", newAllocation.getAllocationDetails().stream().filter(x-> x.getIsActive().equals(true))
+		templateModel.put("newProjectPercentage", newAllocation.getAllocationDetails().stream().filter(x-> x.getIsActive())
 				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum));
 		return templateModel;
 
@@ -56,7 +56,7 @@ public class SwitchOverEmailUtil {
 		templateModel.put("empName", a.getEmployee().getFirstName() + " " + a.getEmployee().getLastName());
 		templateModel.put("empId", a.getEmployee().getEmpCode());
 		templateModel.put("empTitle", a.getEmployee().getTitle().getName());
-		templateModel.put("allocationPercentage", a.getAllocationDetails().stream().filter(x-> x.getIsActive().equals(true))
+		templateModel.put("allocationPercentage", a.getAllocationDetails().stream().filter(x-> x.getIsActive())
 				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum));
 		templateModel.put("dateOfMovement", dateOfMovement.format(DateTimeFormatter.ofPattern("dd-MMM-yy")));
 		return templateModel;

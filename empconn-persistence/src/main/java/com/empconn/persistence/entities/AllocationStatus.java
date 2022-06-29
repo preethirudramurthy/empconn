@@ -36,9 +36,6 @@ public class AllocationStatus extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy="allocationStatus")
 	private List<Allocation> allocations;
 
-	public AllocationStatus() {
-	}
-
 	public Long getAllocationStatusId() {
 		return this.allocationStatusId;
 	}

@@ -51,13 +51,13 @@ public class BootstrapController {
 
 	@PostMapping("/assign-roles")
 	public void assignRoles(@RequestBody Set<EmployeeRoleAssignmentDto> employeeRoleAssignments) {
-		logger.debug("Assign default role to all Employees");
+		logger.debug("Assign role to all Employees");
 		bootstrapService.assignEmployeeRoles(employeeRoleAssignments);
 	}
 
 	@PostMapping("/employee-skills")
 	public void assignEmployeeSkills(@RequestBody @NotEmpty List<@Valid EmployeeSkillRequest> dto) {
-		logger.debug("Assign default role to all Employees");
+		logger.debug("Assign skills to all Employees");
 		bootstrapService.assignEmployeeSkills(dto);
 	}
 

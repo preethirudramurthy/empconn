@@ -83,8 +83,6 @@ public class ProjectLocation extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy="projectLocation")
 	private List<SyncProjectManager> syncProjectManagers;
 
-	public ProjectLocation() {
-	}
 
 	public Long getProjectLocationId() {
 		return this.projectLocationId;
@@ -173,7 +171,7 @@ public class ProjectLocation extends Auditable<Long> implements Serializable {
 	}
 
 	public Map<String, Employee> getAllManagers() {
-		final Map<String, Employee> allManagers = new LinkedHashMap<String, Employee>();
+		final Map<String, Employee> allManagers = new LinkedHashMap<>();
 		allManagers.computeIfAbsent("DEV", val -> getEmployee1());
 		allManagers.computeIfAbsent("QA", val -> getEmployee2());
 		allManagers.computeIfAbsent("UI", val -> getEmployee3());

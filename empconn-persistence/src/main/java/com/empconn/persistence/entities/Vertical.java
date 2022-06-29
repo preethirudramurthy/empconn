@@ -41,9 +41,6 @@ public class Vertical extends Auditable<Long> implements Serializable {
 	@JsonBackReference
 	private Set<Account> accounts;
 
-	public Vertical() {
-	}
-
 	public Integer getVerticalId() {
 		return this.verticalId;
 	}

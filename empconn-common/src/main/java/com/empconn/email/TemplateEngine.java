@@ -20,7 +20,6 @@ public class TemplateEngine {
 			return null;
 		final Context thymeleafContext = new Context();
 		thymeleafContext.setVariables(templateModel);
-		final String htmlBody = thymeleafTemplateEngine.process(layout, thymeleafContext);
-		return htmlBody;
+		return thymeleafTemplateEngine.process(layout, thymeleafContext);
 	}
 }

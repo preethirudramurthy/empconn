@@ -21,22 +21,12 @@ public class LdapServiceImpl implements LdapService {
 
 	@Override
 	public void updateManager(String employeeEmailId, String managerEmailId) {
-		//		try {
 		ldapManagerUpdateService.update(employeeEmailId, managerEmailId);
-		//		} catch (final Exception e) {
-		//			logger.error("Exception in updating manager. Retry will be attempted based on configured values and will be logged if it fails till the end", e);
-		//		}
-
 	}
 
 	@Override
 	public void updateProject(String employeeEmailId, String projectName) {
-		//		try {
 		ldapDepartmentUpdateService.update(employeeEmailId, projectName);
-		//		} catch (final Exception e) {
-		//			logger.error("Exception in updating manager. Retry will be attempted based on configured values and will be logged if it fails till the end", e);
-		//		}
-
 	}
 
 	@Override

@@ -21,7 +21,6 @@ public class LoginToken implements Serializable {
 
 	public LoginToken() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public LoginToken(String loginTokenId) {

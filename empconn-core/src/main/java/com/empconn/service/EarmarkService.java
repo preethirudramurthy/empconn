@@ -57,7 +57,6 @@ import com.empconn.persistence.entities.Project;
 import com.empconn.persistence.entities.ProjectLocation;
 import com.empconn.persistence.entities.SalesforceIdentifier;
 import com.empconn.repositories.AllocationRepository;
-import com.empconn.repositories.AllocationStatusRepository;
 import com.empconn.repositories.EarmarkRepository;
 import com.empconn.repositories.EarmarkSalesforceIdentifierRepository;
 import com.empconn.repositories.EmployeeRepository;
@@ -104,8 +103,6 @@ public class EarmarkService {
 	@Autowired
 	private AllocationRepository allocationRepository;
 
-	@Autowired
-	private AllocationStatusRepository allocationStatusRepository;
 
 	@Autowired
 	private SalesforceIdentifierService sfService;
@@ -140,11 +137,9 @@ public class EarmarkService {
 	}
 
 	public void unearmark(List<Earmark> earmarks) {
-		final String METHOD_NAME = "unearmark";
-
-		earmarks.forEach(e -> {
-			e.setUnearmarkInfo(ApplicationConstants.USER, ApplicationConstants.UNEARMARK_USER_COMMENT);
-		});
+		earmarks.forEach(e -> 
+			e.setUnearmarkInfo(ApplicationConstants.USER, ApplicationConstants.UNEARMARK_USER_COMMENT)
+		);
 
 		// 1- Mark the status as false in Earmark table
 		earmarkRepository.saveAll(earmarks);
@@ -161,32 +156,23 @@ public class EarmarkService {
 
 	@Transactional
 	public List<Earmark> getEarmarkDetails(List<String> earmarkIdList) {
-		final List<Earmark> earList = earmarkRepository
+		return earmarkRepository
 				.findByEarmarkIdIn(earmarkIdList.stream().map(Long::parseLong).collect(Collectors.toList()));
-		return earList;
 	}
 
 	public EarmarkDetailsDto getMoreDetails(List<String> earmarkIdList) {
-		final Earmark earList = earmarkRepository.findById(Long.valueOf(earmarkIdList.get(0))).get();
-		return earmarkToEarmarkDetailsDtoMapper.earmarksToEarmarkDetailsDtos(earList);
+		Optional<Earmark> emOpt = earmarkRepository.findById(Long.valueOf(earmarkIdList.get(0)));
+		if (emOpt.isPresent()) {
+			final Earmark earList = emOpt.get();
+			return earmarkToEarmarkDetailsDtoMapper.earmarksToEarmarkDetailsDtos(earList);
+		}
+		return null;
 	}
 
 	public void mailForUnEarmark(Earmark earmark) {
 		final Map<String, Object> templateModel = new HashMap<String, Object>();
 		final List<String> emailToList = new ArrayList<>();
 		final List<String> emailCCList = new ArrayList<>();
-		List<String> gdmEmails = new ArrayList<>();
-		final Employee loginUser = jwtEmployeeUtil.getLoggedInEmployee();
-
-		final String mangerEmail = earmark.getEmployee2().getEmail();
-		if (earmark.getProject() != null)
-			gdmEmails = earmark.getProject().getGdms().values().stream().map(Employee::getEmail)
-					.collect(Collectors.toList());
-		else if (earmark.getOpportunity() != null) {
-			gdmEmails = earmark.getOpportunity().getGdms().values().stream().map(Employee::getEmail)
-					.collect(Collectors.toList());
-		}
-
 		
 		final Set<MailForEarmarkProjectDto> earmarkDtos = new HashSet<>(1);
 		final Employee earmarkEmp = earmark.getAllocation().getEmployee();
@@ -196,8 +182,8 @@ public class EarmarkService {
 		mailForEarMark.setTitle(earmarkEmp.getTitle().getName());
 		mailForEarMark.setAccountName(CommonQualifiedMapper.earmarkToEarmarkAccountName(earmark));
 		mailForEarMark.setProjectName(CommonQualifiedMapper.earmarkToEarmarkProjectName(earmark));
-		mailForEarMark.setStartDate(new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getStartDate()));
-		mailForEarMark.setEndDate(new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getEndDate()));
+		mailForEarMark.setStartDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getStartDate()));
+		mailForEarMark.setEndDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getEndDate()));
 		mailForEarMark.setBillable(earmark.getBillable() ? "Yes" : "No");
 
 		earmarkDtos.add(mailForEarMark);
@@ -217,23 +203,26 @@ public class EarmarkService {
 	}
 
 	public void validateSaveEarmarkProject(EarmarkProjectDto dto) {
-		final Project project = projectRepository.findById(Long.valueOf(dto.getProjectId())).get();
-		final List<String> projectSfList = project.getSalesforceIdentifiers().stream()
-				.map(SalesforceIdentifier::getValue).collect(Collectors.toList());
+		Optional<Project> pOpt = projectRepository.findById(Long.valueOf(dto.getProjectId()));
+		final Project project = pOpt.isPresent()? pOpt.get() : null;
+		if (project != null) {
+			final List<String> projectSfList = project.getSalesforceIdentifiers().stream()
+					.map(SalesforceIdentifier::getValue).collect(Collectors.toList());
 
-		dto.getEarmarkList().stream().forEach(e -> {
-			final Optional<List<Earmark>> earmark = earmarkRepository
-					.findByAllocationAllocationIdAndProjectProjectIdAndIsActiveIsTrue(Long.valueOf(e.getAllocationId()),
-							Long.valueOf(dto.getProjectId()));
-			if (earmark.isPresent())
-				throw new PreConditionFailedException("ResourceNotAlreadyEarmarkedForTheProject");
-		});
-		if (!CollectionUtils.isEmpty(dto.getSalesforceIdList())) {
-			dto.getSalesforceIdList().removeAll(projectSfList);
-			for (final String sf : dto.getSalesforceIdList()) {
-				if (!sfService.isValidSalesforceIdForProject(sf, Long.valueOf(dto.getProjectId()))) {
-					logger.debug("SalesForce ID is already being used for some other Project");
-					throw new EmpConnException("SalesforceIdMustNotAlreadyExistProj");
+			dto.getEarmarkList().stream().forEach(e -> {
+				final Optional<List<Earmark>> earmark = earmarkRepository
+						.findByAllocationAllocationIdAndProjectProjectIdAndIsActiveIsTrue(
+								Long.valueOf(e.getAllocationId()), Long.valueOf(dto.getProjectId()));
+				if (earmark.isPresent())
+					throw new PreConditionFailedException("ResourceNotAlreadyEarmarkedForTheProject");
+			});
+			if (!CollectionUtils.isEmpty(dto.getSalesforceIdList())) {
+				dto.getSalesforceIdList().removeAll(projectSfList);
+				for (final String sf : dto.getSalesforceIdList()) {
+					if (!sfService.isValidSalesforceIdForProject(sf, Long.valueOf(dto.getProjectId()))) {
+						logger.debug("SalesForce ID is already being used for some other Project");
+						throw new EmpConnException("SalesforceIdMustNotAlreadyExistProj");
+					}
 				}
 			}
 		}
@@ -261,12 +250,12 @@ public class EarmarkService {
 			for (final String sf : dto.getSalesforceIdList()) {
 				if (opportunity != null) {
 					if (!sfService.isValidSalesforceIdForOppurtunity(sf, opportunity.getOpportunityId())) {
-						logger.debug("SalesForce ID is already being used for some other Project");
+						logger.debug("SalesForce ID is already being used for some other Opportunity");
 						throw new EmpConnException("SalesforceIdMustNotAlreadyExistProj");
 					}
 				} else {
 					if (!sfService.isValidSalesforceId(sf)) {
-						logger.debug("SalesForce ID is already being used for some other Project");
+						logger.debug("SalesForce ID is already being used for some other existing Project");
 						throw new EmpConnException("SalesforceIdMustNotAlreadyExistProj");
 					}
 				}
@@ -285,7 +274,7 @@ public class EarmarkService {
 	}
 
 	public Set<ManagerInfoDto> getManagerDropdown(DropdownManagerDto managerDropdownDto) {
-		final Set<ManagerInfoDto> managerInfoDtos = new HashSet<ManagerInfoDto>();
+		final Set<ManagerInfoDto> managerInfoDtos = new HashSet<>();
 		final Set<Employee> empList = new HashSet<Employee>();
 		final Employee loginUser = jwtEmployeeUtil.getLoggedInEmployee();
 
@@ -324,10 +313,9 @@ public class EarmarkService {
 				});
 
 			} else {
-				projects.forEach(p -> {
-					p.getProjectLocations().stream().map(e -> empList.addAll(e.getAllManagers().values()))
-							.collect(Collectors.toList());
-				});
+				projects.forEach(p -> p.getProjectLocations().stream().map(e -> empList.addAll(e.getAllManagers().values()))
+							.collect(Collectors.toList())
+				);
 			}
 			managerInfoDtos.addAll(employeeToMasterInfoDtoMapper.employeesToMastersDto(empList));
 		} else {
@@ -353,18 +341,7 @@ public class EarmarkService {
 		final Map<String, Object> templateModel = new HashMap<String, Object>();
 		final List<String> emailToList = new ArrayList<>();
 		final List<String> emailCCList = new ArrayList<>();
-		List<String> gdmEmails = new ArrayList<>();
-		final Employee employee = jwtEmployeeUtil.getLoggedInEmployee();
-		final String mangerEmail = earMarks.get(0).getEmployee2().getEmail();
-
-		if (earMarks.get(0).getProject() != null)
-			gdmEmails = earMarks.get(0).getProject().getGdms().values().stream().map(Employee::getEmail)
-					.collect(Collectors.toList());
-		else if (earMarks.get(0).getOpportunity() != null) {
-			gdmEmails = earMarks.get(0).getOpportunity().getGdms().values().stream().map(Employee::getEmail)
-					.collect(Collectors.toList());
-		}
-
+		
 		final Set<MailForEarmarkProjectDto> earmarkDtos = new HashSet<>(earMarks.size());
 		for (final Earmark earmark : earMarks) {
 			final Employee earmarkEmp = earmark.getAllocation().getEmployee();
@@ -375,8 +352,8 @@ public class EarmarkService {
 			mailForEarMark.setTitle(earmarkEmp.getTitle().getName());
 			mailForEarMark.setAccountName(CommonQualifiedMapper.earmarkToEarmarkAccountName(earmark));
 			mailForEarMark.setProjectName(CommonQualifiedMapper.earmarkToEarmarkProjectName(earmark));
-			mailForEarMark.setStartDate(new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getStartDate()));
-			mailForEarMark.setEndDate(new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getEndDate()));
+			mailForEarMark.setStartDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getStartDate()));
+			mailForEarMark.setEndDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getEndDate()));
 			mailForEarMark.setBillable(earmark.getBillable() ? "Yes" : "No");
 			earmarkDtos.add(mailForEarMark);
 		}
@@ -403,14 +380,17 @@ public class EarmarkService {
 
 	public EarmarkAvailabilityDto getEarmarkAvailability(String allocationId) {
 		EarmarkAvailabilityDto availabilityDto = null;
-		final Allocation allocation = allocationRepository.findById(Long.valueOf(allocationId)).get();
+		Optional<Allocation> allocOpt = allocationRepository.findById(Long.valueOf(allocationId));
+		final Allocation allocation = allocOpt.isPresent()?allocOpt.get():null;
 		final Optional<List<Earmark>> earmarksForAllocation = earmarkRepository
 				.findByAllocationAllocationIdAndIsActiveIsTrue(Long.valueOf(allocationId));
-		availabilityDto = allocationMapper.allocationToToEarmarkAvailabilityDto(allocation);
-		if (earmarksForAllocation.isPresent()) {
-			final List<EarmarkSummaryDto> dtos = allocationMapper
-					.earMarkToEarmarkSummaryDtoList(earmarksForAllocation.get());
-			availabilityDto.setEarmarkList(dtos);
+		if (allocation != null) {
+			availabilityDto = allocationMapper.allocationToToEarmarkAvailabilityDto(allocation);
+			if (earmarksForAllocation.isPresent()) {
+				final List<EarmarkSummaryDto> dtos = allocationMapper
+						.earMarkToEarmarkSummaryDtoList(earmarksForAllocation.get());
+				availabilityDto.setEarmarkList(dtos);
+			}
 		}
 		return availabilityDto;
 	}
@@ -420,20 +400,6 @@ public class EarmarkService {
 
 		earmark.setUnearmarkInfo(ApplicationConstants.SYSTEM, comment);
 		earmarkRepository.save(earmark);
-
-		// 2- Update the allocation status also in allocation table
-		/*
-		 * final AllocationStatus allocatedStatusPB =
-		 * allocationStatusRepository.findByStatus("PB"); final Allocation allocation =
-		 * earmark.getAllocation();
-		 *
-		 * if (allocation != null) { allocation.getEarmarks().remove(earmark);
-		 * if(allocation.getEarmarks().isEmpty()) {
-		 * logger.debug("{} allocationStatusId : {}", METHOD_NAME,
-		 * allocatedStatusPB.getAllocationStatusId());
-		 * allocationRepository.updateAllocatedStatus(allocatedStatusPB,
-		 * earmark.getAllocation().getAllocationId()); } }
-		 */
 
 		mailForUnEarmarkBySystem(earmark);
 
@@ -461,8 +427,8 @@ public class EarmarkService {
 				earmark.getProject() != null ? earmark.getProject().getAccount().getName()
 						: earmark.getOpportunity().getAccountName(),
 				earmark.getProject() != null ? earmark.getProject().getName() : earmark.getOpportunity().getName(),
-				new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getStartDate()),
-				new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getEndDate()), earmark.getBillable() ? "Yes" : "No");
+				new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getStartDate()),
+				new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getEndDate()), earmark.getBillable() ? "Yes" : "No");
 		earmarkDtos.add(mailForEarMark);
 		templateModel.put("earMark", earmarkDtos);
 		emailService.send("resource-un-earmark", templateModel, emailToList.toArray(new String[emailToList.size()]),
@@ -535,20 +501,23 @@ public class EarmarkService {
 
 	public Set<ManagerInfoDto> getSelectedManagerDropdown(String projectId) {
 
-		final Project project = projectRepository.findById(Long.valueOf(projectId)).get();
-		final List<Employee> managerList = getProjectManagersList(project);
+		Optional<Project> pOpt = projectRepository.findById(Long.valueOf(projectId));
+		final Project project = pOpt.isPresent() ? pOpt.get() : null;
+		if (project != null) {
+			final List<Employee> managerList = getProjectManagersList(project);
 
-		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
-			return getManagerInfoDtoList(managerList);
+			if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
+				return getManagerInfoDtoList(managerList);
 
-		if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee())) {
-			if (!isUserGdmOfProject(project))
+			if (RolesUtil.isGDM(jwtEmployeeUtil.getLoggedInEmployee())) {
+				if (!isUserGdmOfProject(project))
+					return getManagerInfoDtoIfUserIsProjectManager(managerList);
+				return getManagerInfoDtoList(managerList);
+			}
+
+			if (RolesUtil.isAManager(jwtEmployeeUtil.getLoggedInEmployee())) {
 				return getManagerInfoDtoIfUserIsProjectManager(managerList);
-			return getManagerInfoDtoList(managerList);
-		}
-
-		if (RolesUtil.isAManager(jwtEmployeeUtil.getLoggedInEmployee())) {
-			return getManagerInfoDtoIfUserIsProjectManager(managerList);
+			}
 		}
 
 		// the user is allowed to get the data only for the above conditions

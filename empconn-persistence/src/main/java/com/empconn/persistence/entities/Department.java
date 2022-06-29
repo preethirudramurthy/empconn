@@ -31,9 +31,6 @@ public class Department extends NamedAuditable<Long> implements Serializable {
 	@OneToMany(mappedBy = "department")
 	private Set<Employee> employees;
 
-	public Department() {
-	}
-
 	public Long getDepartmentId() {
 		return this.departmentId;
 	}

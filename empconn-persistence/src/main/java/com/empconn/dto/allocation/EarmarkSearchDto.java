@@ -1,9 +1,11 @@
 package com.empconn.dto.allocation;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class EarmarkSearchDto {
-
+public class EarmarkSearchDto implements Serializable{
+	
+	private static final long serialVersionUID = 8475980954301960879L;
 	private boolean isOpp;
 	private List<String> accountNameList;
 	private List<String> projOppNameList;

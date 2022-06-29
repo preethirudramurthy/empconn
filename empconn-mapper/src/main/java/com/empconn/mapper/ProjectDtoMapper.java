@@ -1,5 +1,6 @@
 package com.empconn.mapper;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -142,7 +143,7 @@ public abstract class ProjectDtoMapper {
 	public Set<SalesforceIdentifier> getSalesforceIdentifiersForProject(List<String> salesforceIdList,
 			Project project) {
 		if (CollectionUtils.isEmpty(salesforceIdList))
-			return null;
+			return Collections.emptySet();
 		final Set<SalesforceIdentifier> set = new HashSet<>();
 		IterableUtils.removeIfNullOrEmpty(salesforceIdList);
 		if (CollectionUtils.isEmpty(project.getSalesforceIdentifiers())) {
@@ -153,7 +154,7 @@ public abstract class ProjectDtoMapper {
 		} else {
 			for (final String sf : salesforceIdList) {
 				final Optional<SalesforceIdentifier> sfExist = project.getSalesforceIdentifiers().stream()
-						.filter(s -> s.getIsActive() == true && s.getValue().equals(sf)).findFirst();
+						.filter(s -> s.getIsActive() && s.getValue().equals(sf)).findFirst();
 				if (sfExist.isPresent())
 					set.add(sfExist.get());
 				else
@@ -192,12 +193,12 @@ public abstract class ProjectDtoMapper {
 	public abstract CheckListInformationDto projectToCheckListInformationDto(ProjectChecklist source);
 
 	public String getCommentFromChecklist(ProjectChecklist source) {
-		return source.getIsSelected() != null && source.getIsSelected() ? source.getComment() : "NA";
+		return (source.getIsSelected()) ? source.getComment() : "NA";
 	}
 
 	@Named("projectLocationToListOfResource")
 	public Set<ResourceInformationDto> projectLocationToListOfResource(Set<ProjectLocation> projectLocations) {
-		final Set<ResourceInformationDto> resourceInformationDtos = new HashSet<ResourceInformationDto>();
+		final Set<ResourceInformationDto> resourceInformationDtos = new HashSet<>();
 		for (final ProjectLocation location : projectLocations) {
 			if (location.getIsActive()) {
 				for (final ProjectResource projectResource : location.getProjectResources()) {
@@ -220,7 +221,7 @@ public abstract class ProjectDtoMapper {
 
 	@Named("subCategoryIdToProjectSubCategory")
 	ProjectSubCategory subCategoryIdToProjectSubCategory(String subCategoryId) {
-		if (subCategoryId != null) {
+		if (subCategoryId != null && projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId)).isPresent()) {
 			return projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId)).get();
 		}
 		return null;
@@ -228,7 +229,7 @@ public abstract class ProjectDtoMapper {
 
 	@Named("horizontalIdToHorizontal")
 	Horizontal horizontalIdToHorizontal(String horizontalId) {
-		if (horizontalId != null) {
+		if (horizontalId != null && horizontalRepository.findById(Integer.valueOf(horizontalId)).isPresent()) {
 			return horizontalRepository.findById(Integer.valueOf(horizontalId)).get();
 		}
 		return null;
@@ -246,7 +247,7 @@ public abstract class ProjectDtoMapper {
 
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(String employeeId) {
-		if (employeeId != null) {
+		if (employeeId != null && employeeRepository.findById(Long.valueOf(employeeId)).isPresent()) {
 			return employeeRepository.findById(Long.valueOf(employeeId)).get();
 		}
 		return null;
@@ -266,7 +267,7 @@ public abstract class ProjectDtoMapper {
 
 	@Named("accountIdToAccount")
 	Account accountIdToAccount(String accountId) {
-		if (accountId != null) {
+		if (accountId != null && accountRepository.findById(Integer.valueOf(accountId)).isPresent()) {
 			return accountRepository.findById(Integer.valueOf(accountId)).get();
 		}
 		return null;

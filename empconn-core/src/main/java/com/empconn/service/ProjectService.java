@@ -53,7 +53,6 @@ import com.empconn.persistence.entities.ProjectComment;
 import com.empconn.persistence.entities.ProjectLocation;
 import com.empconn.repositories.AllocationRepository;
 import com.empconn.repositories.EmployeeRepository;
-import com.empconn.repositories.ProjectCommentRepository;
 import com.empconn.repositories.ProjectLocationRespository;
 import com.empconn.repositories.ProjectRepository;
 import com.empconn.repositories.specification.ProjectSpec;
@@ -99,9 +98,6 @@ public class ProjectService {
 
 	@Autowired
 	PinProjectMailService pinProjectMailService;
-
-	@Autowired
-	private ProjectCommentRepository projectCommentRepository;
 
 	@Autowired
 	ProjectCommentDtoMapper projectCommentDtoMapper;

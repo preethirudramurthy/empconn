@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.ChangeEndDateDto;
 import com.empconn.dto.PinStatusChangeCommentDto;
 import com.empconn.dto.ProjectEndDateChangeDto;
@@ -167,9 +168,9 @@ public class PinProjectMailService {
 		templateModel.put("projectName", project.getName());
 		templateModel.put("accountName", project.getAccount().getName());
 		templateModel.put("GDMName", projectService.getProjectGdm(project).getFullName());
-		templateModel.put("startDate", new SimpleDateFormat("dd-MMM-YYYY").format(project.getStartDate()));
-		templateModel.put("endDate", new SimpleDateFormat("dd-MMM-YYYY").format(project.getEndDate()));
-		templateModel.put("date", new SimpleDateFormat("dd-MMM-YYYY").format(project.getEndDate()));
+		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getStartDate()));
+		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getEndDate()));
+		templateModel.put("date", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getEndDate()));
 		templateModel.put("link", applicationUrl);
 		emailService.send(templateName, templateModel, toEmailId.toArray(new String[toEmailId.size()]),
 				ccEmailId.toArray(new String[ccEmailId.size()]));
@@ -187,7 +188,7 @@ public class PinProjectMailService {
 				.setBusinessManagerName(project.getEmployee3() == null ? "" : project.getEmployee3().getFullName());
 		String initiationMeetingDate = "-";
 		if (project.getProjectKickoffIsRequired() != null && project.getProjectKickoffIsRequired()) {
-			initiationMeetingDate = new SimpleDateFormat("dd-MMM-YYYY")
+			initiationMeetingDate = new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY)
 					.format(DateUtils.addDays(project.getStartDate(), 14));
 		}
 		informationDto.setInitialMeetingDate(initiationMeetingDate);
@@ -213,8 +214,8 @@ public class PinProjectMailService {
 		final Map<String, Object> templateModel = new HashMap<>();
 		templateModel.put("projectName", p.getName());
 		templateModel.put("verticalName", p.getAccount().getVertical().getName());
-		templateModel.put("startDate", new SimpleDateFormat("dd-MMM-YYYY").format(p.getStartDate()));
-		templateModel.put("endDate", new SimpleDateFormat("dd-MMM-YYYY").format(p.getEndDate()));
+		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
+		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
 		templateModel.put("oldProjectStatus", oldStatus);
 		templateModel.put("newProjectStatus", newStatus);
 		final String[] emailToList = new String[] { sb == null ? "" : sb.toString() + "" };
@@ -236,8 +237,8 @@ public class PinProjectMailService {
 		final Map<String, Object> templateModel = new HashMap<>();
 		templateModel.put("projectName", p.getName());
 		templateModel.put("verticalName", p.getAccount().getVertical().getName());
-		templateModel.put("startDate", new SimpleDateFormat("dd-MMM-YYYY").format(p.getStartDate()));
-		templateModel.put("endDate", new SimpleDateFormat("dd-MMM-YYYY").format(p.getEndDate()));
+		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
+		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
 		templateModel.put("oldProjectStatus", oldStatus);
 		templateModel.put("newProjectStatus", newStatus);
 		final String[] emailToList = new String[] { sb == null ? "" : sb.toString() + "" };
@@ -258,7 +259,7 @@ public class PinProjectMailService {
 		final Map<String, Object> templateModel = new HashMap<>();
 		templateModel.put("projectName", p.getName());
 		templateModel.put("verticalName", p.getAccount().getVertical().getName());
-		templateModel.put("startDate", new SimpleDateFormat("dd-MMM-YYYY").format(p.getStartDate()));
+		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
 		templateModel.put("endDate", p.getEndDate().toString());
 		templateModel.put("oldProjectStatus", oldStatus);
 		templateModel.put("newProjectStatus", newStatus);
@@ -306,15 +307,15 @@ public class PinProjectMailService {
 			final ChangeEndDateDto changeEndDateDto = new ChangeEndDateDto();
 			changeEndDateDto.setEmpCode(a.getEmployee().getEmpCode());
 			changeEndDateDto.setEmpName(a.getEmployee().getFirstName() + " " + a.getEmployee().getLastName());
-			changeEndDateDto.setOriginalDate(new SimpleDateFormat("dd-MMM-YYYY").format(a.getReleaseDate()));
-			changeEndDateDto.setReleaseDate(new SimpleDateFormat("dd-MMM-YYYY")
+			changeEndDateDto.setOriginalDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(a.getReleaseDate()));
+			changeEndDateDto.setReleaseDate(new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY)
 					.format(CommonQualifiedMapper.localDateToDate(dto.getEndDate())));
 			dtoSet.add(changeEndDateDto);
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
-		templateModel.put("originalDate", new SimpleDateFormat("dd-MMM-YYYY").format(p.getEndDate()));
+		templateModel.put("originalDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
 		templateModel.put("newDate",
-				new SimpleDateFormat("dd-MMM-YYYY").format(CommonQualifiedMapper.localDateToDate(dto.getEndDate())));
+				new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(CommonQualifiedMapper.localDateToDate(dto.getEndDate())));
 		templateModel.put("projectName", p.getName());
 		templateModel.put("allocation", dtoSet);
 		templateModel.put("link", applicationUrl);
@@ -329,7 +330,7 @@ public class PinProjectMailService {
 		logger.debug("Test Mail for mailForProjectManagerChange");
 		final Map<String, Object> templateModel = new HashMap<>();
 		templateModel.put("managerName", manager.getFullName());
-		templateModel.put("startDate", new SimpleDateFormat("dd-MMM-YYYY").format(new Date()));
+		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(new Date()));
 		templateModel.put("projectName", p.getName());
 		templateModel.put("accountName", p.getAccount().getName());
 		templateModel.put("location", projectLocation.getLocation().getName());

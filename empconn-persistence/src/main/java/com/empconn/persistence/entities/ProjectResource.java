@@ -74,9 +74,6 @@ public class ProjectResource extends Auditable<Long> implements Serializable {
 	@Where(clause = "is_active = true")
 	private Set<ProjectResourcesSecondarySkill> projectResourcesSecondarySkills;
 
-	public ProjectResource() {
-	}
-
 	public Long getProjectResourcesId() {
 		return this.projectResourcesId;
 	}

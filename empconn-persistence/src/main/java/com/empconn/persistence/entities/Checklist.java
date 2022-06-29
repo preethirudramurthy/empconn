@@ -34,9 +34,6 @@ public class Checklist extends Auditable<Long> implements Serializable {
 	@OneToMany(mappedBy="checklist")
 	private Set<ProjectChecklist> projectChecklists;
 
-	public Checklist() {
-	}
-
 	public Integer getChecklistId() {
 		return this.checklistId;
 	}

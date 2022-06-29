@@ -33,7 +33,7 @@ public class ProjectChecklist extends Auditable<Long> implements Serializable {
 	private String comment;
 
 	@Column(name="is_selected")
-	private Boolean isSelected;
+	private boolean isSelected;
 
 	//bi-directional many-to-one association to Checklist
 	@ManyToOne
@@ -44,9 +44,6 @@ public class ProjectChecklist extends Auditable<Long> implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="project_id")
 	private Project project;
-
-	public ProjectChecklist() {
-	}
 
 	public Long getProjectChecklistId() {
 		return this.projectChecklistId;
@@ -64,11 +61,11 @@ public class ProjectChecklist extends Auditable<Long> implements Serializable {
 		this.comment = comment;
 	}
 
-	public Boolean getIsSelected() {
+	public boolean getIsSelected() {
 		return this.isSelected;
 	}
 
-	public void setIsSelected(Boolean isSelected) {
+	public void setIsSelected(boolean isSelected) {
 		this.isSelected = isSelected;
 	}
 

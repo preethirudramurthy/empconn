@@ -33,9 +33,9 @@ public class ChangeManagerCron {
 		logger.info("{} starts execution successfully", METHOD_NAME);
 		try {
 			final Set<ManagerChange> pendingRequests = managerChangeRepository.findPendingRequests(false);
-			logger.debug("Total number of Pending/Failed Manager Change requests : " + pendingRequests.size());
+			logger.debug("Total number of Pending/Failed Manager Change requests : {}" , pendingRequests.size());
 
-			if(pendingRequests != null && !pendingRequests.isEmpty()) {
+			if(!pendingRequests.isEmpty()) {
 				final Set<ManagerChangeDto> managerChangeDtos = managerChangeDtoToManagerChangeMapper.mapToDtos(pendingRequests);
 
 				final Boolean isProcessed = successFactorManagerChangeOutboundService.syncManagerChanges(managerChangeDtos);

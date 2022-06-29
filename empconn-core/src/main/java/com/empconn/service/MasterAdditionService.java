@@ -20,7 +20,6 @@ import com.empconn.persistence.entities.Title;
 import com.empconn.repositories.BusinessUnitRepository;
 import com.empconn.repositories.DepartmentRepository;
 import com.empconn.repositories.DivisionRepository;
-import com.empconn.repositories.EmployeeRepository;
 import com.empconn.repositories.LocationRepository;
 import com.empconn.repositories.TitleRepository;
 import com.empconn.security.SecurityUtil;
@@ -44,9 +43,6 @@ public class MasterAdditionService {
 
 	@Autowired
 	private TitleRepository titleRepository;
-
-	@Autowired
-	private EmployeeRepository employeeRepository;
 
 	@Autowired
 	private SecurityUtil securityUtil;

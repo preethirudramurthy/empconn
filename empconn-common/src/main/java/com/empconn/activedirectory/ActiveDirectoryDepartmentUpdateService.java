@@ -8,11 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ActiveDirectoryDepartmentUpdateService extends ActiveDirectoryUpdateService {
 
-
-	/*
-	 * @Autowired(required = false) private DirContext ldapContext;
-	 */
-
 	@Override
 	public String attributeName() {
 		return "department";
@@ -22,8 +17,4 @@ public class ActiveDirectoryDepartmentUpdateService extends ActiveDirectoryUpdat
 	public Attribute attribute(String value) {
 		return new BasicAttribute(attributeName(), value);
 	}
-
-	/*
-	 * @Override public DirContext ldapContext() { return ldapContext; }
-	 */
 }

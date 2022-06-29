@@ -8,7 +8,7 @@ public class DeallocateDto {
 	private String techFeedback;
 	private Integer softSkillRating;
 	private String softSkillFeedback;
-	private Boolean partial;
+	private boolean partial;
 	public Long getAllocationId() {
 		return allocationId;
 	}
@@ -45,10 +45,10 @@ public class DeallocateDto {
 	public void setSoftSkillFeedback(String softSkillFeedback) {
 		this.softSkillFeedback = softSkillFeedback;
 	}
-	public Boolean getPartial() {
+	public boolean getPartial() {
 		return partial;
 	}
-	public void setPartial(Boolean partial) {
+	public void setPartial(boolean partial) {
 		this.partial = partial;
 	}
 

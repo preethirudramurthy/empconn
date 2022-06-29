@@ -4,7 +4,7 @@ public class ChangeManagerDto {
 
 	private Long allocationId;
 	private Long newReportingMangerId;
-	private Boolean isPrimary;
+	private boolean isPrimary;
 
 	public Long getAllocationId() {
 		return allocationId;
@@ -18,10 +18,10 @@ public class ChangeManagerDto {
 	public void setNewReportingMangerId(Long newReportingMangerId) {
 		this.newReportingMangerId = newReportingMangerId;
 	}
-	public Boolean getIsPrimary() {
+	public boolean getIsPrimary() {
 		return isPrimary;
 	}
-	public void setIsPrimary(Boolean isPrimary) {
+	public void setIsPrimary(boolean isPrimary) {
 		this.isPrimary = isPrimary;
 	}
 

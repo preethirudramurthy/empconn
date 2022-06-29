@@ -1,6 +1,7 @@
 package com.empconn.mapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -20,11 +21,11 @@ public abstract class ProjectCheckListMapper {
 
 	List<CheckListItemDto> projectChecklistsToChecklistItemDtos(Set<ProjectChecklist> set) {
 		if (set == null) {
-			return null;
+			return Collections.emptyList();
 		}
-		final List<CheckListItemDto> list = new ArrayList<CheckListItemDto>(set.size());
+		final List<CheckListItemDto> list = new ArrayList<>(set.size());
 		for (final ProjectChecklist projectChecklist : set) {
-			if (projectChecklist.getIsSelected() == true)
+			if (projectChecklist.getIsSelected())
 				list.add(projectChecklistToChecklistItemDto(projectChecklist));
 		}
 		return list;

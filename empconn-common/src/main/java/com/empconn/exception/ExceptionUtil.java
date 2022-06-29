@@ -26,10 +26,10 @@ public class ExceptionUtil {
 
 		final String message = environment.getProperty(exception.getCode());
 		if (null != message) {
-			return new HashSet<ExceptionResponse>(Arrays.asList(new ExceptionResponse(exception.getCode(), message)));
+			return new HashSet<>(Arrays.asList(new ExceptionResponse(exception.getCode(), message)));
 		}
 
-		return new HashSet<ExceptionResponse>(Arrays.asList(getDefaultExceptionResponse()));
+		return new HashSet<>(Arrays.asList(getDefaultExceptionResponse()));
 	}
 
 	private ExceptionResponse getDefaultExceptionResponse() {
@@ -38,6 +38,6 @@ public class ExceptionUtil {
 
 	public Set<ExceptionResponse> getExceptions(Throwable throwable) {
 		logger.error("Exception in processing : ", throwable);
-		return new HashSet<ExceptionResponse>(Arrays.asList(getDefaultExceptionResponse()));
+		return new HashSet<>(Arrays.asList(getDefaultExceptionResponse()));
 	}
 }

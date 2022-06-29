@@ -19,7 +19,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	List<Account> findByNameContainingIgnoreCaseAndCategoryIgnoreCaseEqualsAndStatusIgnoreCaseNotAndIsActiveTrueOrderByName(
-			String partialName, String category, String Status);
+			String partialName, String category, String status);
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	Account findByNameIgnoreCase(String name);
@@ -46,7 +46,7 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	public Integer changeStatus(Integer accountId, String status);
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
-	Set<Account> findAllByIsActiveAndStatusIgnoreCaseNot(Boolean isActive, String Status);
+	Set<Account> findAllByIsActiveAndStatusIgnoreCaseNot(Boolean isActive, String status);
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	Set<Account> findAllByIsActiveAndStatusIn(Boolean isActive, List<String> status);

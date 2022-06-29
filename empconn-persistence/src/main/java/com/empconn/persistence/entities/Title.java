@@ -3,7 +3,6 @@ package com.empconn.persistence.entities;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,9 +38,6 @@ public class Title extends NamedAuditable<Long> implements Serializable {
 	//bi-directional many-to-one association to ProjectResource
 	@OneToMany(mappedBy="title")
 	private Set<ProjectResource> projectResources;
-
-	public Title() {
-	}
 
 	public Integer getTitleId() {
 		return this.titleId;

@@ -1,5 +1,6 @@
 package com.empconn.mapper;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,11 +64,12 @@ public abstract class ProjectLocationDtoMapper {
 	public Set<ProjectLocation> locationsManagersDtoToProjectLocations(
 			List<LocationManagersValidateDto> locationsManagersDto) {
 		if (locationsManagersDto == null) {
-			return null;
+			return Collections.emptySet();
 		}
 		final Set<ProjectLocation> set = new HashSet<>();
 		for (final LocationManagersValidateDto dto : locationsManagersDto) {
-			if (dto.getProjectLocationId() != null) {
+			if (dto.getProjectLocationId() != null && projectLocationRespository
+					.findById(Long.valueOf(dto.getProjectLocationId())).isPresent()) {
 				final ProjectLocation location = projectLocationRespository
 						.findById(Long.valueOf(dto.getProjectLocationId())).get();
 				set.add(locationManagersDtoToProjectLocation(dto, location));
@@ -75,7 +77,7 @@ public abstract class ProjectLocationDtoMapper {
 				set.add(locationManagersDtoToProjectLocation(dto));
 		}
 		if (set.isEmpty())
-			return null;
+			return Collections.emptySet();
 		return set;
 	}
 
@@ -110,7 +112,8 @@ public abstract class ProjectLocationDtoMapper {
 
 	@Named("locationUnitValueToLocation")
 	Location locationUnitValueToLocation(UnitValue location) {
-		if (location != null && location.getId() != null) {
+		if (location != null && location.getId() != null && locationRepository.findById(Integer.valueOf(location.getId())).isPresent())
+		{
 			return locationRepository.findById(Integer.valueOf(location.getId())).get();
 		}
 		return null;
@@ -119,7 +122,7 @@ public abstract class ProjectLocationDtoMapper {
 
 	@Named("managerInfoToEmployee")
 	Employee managerInfoToEmployee(ManagerInfoDto manager) {
-		if (manager != null && manager.getId() != null) {
+		if (manager != null && manager.getId() != null && employeeRepository.findById(Long.valueOf(manager.getId())).isPresent()) {
 			return employeeRepository.findById(Long.valueOf(manager.getId())).get();
 		}
 		return null;

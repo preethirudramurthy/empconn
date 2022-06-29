@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.empconn.dto.AllocationReportResponseDto;
 
 @Component
-public class ExcelAllocationReportGenerator extends ExcelReportGenerator {
+public class ExcelAllocationReportGenerator implements ExcelReportGenerator {
 
 	@Override
 	public List<String> headers() {

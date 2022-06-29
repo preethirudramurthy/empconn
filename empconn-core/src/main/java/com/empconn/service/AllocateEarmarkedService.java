@@ -20,8 +20,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +63,10 @@ import com.empconn.utilities.TimeUtils;
 
 @Service
 public class AllocateEarmarkedService {
-	private static final Logger logger = LoggerFactory.getLogger(AllocateEarmarkedService.class);
+	
+	private static final String PROJECT_NAME = "projectName";
+
+	public static final String NOT_AVAILABLE_PRIOR_ALLOC = "NotAvailablePrioAllocatePercentage";
 
 	@Autowired
 	private AllocationRepository allocationRepository;
@@ -122,50 +123,55 @@ public class AllocateEarmarkedService {
 
 	public EarmarkForAllocationDto getEarmarkDetailsForAllocation(Long earmarkId, Long projectId) {
 		final Optional<Earmark> selectedEarmark = earMarkRepository.findById(earmarkId);
-		final Project toProject = projectRepository.findById(projectId).get();
-		final Long employeeId = selectedEarmark.get().getAllocation().getEmployee().getEmployeeId();
+		Optional<Project> p = projectRepository.findById(projectId);
+		Project toProject = null;
+		if (p.isPresent())
+			toProject = p.get();
+		if (selectedEarmark.isPresent()) {
+			final Long employeeId = selectedEarmark.get().getAllocation().getEmployee().getEmployeeId();
 
-		final List<AllocationSummaryDto> allocationSummary = allocationRepository.getAllocationSummary(employeeId);
-		final Long primaryAllocationId = selectedEarmark.get().getAllocation().getEmployee().getPrimaryAllocation()
-				.getAllocationId();
+			final List<AllocationSummaryDto> allocationSummary = allocationRepository.getAllocationSummary(employeeId);
+			final Long primaryAllocationId = selectedEarmark.get().getAllocation().getEmployee().getPrimaryAllocation()
+					.getAllocationId();
 
-		final Set<Allocation> empAllocations = allocationRepository.findByEmployeeEmployeeIdAndIsActive(
-				selectedEarmark.get().getAllocation().getEmployee().getEmployeeId(), true);
+			final Set<Allocation> empAllocations = allocationRepository.findByEmployeeEmployeeIdAndIsActive(
+					selectedEarmark.get().getAllocation().getEmployee().getEmployeeId(), true);
 
-		final Map<Long, List<Allocation>> employeeAllocationMap = empAllocations.stream()
-				.collect(Collectors.groupingBy(a -> a.getProject().getProjectId()));
+			final Map<Long, List<Allocation>> employeeAllocationMap = empAllocations.stream()
+					.collect(Collectors.groupingBy(a -> a.getProject().getProjectId()));
 
-		allocationSummary.forEach(a -> {
-			a.setReportingMangerName(
-					String.join(" ", a.getReportingManager().getFirstName(), a.getReportingManager().getLastName()));
-			a.setIsPrimary(employeeAllocationMap.get(a.getProjectId()).stream()
-					.filter(i -> i.getAllocationId().equals(primaryAllocationId)).findAny().isPresent());
-		});
+			allocationSummary.forEach(a -> {
+				a.setReportingMangerName(String.join(" ", a.getReportingManager().getFirstName(),
+						a.getReportingManager().getLastName()));
+				a.setIsPrimary(employeeAllocationMap.get(a.getProjectId()).stream()
+						.filter(i -> i.getAllocationId().equals(primaryAllocationId)).findAny().isPresent());
+			});
 
-		ExistingAllocationDto existingAllocationDto = null;
-		Allocation existAllocation = null;
-		final List<Allocation> existingAllocationList = allocationRepository
-				.findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveTrue(employeeId, projectId);
-		if (existingAllocationList.size() > 0) {
-			existAllocation = existingAllocationList.get(0);
-			final String reportingManagerName = existAllocation.getReportingManagerId().getFirstName() + " "
-					+ existAllocation.getReportingManagerId().getLastName();
-			boolean isPrimary = false;
-			if (existAllocation.getReportingManagerId().getEmployeeId().equals(employeeId)) {
-				isPrimary = true;
+			ExistingAllocationDto existingAllocationDto = null;
+			Allocation existAllocation = null;
+			final List<Allocation> existingAllocationList = allocationRepository
+					.findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveTrue(employeeId, projectId);
+			if (!existingAllocationList.isEmpty()) {
+				existAllocation = existingAllocationList.get(0);
+				final String reportingManagerName = existAllocation.getReportingManagerId().getFirstName() + " "
+						+ existAllocation.getReportingManagerId().getLastName();
+				boolean isPrimary = false;
+				if (existAllocation.getReportingManagerId().getEmployeeId().equals(employeeId)) {
+					isPrimary = true;
+				}
+				existingAllocationDto = new ExistingAllocationDto(
+						Long.toString(existAllocation.getProjectLocation().getProjectLocationId()),
+						existAllocation.getProjectLocation().getLocation().getName(),
+						existAllocation.getWorkGroup().getName(),
+						Long.toString(existAllocation.getReportingManagerId().getEmployeeId()), reportingManagerName,
+						isPrimary, CommonQualifiedMapper.dateToLocalDate(existAllocation.getReleaseDate()));
+
 			}
-			existingAllocationDto = new ExistingAllocationDto(
-					Long.toString(existAllocation.getProjectLocation().getProjectLocationId()),
-					existAllocation.getProjectLocation().getLocation().getName(),
-					existAllocation.getWorkGroup().getName(),
-					Long.toString(existAllocation.getReportingManagerId().getEmployeeId()), reportingManagerName,
-					isPrimary, CommonQualifiedMapper.dateToLocalDate(existAllocation.getReleaseDate()));
 
-		}
-		final EarmarkForAllocationDto earmarkForAllocationDto = allocationMapper.earmarkToEarmarkForAllocationDto(
-				selectedEarmark.get(), allocationSummary, existingAllocationDto, toProject);
-
-		return earmarkForAllocationDto;
+			return allocationMapper.earmarkToEarmarkForAllocationDto(selectedEarmark.get(), allocationSummary,
+					existingAllocationDto, toProject);
+		} else
+			return null;
 	}
 
 	public IsValidEarmarkAllocationDto isValidEarmarkAllocation(ValidateEarmarkAllocateDto dto) {
@@ -176,40 +182,37 @@ public class AllocateEarmarkedService {
 		final List<Allocation> allocations = allocationRepository
 				.findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveIsTrue(Long.valueOf(dto.getResourceId()),
 						Long.valueOf(dto.getProjectId()));
-		final Earmark earmark = earMarkRepository.findById(Long.valueOf(dto.getEarmarkId())).get();
-		if (!earmark.getIsActive())
+		Earmark earmark = null;
+		Optional<Earmark> e = earMarkRepository.findById(Long.valueOf(dto.getEarmarkId()));
+			if (e.isPresent())
+					earmark = e.get();
+		if (earmark != null && !earmark.getIsActive())
 			throw new EmpConnException("NotAvailableAllocatePercentage");
 		final Allocation currentAllocation = earmark.getAllocation();
 
 		if (!allocations.isEmpty()) {
 			for (final Allocation allocation : allocations)
-				if (allocation.getProjectLocation().getProjectLocationId()
-						.equals((Long.valueOf(dto.getProjectLocationId())))
-						&& allocation.getWorkGroup().getName().equals(dto.getWorkgroup())
-						&& allocation.getReportingManagerId().getEmployeeId()
-								.equals(Long.valueOf(dto.getReportingManagerId())))
-					isValidDto.setInvalidLocationWorkgroup(false);
-				else
-					isValidDto.setInvalidLocationWorkgroup(true);
+					isValidDto.setInvalidLocationWorkgroup(!(allocation.getProjectLocation().getProjectLocationId()
+							.equals((Long.valueOf(dto.getProjectLocationId())))
+							&& allocation.getWorkGroup().getName().equals(dto.getWorkgroup())
+							&& allocation.getReportingManagerId().getEmployeeId()
+									.equals(Long.valueOf(dto.getReportingManagerId()))));
 		}
 
 		if (currentAllocation != null
 				&& currentAllocation.getProject().getAccount().getName().equalsIgnoreCase("Bench")) {
-			if (dto.getPercentage() > currentAllocation.getAllocationDetails().stream()
-					.filter(AllocationDetail::getIsActive).map(AllocationDetail::getAllocatedPercentage)
-					.reduce(0, Integer::sum))
-				isValidDto.setInvalidAllocationPercentage(true);
-			else
-				isValidDto.setInvalidAllocationPercentage(false);
+				isValidDto.setInvalidAllocationPercentage((dto.getPercentage() > currentAllocation.getAllocationDetails().stream()
+						.filter(AllocationDetail::getIsActive).map(AllocationDetail::getAllocatedPercentage)
+						.reduce(0, Integer::sum)));
 		} else
 			isValidDto.setInvalidAllocationPercentage(true);
 
 		for (final String id : dto.getRequestSalesforceIdList()) {
 			if (!projectSalesforceIds.contains(id)) {
-				Boolean isValidSf = null;
+				boolean isValidSf;
 				if (earmark.getOpportunity() != null)
 					isValidSf = salesforceIdentifierService.isValidSalesforceIdForOppurtunity(id,
-							Long.valueOf(earmark.getOpportunity().getOpportunityId()));
+							earmark.getOpportunity().getOpportunityId());
 				else
 					isValidSf = salesforceIdentifierService.isValidSalesforceIdForProject(id,
 							Long.valueOf(dto.getProjectId()));
@@ -222,16 +225,8 @@ public class AllocateEarmarkedService {
 		}
 
 		final Date releaseDate = CommonQualifiedMapper.localDateTimeToDate(dto.getReleaseDate());
-		if (project.getEndDate().compareTo(releaseDate) < 0)
-			isValidDto.setInvalidReleaseDateAfterProjectDate(true);
-		else
-			isValidDto.setInvalidReleaseDateAfterProjectDate(false);
-
 		final DayOfWeek releaseDay = DayOfWeek.of(dto.getReleaseDate().get(ChronoField.DAY_OF_WEEK));
-		if (releaseDay.equals(SATURDAY) || releaseDay.equals(SUNDAY))
-			isValidDto.setInvalidReleaseDateOnWeekend(true);
-		else
-			isValidDto.setInvalidReleaseDateOnWeekend(false);
+		isValidDto.setInvalidReleaseDateAfterProjectDate(((project.getEndDate().compareTo(releaseDate) < 0) || (releaseDay.equals(SATURDAY) || releaseDay.equals(SUNDAY))));
 
 		return isValidDto;
 	}
@@ -240,17 +235,23 @@ public class AllocateEarmarkedService {
 	public void earmarkAllocate(List<EarmarkAllocationRequestDto> allocationList) {
 		validateEarmarkAllocate(allocationList);
 		for (final EarmarkAllocationRequestDto request : allocationList) {
-			final Earmark earmark = earMarkRepository.findById(Long.valueOf(request.getEarmarkId())).get();
-			request.setAllocationId(earmark.getAllocation().getAllocationId());
+		Earmark earmark = null;
+		Optional<Earmark> e = earMarkRepository.findById(Long.valueOf(request.getEarmarkId()));
+			if (e.isPresent())
+					earmark = e.get();
 			final Allocation toAllocation = allocationService.allocate(new AllocationRequestDto(request));
-			if ((earmark.getProject() != null
-					&& earmark.getProject().getProjectId().equals(toAllocation.getProject().getProjectId()))
-					|| earmark.getOpportunity() != null) {
-				earmark.setUnearmarkInfo(ApplicationConstants.SYSTEM,
-						ApplicationConstants.UNEARMARK_ALLOCATE_EARMARK_COMMENT);
-				earMarkRepository.save(earmark);
+			if (earmark != null) {
+				request.setAllocationId(earmark.getAllocation().getAllocationId());
+
+				if ((earmark.getProject() != null
+						&& earmark.getProject().getProjectId().equals(toAllocation.getProject().getProjectId()))
+						|| earmark.getOpportunity() != null) {
+					earmark.setUnearmarkInfo(ApplicationConstants.SYSTEM,
+							ApplicationConstants.UNEARMARK_ALLOCATE_EARMARK_COMMENT);
+					earMarkRepository.save(earmark);
+				}
+				unearmarkOnEarmarkAllocate(earmark.getAllocation());
 			}
-			unearmarkOnEarmarkAllocate(earmark.getAllocation());
 			sendMailOnAllocateEarmarkedResource(toAllocation);
 		}
 	}
@@ -333,15 +334,12 @@ public class AllocateEarmarkedService {
 					Integer::sum);
 
 			if (currentAllocation == null)
-				throw new EmpConnException("NotAvailablePrioAllocatePercentage");
+				throw new EmpConnException(NOT_AVAILABLE_PRIOR_ALLOC);
 
 			if (sumOfAllocationPercent > currentAllocation.getAllocationDetails().stream()
 					.filter(AllocationDetail::getIsActive).map(AllocationDetail::getAllocatedPercentage)
 					.reduce(0, Integer::sum)) {
-				if (a.size() > 1)
-					throw new EmpConnException("NotAvailablePrioAllocatePercentage");
-				else
-					throw new EmpConnException("NotAvailablePrioAllocatePercentage");
+					throw new EmpConnException(NOT_AVAILABLE_PRIOR_ALLOC);
 			}
 			if (!existingAllocations.isEmpty()) {
 				for (final Allocation allocation : existingAllocations)
@@ -386,10 +384,10 @@ public class AllocateEarmarkedService {
 					unearmarks.add(e);
 			}
 			if (!CollectionUtils.isEmpty(unearmarks)) {
-				unearmarks.forEach(e -> {
+				unearmarks.forEach(e -> 
 					e.setUnearmarkInfo(ApplicationConstants.SYSTEM,
-							ApplicationConstants.UNEARMARK_ALLOCATE_NOT_AVAILABLE_PERCENTAGE_COMMENT);
-				});
+							ApplicationConstants.UNEARMARK_ALLOCATE_NOT_AVAILABLE_PERCENTAGE_COMMENT)
+				);
 				final List<Long> unearmarkIds = unearmarks.stream().map(Earmark::getEarmarkId)
 						.collect(Collectors.toList());
 				earMarkRepository.saveAll(unearmarks);
@@ -430,17 +428,18 @@ public class AllocateEarmarkedService {
 
 		final Set<String> locationHr = masterService
 				.getLocationHr(allocation.getEmployee().getLocation().getLocationId());
-		locationHr.stream().forEach(h -> emailCCList.add(h));
+		locationHr.stream().forEach(emailCCList::add);
 		templateModel.put("employeeName", CommonQualifiedMapper.employeeToFullName(emp));
 		templateModel.put("employeeId", emp.getEmpCode());
 		templateModel.put("employeeTitle", emp.getTitle().getName());
 		templateModel.put("allocationPercent",
 				StringUtils.join(allocation.getAllocationDetails().stream().filter(AllocationDetail::getIsActive)
 						.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum), "%"));
-		templateModel.put("projectName", allocation.getProject().getName());
+		templateModel.put(PROJECT_NAME, allocation.getProject().getName());
 
-		templateModel.put("dateOfMovement",
-				new SimpleDateFormat("dd-MMM-YYYY").format(allocationDetail.get().getStartDate()));
+		if (allocationDetail.isPresent())
+			templateModel.put("dateOfMovement",
+					new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(allocationDetail.get().getStartDate()));
 		templateModel.put("reportingManagerName",
 				CommonQualifiedMapper.employeeToFullName(allocation.getReportingManagerId()));
 		templateModel.put("reportingManagerId", allocation.getReportingManagerId().getEmpCode());
@@ -468,7 +467,7 @@ public class AllocateEarmarkedService {
 				emailCCList.add(project.getEmployee1().getEmail());
 
 			templateModel.put("accountName", project.getAccount().getName());
-			templateModel.put("projectName", project.getName());
+			templateModel.put(PROJECT_NAME, project.getName());
 
 		} else if (oppurtunity != null) {
 			if (oppurtunity.getEmployee2() != null)
@@ -478,7 +477,7 @@ public class AllocateEarmarkedService {
 				emailCCList.add(oppurtunity.getEmployee1().getEmail());
 
 			templateModel.put("accountName", oppurtunity.getAccountName());
-			templateModel.put("projectName", oppurtunity.getName());
+			templateModel.put(PROJECT_NAME, oppurtunity.getName());
 		}
 
 		emailToList.add(earmark.getEmployee2().getEmail());
@@ -488,9 +487,9 @@ public class AllocateEarmarkedService {
 		templateModel.put("employeeName", CommonQualifiedMapper.employeeToFullName(emp));
 		templateModel.put("title", emp.getTitle().getName());
 
-		templateModel.put("startDate", new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getStartDate()));
-		templateModel.put("endDate", new SimpleDateFormat("dd-MMM-YYYY").format(earmark.getEndDate()));
-		templateModel.put("isBillable", earmark.getBillable() == true ? "Yes" : "No");
+		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getStartDate()));
+		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getEndDate()));
+		templateModel.put("isBillable", earmark.getBillable()? "Yes" : "No");
 		emailService.send("allocate-earmarked-resource-unearmarked", templateModel,
 				emailToList.toArray(new String[emailToList.size()]),
 				emailCCList.toArray(new String[emailCCList.size()]));
@@ -512,8 +511,8 @@ public class AllocateEarmarkedService {
 		toAllocation.setCreatedOn(TimeUtils.getCreatedOn());
 		toAllocation.setCreatedBy(securityUtil.getLoggedInEmployee().getEmployeeId());
 		toAllocation.setIsActive(Boolean.TRUE);
-		toAllocation.setAllocationDetails(new ArrayList<AllocationDetail>());
-		toAllocation.setEarmarks(new HashSet<Earmark>());
+		toAllocation.setAllocationDetails(new ArrayList<>());
+		toAllocation.setEarmarks(new HashSet<>());
 		final AllocationStatus allocatedStatus = allocationStatusRepository.findByStatus("Allocated");
 		toAllocation.setAllocationStatus(allocatedStatus);
 		return toAllocation;

@@ -79,7 +79,7 @@ public class AllocationHoursService {
 	public Map<String, AllocationHour> getBillingHours(final Allocation allocation,
 			final List<AllocationDetail> allocationDetails) {
 
-		final Map<String, AllocationHour> byMonthBillingHoursCopy = new HashMap<String, AllocationHour>();
+		final Map<String, AllocationHour> byMonthBillingHoursCopy = new HashMap<>();
 		for (final AllocationDetail ad : allocationDetails) {
 			// For inactive ones, duration is between start date to deallocated on
 			// For active ones, duration is start date to release date from allocation table
@@ -109,17 +109,17 @@ public class AllocationHoursService {
 		return byMonthBillingHoursCopy;
 	}
 
-	private List<AllocationHourDto> getBillingHours(Date startDate, Date endDate, Boolean inclusiveOfEndDate, Integer percentage) {
+	private List<AllocationHourDto> getBillingHours(Date startDate, Date endDate, boolean inclusiveOfEndDate, Integer percentage) {
 
 		Map<String, List<LocalDate>> byMonth = null;
 		if (inclusiveOfEndDate) {
 			byMonth = DateUtils
-					.BusinessDaysBetweenIncludingEndDate(startDate, endDate).stream()
+					.businessDaysBetweenIncludingEndDate(startDate, endDate).stream()
 					.collect(Collectors.groupingBy(d -> String.join("-", String.valueOf(d.getYear()),
 							d.getMonth().getDisplayName(TextStyle.SHORT, Locale.getDefault()))));
 		} else {
 			byMonth = DateUtils
-					.BusinessDaysBetweenExcludingEndDate(startDate, endDate).stream()
+					.businessDaysBetweenExcludingEndDate(startDate, endDate).stream()
 					.collect(Collectors.groupingBy(d -> String.join("-", String.valueOf(d.getYear()),
 							d.getMonth().getDisplayName(TextStyle.SHORT, Locale.getDefault()))));
 		}
@@ -145,9 +145,9 @@ public class AllocationHoursService {
 
 	public List<EditReleaseDateAllocationHour> getAllocationHrsList(
 			Collection<AllocationHourDto> allocationHrs) {
-		final List<EditReleaseDateAllocationHour> allocationHrsDto = new ArrayList<EditReleaseDateAllocationHour>();
+		final List<EditReleaseDateAllocationHour> allocationHrsDto = new ArrayList<>();
 		final int year = Calendar.getInstance().get(Calendar.YEAR);
-		final Map<Integer, List<EditReleaseMonthDto>> map = new HashMap<Integer, List<EditReleaseMonthDto>>();
+		final Map<Integer, List<EditReleaseMonthDto>> map = new HashMap<>();
 		for (final AllocationHourDto ah : allocationHrs) {
 			final EditReleaseMonthDto editReleaseMonthDto = new EditReleaseMonthDto();
 			editReleaseMonthDto.setName(ah.getMonth());
@@ -159,7 +159,7 @@ public class AllocationHoursService {
 					monthList.add(editReleaseMonthDto);
 					map.put(ah.getYear(), monthList);
 				} else {
-					final List<EditReleaseMonthDto> monthList = new ArrayList<EditReleaseMonthDto>();
+					final List<EditReleaseMonthDto> monthList = new ArrayList<>();
 					monthList.add(editReleaseMonthDto);
 					map.put(ah.getYear(), monthList);
 				}
@@ -190,7 +190,7 @@ public class AllocationHoursService {
 
 	public List<EditReleaseDateAllocationHour> getCalculatedHours(Date fromDate, Date toDate, Integer percentage) {
 		final Map<String, List<LocalDate>> byMonth = DateUtils
-				.BusinessDaysBetweenIncludingEndDate(fromDate, toDate).stream()
+				.businessDaysBetweenIncludingEndDate(fromDate, toDate).stream()
 				.collect(Collectors.groupingBy(d -> String.join("-", String.valueOf(d.getYear()),
 						d.getMonth().getDisplayName(TextStyle.SHORT, Locale.getDefault()))));
 		return getAllocationHrsList(getMonthlyHours(percentage, byMonth));

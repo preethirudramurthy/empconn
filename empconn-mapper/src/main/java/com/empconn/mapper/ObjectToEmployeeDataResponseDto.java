@@ -14,7 +14,6 @@ public class ObjectToEmployeeDataResponseDto {
 	public List<EmployeeDataResponseDto> objectsToEmployeeDataResponseDto(Set<Object[]> object){
 		final List<EmployeeDataResponseDto> empList = new ArrayList<>();
 		for (final Object[] obj : object) {
-			//logger.debug("Response from query :- "+obj[0]+"---"+obj[1]+"---"+obj[2]+"---"+obj[3]+"---"+obj[4]+"---"+obj[5]+"---"+obj[6]+"---"+obj[7]+"---"+obj[8]);
 			final EmployeeDataResponseDto dto=new EmployeeDataResponseDto();
 			dto.setDesignation(obj[0].toString());
 			dto.setEmailId(obj[1].toString());

@@ -34,8 +34,6 @@ public class TimesheetAllocation extends Auditable<Long> implements Serializable
 	@Column(name="allocation_id")
 	private Long allocationId;
 
-	public TimesheetAllocation() {
-	}
 
 
 	public Long getTimesheetAllocationId() {

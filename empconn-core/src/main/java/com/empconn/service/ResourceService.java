@@ -83,7 +83,6 @@ public class ResourceService {
 
 	public List<ResourceViewResponseDto> getResourceList(ResourceViewRequestDto resourceViewReqDto) {
 
-		final Employee currentUser = securityUtil.getLoggedInEmployee();
 		final Set<String> myProjects = getMyProjects(resourceViewReqDto);
 		if (myProjects != null && myProjects.size() > 0)
 			resourceViewReqDto.getProhectIdsForManager().addAll(myProjects);
@@ -99,7 +98,7 @@ public class ResourceService {
 		}
 
 		return resourceViewmapper.allocationToAvailableResourceDtoList(
-				allocationRepository.findAll(new ResourceViewSpecification(resourceViewReqDto, currentUser)));
+				allocationRepository.findAll(new ResourceViewSpecification(resourceViewReqDto)));
 	}
 
 	private Set<String> getMyProjects(ResourceViewRequestDto filter) {

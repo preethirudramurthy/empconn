@@ -40,6 +40,7 @@ public class MasterController {
 
 	private ProjectService projectService;
 
+	@SuppressWarnings("unused")
 	private PinService pinService;
 
 	private CommonBenchService commonBenchService;

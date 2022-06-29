@@ -32,7 +32,7 @@ public abstract class CsvFileCreatorService {
 		logger.debug(getHeader());
 		try {
 			final List<String> content = new ArrayList<>();
-			if(ApplicationConstants.SF_FTP.Project.name().equals(uploadType)) {
+			if(ApplicationConstants.SF_FTP.PROJECT.name().equals(uploadType)) {
 				content.add(getHeader());
 			}
 			for (final SuccessFactorsOutboundData successFactorsOutboundData : data) {

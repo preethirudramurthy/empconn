@@ -57,17 +57,6 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long>, J
 	List<Allocation> findByEmployeeEmployeeIdAndProjectProjectIdAndProjectLocationProjectLocationIdAndWorkGroupWorkGroupIdAndTimesheetAllocationAllocationId(
 			Long employeeId, Long projectId, Long projectLocationId, Integer workGroupId, Long allocationId);
 
-	// To be rewritten
-	/*
-	 * @Transactional
-	 *
-	 * @Modifying
-	 *
-	 * @Query("UPDATE Allocation p SET p.allocatedPercentage = :percentage WHERE p.allocationId = :allocationId"
-	 * ) public Integer updateAllocatedPercentage(Integer percentage, Long
-	 * allocationId);
-	 */
-
 	Set<Allocation> findByEmployeeEmployeeIdAndIsActive(Long employeeId, Boolean isActive);
 
 	@Query("select a from Allocation a where a.employee.employeeId = ?1 and a.isActive = ?2 and a.project.account.name != 'Bench'")
@@ -98,21 +87,8 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long>, J
 
 	List<Allocation> findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveTrue(Long employeeId, Long projectId);
 
-	// To be rewritten
-	/*
-	 * @Query("select a.allocatedPercentage from Allocation a where a.employee.employeeId = ?1 and isBillable = false"
-	 * ) public Integer getAllocatedPercentageOfEmployee(Long employeeId);
-	 */
-
 	@Query("SELECT COUNT( DISTINCT a.employee.employeeId) FROM Allocation a WHERE a.project.projectId = :projectId and a.isActive = true")
 	Integer findNumberOfResourcesForProject(Long projectId);
-
-	// To be rewritten
-	/*
-	 * @Query("select sum(a.allocatedPercentage) from Allocation a where a.isBillable = true and a.isActive = true and a.employee.employeeId = :employeeId "
-	 * + "AND a.project.name NOT IN ('Central Bench','NDBench')") public Integer
-	 * getAllocationPercentage(Long employeeId);
-	 */
 
 	@Query("select a.project.projectId from Allocation a where a.allocationId = ?1")
 	public Long getProjectIde(Long allocationId);
@@ -156,16 +132,5 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long>, J
 	@Query("SELECT a FROM Allocation a WHERE a.releaseDate < :currentDate and a.isActive = true")
 	List<Allocation> findReleaseDatePast(Date currentDate);
 
-	/*
-	 * @Override
-	 * 
-	 * @EntityGraph(attributePaths =
-	 * {"employee","allocationDetails","allocationStatus", "employee.location",
-	 * "project","projectLocation","project.account","project.account.vertical",
-	 * "earmarks","employee.systemUser","employee.title",
-	 * "employee.employeeSkills.secondarySkill",
-	 * "employee.employeeSkills.secondarySkill.primarySkill",
-	 * "employee.primaryAllocation","workGroup"}) List<Allocation>
-	 * findAll(Specification<Allocation> spec);
-	 */
+	
 }

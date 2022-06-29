@@ -36,9 +36,6 @@ public class NdRequestSalesforceIdentifier extends Auditable<Long> implements Se
 	@JoinColumn(name = "nd_request_id")
 	private NdRequest ndRequest;
 
-	public NdRequestSalesforceIdentifier() {
-	}
-
 	public Long getNdRequestSalesforceIdentifierId() {
 		return this.ndRequestSalesforceIdentifierId;
 	}

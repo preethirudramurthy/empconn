@@ -2,6 +2,7 @@ package com.empconn.mapper;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.mapstruct.Mapper;
@@ -47,8 +48,8 @@ public abstract class ContactToAccountLocationContactDtoMapper {
 		final Set<Contact> set = new HashSet<>();
 		for (final AccountLocationContactDto dto : source) {
 			if (dto.getAccountLocationContactId() != null) {
-				final Contact contact = contactRepository.findById(Long.valueOf(dto.getAccountLocationContactId()))
-						.get();
+				Optional<Contact> cOpt = contactRepository.findById(Long.valueOf(dto.getAccountLocationContactId()));
+				final Contact contact = cOpt.isPresent()?cOpt.get():null;
 				set.add(accountLocationContactDtoToContact(dto, contact));
 			} else
 				set.add(accountLocationContactDtoToContact(dto));

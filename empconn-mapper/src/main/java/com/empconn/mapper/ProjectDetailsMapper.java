@@ -1,6 +1,7 @@
 package com.empconn.mapper;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
@@ -70,7 +71,7 @@ public abstract class ProjectDetailsMapper {
 	@Named("subProjectsToSubProjectsNameList")
 	public List<String> subProjectsToSubProjectsNameList(Set<Project> projects) {
 		if (projects == null) {
-			return null;
+			return Collections.emptyList();
 		}
 		return projects.stream().map(Project::getName).collect(Collectors.toList());
 	}

@@ -112,8 +112,9 @@ public class EditReleaseDateService {
 		logger.debug("changeReleaseDate");
 		final Employee loggedInEmployee = jwtEmployeeUtil.getLoggedInEmployee();
 		for (final ChangeReleaseDateListDto changeReleaseDateDto : dto.getChangeReleaseDateList()) {
-			final Allocation allocation = allocationRepository
-					.findById(Long.valueOf(changeReleaseDateDto.getAllocationId())).get();
+			Optional<Allocation> allocOpt = allocationRepository
+					.findById(Long.valueOf(changeReleaseDateDto.getAllocationId()));
+			final Allocation allocation = allocOpt.isPresent()? allocOpt.get():null;
 			final List<AllocationHour> allocationHours = allocation.getAllocationHours();
 			if (allocation.getReleaseDate().equals(Date
 					.from(changeReleaseDateDto.getReleaseDate().atStartOfDay(ZoneId.systemDefault()).toInstant()))) {
@@ -217,7 +218,7 @@ public class EditReleaseDateService {
 
 	private void modfiedBillingHour(final ChangeReleaseDateListDto changeReleaseDateDto,
 			final List<AllocationHour> allocationHours2) {
-		final Map<Integer, List<EditReleaseMonthDto>> map = new HashMap<Integer, List<EditReleaseMonthDto>>();
+		final Map<Integer, List<EditReleaseMonthDto>> map = new HashMap<>();
 
 		final List<EditReleaseDateAllocationHour> allocationHours = changeReleaseDateDto.getAllocationHours();
 		for (final EditReleaseDateAllocationHour editReleaseDateAllocationHour : allocationHours) {

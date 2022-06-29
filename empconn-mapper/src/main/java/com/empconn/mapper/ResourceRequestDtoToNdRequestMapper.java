@@ -41,14 +41,6 @@ public abstract class ResourceRequestDtoToNdRequestMapper {
 	@Mapping(target = "ndRequestSalesforceIdentifiers", expression = "java(salesforceIdListToNdRequestSfs(requestDto.getExtraSalesforceIdList(), ndRequest))")
 	public abstract NdRequest resourceRequestDtoToNdRequest(RequestDto requestDto);
 
-	/*
-	 * public abstract List<NdRequest>
-	 * resourceRequestDtoToNdRequests(ResourceRequestDto resourceRequestDtos);
-	 *
-	 * @Named("resourceRequestToNdRequest") NdRequest
-	 * resourceRequestToNdRequest(ResourceRequestDto resourceRequestDtos) { return
-	 * null; }
-	 */
 
 	@Named("salesforceIdListToNdRequestSfs")
 	public List<NdRequestSalesforceIdentifier> salesforceIdListToNdRequestSfs(List<String> sfList, NdRequest ndRequest) {
@@ -72,11 +64,13 @@ public abstract class ResourceRequestDtoToNdRequestMapper {
 
 	@Named("getProject")
 	public Project getProject(Long projectId) {
-		return projectRepository.findById(projectId).get();
+		if (projectRepository.findById(projectId).isPresent()) return projectRepository.findById(projectId).get();
+		return null;
 	}
 
 	@Named("getEmployee")
 	public Employee getEmployee(Long resourceId) {
-		return employeeRepository.findById(resourceId).get();
+		if (employeeRepository.findById(resourceId).isPresent()) return employeeRepository.findById(resourceId).get();
+		return null;
 	}
 }

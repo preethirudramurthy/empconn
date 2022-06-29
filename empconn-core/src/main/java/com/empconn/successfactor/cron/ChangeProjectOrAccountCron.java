@@ -35,9 +35,9 @@ public class ChangeProjectOrAccountCron {
 		logger.info("{} starts execution successfully", METHOD_NAME);
 		try {
 			final Set<ProjectChange> pendingRequests = projectChangeRepository.findPendingRequests();
-			logger.debug("Total number of Pending/Failed Project or Account Change requests : "+pendingRequests.size());
+			logger.debug("Total number of Pending/Failed Project or Account Change requests : {}",pendingRequests.size());
 
-			if(pendingRequests != null && !pendingRequests.isEmpty()) {
+			if(!pendingRequests.isEmpty()) {
 				final Set<ProjectChangeDto> projectChangeDtos = projectChangeDtoToProjectChangeMapper.mapToDtos(pendingRequests);
 
 				final Boolean isProcessed = successFactorProjectChangeOutboundService.syncProjectChanges(projectChangeDtos);

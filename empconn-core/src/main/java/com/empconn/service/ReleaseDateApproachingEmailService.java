@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.MailForReleaseDateDto;
 import com.empconn.email.EmailService;
 import com.empconn.persistence.entities.Allocation;
@@ -51,7 +52,7 @@ public class ReleaseDateApproachingEmailService {
 			final Map<String, Object> templateModel = new HashMap<String, Object>();
 			final MailForReleaseDateDto mailForReleaseDateDto = new MailForReleaseDateDto(a1.getEmployee().getEmpCode(),
 					a1.getEmployee().getFullName(), a1.getProject().getAccount().getName(), a1.getProject().getName(),
-					new SimpleDateFormat("dd-MMM-YYYY").format(a1.getReleaseDate()));
+					new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(a1.getReleaseDate()));
 			final StringBuilder managerEmails = new StringBuilder();
 			final Employee repotingManager = a1.getEmployee().getPrimaryAllocation().getReportingManagerId();
 			if (repotingManager != null) {
@@ -83,7 +84,7 @@ public class ReleaseDateApproachingEmailService {
 			final Map<String, Object> templateModel = new HashMap<String, Object>();
 			final MailForReleaseDateDto mailForReleaseDateDto = new MailForReleaseDateDto(a1.getEmployee().getEmpCode(),
 					a1.getEmployee().getFullName(), a1.getProject().getAccount().getName(), a1.getProject().getName(),
-					new SimpleDateFormat("dd-MMM-YYYY").format(a1.getReleaseDate()));
+					new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(a1.getReleaseDate()));
 			final StringBuilder managerEmails = new StringBuilder();
 			final Employee repotingManager = a1.getEmployee().getPrimaryAllocation().getReportingManagerId();
 			if (repotingManager != null) {

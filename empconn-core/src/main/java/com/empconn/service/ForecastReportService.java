@@ -110,8 +110,8 @@ public class ForecastReportService {
 		final Map<String, List<Allocation>> allocationMap = allocations.stream().collect(Collectors.groupingBy(a -> a.getEmployee().getTitle().getName()));
 		final Map<String,Map<String,List<ForecastDataDto>>> map = new HashMap<String,Map<String,List<ForecastDataDto>>>();
 		String key = "";
-		if(!Strings.isNullOrEmpty(request.getInside_monthYear())){
-			final String[] str = request.getInside_monthYear().split("_");
+		if(!Strings.isNullOrEmpty(request.getInsideMonthYear())){
+			final String[] str = request.getInsideMonthYear().split("_");
 			final LocalDate current_date = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), 1);
 			key = String.join("_",String.valueOf(current_date.getMonthValue()),String.valueOf(current_date.getYear()));
 		}
@@ -210,7 +210,7 @@ public class ForecastReportService {
 	public ByteArrayInputStream generateExcelReportData(ForecastReportRequestDto request) throws IOException {
 		logger.debug("Generating the forecast excel report");
 		final List<ForecastDataDto> reportData = getReportData(request);
-		final String[] str = request.getInside_monthYear().split("_");
+		final String[] str = request.getInsideMonthYear().split("_");
 		final LocalDate date = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), forecastReportDays);
 		final String header = request.getTitle() +" | " + date.getMonth() +"-"+ date.getYear();
 		return forecastReportGenerator.generate(reportData, securityUtil.getLoggedInEmployee().getFullName(), header);

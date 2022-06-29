@@ -3,6 +3,7 @@ package com.empconn.mapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -136,7 +137,7 @@ public abstract class ProjectPinMapper {
 			return salesforceIdentifiers.stream().filter(SalesforceIdentifier::getIsActive)
 					.map(SalesforceIdentifier::getValue).collect(Collectors.toList());
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Named("projectCommentsToGdmCommentList")
@@ -155,7 +156,7 @@ public abstract class ProjectPinMapper {
 	}
 
 	public static LocalDateTime getInitiationMeetingDeadline(Project project) {
-		if (project.getProjectKickoffIsRequired() != null && project.getProjectKickoffIsRequired() == true
+		if (project.getProjectKickoffIsRequired() != null && project.getProjectKickoffIsRequired()
 				&& project.getStartDate() != null) {
 			final LocalDate startDate = CommonQualifiedMapper.dateToLocalDate(project.getStartDate());
 			return startDate.plusDays(ApplicationConstants.PROJECT_INIT_DEADLINE_BY).atStartOfDay();

@@ -13,8 +13,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -45,15 +43,13 @@ import com.empconn.repositories.ProjectChangeRepository;
 import com.empconn.repositories.ProjectLocationRespository;
 import com.empconn.repositories.WorkGroupRepository;
 import com.empconn.security.SecurityUtil;
-import com.empconn.successfactor.service.SFIntegrationService;
-import com.empconn.utilities.EmailConfigReader;
 import com.empconn.utilities.TimeUtils;
 
 @Service
 @Transactional(readOnly = true)
 public class DeallocationService {
 
-	private static final Logger logger = LoggerFactory.getLogger(DeallocationService.class);
+	private static final String PENDING = "Pending";
 
 	@Autowired
 	private AllocationRepository allocationRepository;
@@ -90,11 +86,6 @@ public class DeallocationService {
 	@Value("${spring.profiles.active:Local}")
 	private String activeProfile;
 
-	@Autowired
-	private EmailConfigReader emailConfigReader;
-
-	@Autowired
-	private SFIntegrationService sfIntegrationService;
 
 	@Autowired
 	private DeallocationEmailUtil deallocationEmailUtil;
@@ -124,9 +115,11 @@ public class DeallocationService {
 	public void deallocate(List<DeallocateDto> deallocateDtos) {
 		for (final DeallocateDto request : deallocateDtos) {
 			final Employee loggedInEmployee = jwtEmployeeUtil.getLoggedInEmployee();
-			final Allocation currentAllocation = allocationRepository.findById(request.getAllocationId()).get();
+			Optional<Allocation> allocOpt = allocationRepository.findById(request.getAllocationId());
+			final Allocation currentAllocation = allocOpt.isPresent()?allocOpt.get():null;
+			if (currentAllocation != null) {
 			final Employee employee = currentAllocation.getEmployee();
-			final Boolean isDelivery = employeeService.isDelivery(currentAllocation.getEmployee());
+			final boolean isDelivery = employeeService.isDelivery(currentAllocation.getEmployee());
 			final Project benchProject = projectService.getBenchProject(isDelivery);
 			final Location location = locationRepository.findByName(ApplicationConstants.LOCATION_GLOBAL);
 			final ProjectLocation benchProjectLocation = projectLocationRespository
@@ -141,7 +134,7 @@ public class DeallocationService {
 
 			final Optional<Allocation> existingBenchAllocation = allocationRepository
 					.findOneByEmployeeEmployeeIdAndProjectProjectIdAndIsActive(employee.getEmployeeId(),
-							Long.valueOf(benchProject.getProjectId()), true);
+							benchProject.getProjectId(), true);
 
 			final boolean isNew = !existingBenchAllocation.isPresent();
 
@@ -196,6 +189,7 @@ public class DeallocationService {
 					else
 						mailForPartialDeallocation(currentAllocation, request, toAllocation);
 		}
+		}
 
 	}
 
@@ -241,7 +235,7 @@ public class DeallocationService {
 
 	private void completeDeallocate(final DeallocateDto request, final Employee loggedInEmployee,
 			final Allocation currentAllocation, final Employee employee, final boolean isNew,
-			final Allocation toAllocation, Project project) {
+			final Allocation toAllocation) {
 		// Move earmark if eligible
 		final Set<Earmark> earmarks = currentAllocation.getEarmarks();
 
@@ -254,7 +248,7 @@ public class DeallocationService {
 		toAllocation.getAllocationDetails().add(allocationDetail);
 
 		if (toAllocation.getAllocationFeedbacks() == null) {
-			toAllocation.setAllocationFeedbacks(new ArrayList<AllocationFeedback>());
+			toAllocation.setAllocationFeedbacks(new ArrayList<>());
 		}
 
 		toAllocation.getAllocationFeedbacks()
@@ -270,22 +264,21 @@ public class DeallocationService {
 		});
 
 		currentAllocation.setIsActive(false);
-		//currentAllocation.setReleaseDate(TimeUtils.getToday());
 
 		moveEarmarks(loggedInEmployee, toAllocation, earmarks);
 
-		Employee primaryManager = employee.getPrimaryAllocation().getReportingManagerId();
+		Employee primaryManager = null;
 		// Update primary manager only if the current allocation's RM was the Primary
 		// Manager
 		if (employee.getPrimaryAllocation() != null
 				&& employee.getPrimaryAllocation().getAllocationId().equals(currentAllocation.getAllocationId())) {
 			final Allocation primaryAllocation = allocationUtilityService.getPrimaryManager(currentAllocation,
-					employee.getEmployeeId(), false, false, toAllocation, isNew, request.getPercentage());
+					employee.getEmployeeId(), false, false, toAllocation, isNew);
 
 			employee.setPrimaryAllocation(primaryAllocation);
 			primaryManager = primaryAllocation.getReportingManagerId();
 			final Map<String, Employee> gdms = primaryAllocation.getProject().getGdms();
-			final Boolean isDelivery = employeeService.isDelivery(currentAllocation.getEmployee());
+			final boolean isDelivery = employeeService.isDelivery(currentAllocation.getEmployee());
 			final Employee gdm = (isDelivery)?(((gdms.get(primaryAllocation.getWorkGroup().getName())) == null)
 					? gdms.values().stream().findFirst().get()
 							: gdms.get(primaryAllocation.getWorkGroup().getName())):employee.getEmployee2();
@@ -301,13 +294,13 @@ public class DeallocationService {
 		// Integration call with SF starts here
 		final Date startDate = TimeUtils.getToday();
 
-		final ManagerChange managerChange = new ManagerChange(startDate, false, "Pending", employee, primaryManager,
+		final ManagerChange managerChange = new ManagerChange(startDate, false, PENDING, employee, primaryManager,
 				loggedInEmployee.getEmployeeId());
 		managerChangeRepository.save(managerChange);
-		final ManagerChange gdmChange = new ManagerChange(startDate, true, "Pending", employee, gdm,
+		final ManagerChange gdmChange = new ManagerChange(startDate, true, PENDING, employee, gdm,
 				loggedInEmployee.getEmployeeId());
 		managerChangeRepository.save(gdmChange);
-		final ProjectChange projectChange = new ProjectChange(startDate, "Pending", project.getAccount(), employee,
+		final ProjectChange projectChange = new ProjectChange(startDate, PENDING, project.getAccount(), employee,
 				project, loggedInEmployee.getEmployeeId());
 		projectChangeRepository.save(projectChange);
 

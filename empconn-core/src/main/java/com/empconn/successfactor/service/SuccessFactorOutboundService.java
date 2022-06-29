@@ -39,9 +39,9 @@ public abstract class SuccessFactorOutboundService {
 			logger.debug("Converting {} details to csv file", description());
 			final File file = csvFileCreatorService().convert(successFactorData,uploadType);
 			logger.debug("Sending the {} file to SFTP server", description());
-			if(ApplicationConstants.SF_FTP.Gdm.name().equals(uploadType)) {
+			if(ApplicationConstants.SF_FTP.GDM.name().equals(uploadType)) {
 				gatewayGdm.upload(file);
-			}else if(ApplicationConstants.SF_FTP.Manager.name().equals(uploadType)){
+			}else if(ApplicationConstants.SF_FTP.MANAGER.name().equals(uploadType)){
 				gatewayManager.upload(file);
 			}else
 				gatewayProject.upload(file);

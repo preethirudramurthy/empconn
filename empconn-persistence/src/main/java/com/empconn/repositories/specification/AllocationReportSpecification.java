@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,7 +17,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 
@@ -25,6 +24,12 @@ import com.empconn.dto.AllocationReportRequestDto;
 import com.empconn.persistence.entities.Allocation;
 
 public class AllocationReportSpecification implements Specification<Allocation> {
+
+	private static final String ACCOUNT = "account";
+
+	private static final String PROJECT = "project";
+
+	private static final String EMPLOYEE = "employee";
 
 	private static final long serialVersionUID = -3763123808668118215L;
 
@@ -38,15 +43,12 @@ public class AllocationReportSpecification implements Specification<Allocation> 
 	@Override
 	public Predicate toPredicate(Root<Allocation> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 
-		root.fetch("employee");
-		//root.fetch("employee").fetch("title");
-		//root.fetch("employee").fetch("location");
-		//root.fetch("workGroup");
-		//root.fetch("employee").fetch("employeeSkills", JoinType.LEFT);
+		root.fetch(EMPLOYEE);
+		
 		root.fetch("allocationDetails");
-		root.fetch("employee").fetch("primaryAllocation").fetch("reportingManagerId");
+		root.fetch(EMPLOYEE).fetch("primaryAllocation").fetch("reportingManagerId");
 
-		final List<Predicate> finalPredicate = new ArrayList<Predicate>();
+		final List<Predicate> finalPredicate = new ArrayList<>();
 		finalPredicate.add(cb.equal(root.get("isActive"), true));
 
 		// Retrieve the filter values
@@ -59,10 +61,10 @@ public class AllocationReportSpecification implements Specification<Allocation> 
 		final Date allocationFrom = localDateToDate(filter.getAllocationFrom());
 		final List<Integer> primarySkillIds = convertToIntegers(filter.getPrimarySkillIdList());
 		final List<Integer> secondarySkillIds = convertToIntegers(filter.getSecondarySkillIdList());
-		final Boolean onlyActive = filter.isOnlyActive();
+		final boolean onlyActive = filter.isOnlyActive();
 
 		// Prep the specification
-		final Join<Object, Object> employeeJoin = root.join("employee");
+		final Join<Object, Object> employeeJoin = root.join(EMPLOYEE);
 		final Join<Object, Object> employeeSkillsJoin = employeeJoin.join("employeeSkills", JoinType.LEFT);
 		final Path<Object> primarySkillId = employeeSkillsJoin.get("secondarySkill").get("primarySkill")
 				.get("primarySkillId");
@@ -70,8 +72,7 @@ public class AllocationReportSpecification implements Specification<Allocation> 
 		final Path<Object> titleId = employeeJoin.get("title").get("titleId");
 		final Path<Object> locationId = employeeJoin.get("location").get("locationId");
 		final Join<Object, Object> allocationDetailsJoin = root.join("allocationDetails", JoinType.LEFT);
-		final Predicate benchProjects = cb.equal(root.get("project").get("account").get("name"), "Bench");
-		final Path<Object> projectId = root.get("project").get("projectId");
+		final Predicate benchProjects = cb.equal(root.get(PROJECT).get(ACCOUNT).get("name"), "Bench");
 
 		// Define and add the predicates
 		finalPredicate.add(cb.equal(employeeJoin.get("isActive"), true));
@@ -79,13 +80,13 @@ public class AllocationReportSpecification implements Specification<Allocation> 
 
 		if (!CollectionUtils.isEmpty(verticalIds))
 			finalPredicate.add(getInPredicate(cb, verticalIds,
-					root.get("project").get("account").get("vertical").get("verticalId")));
+					root.get(PROJECT).get(ACCOUNT).get("vertical").get("verticalId")));
 
 		if (!CollectionUtils.isEmpty(accountIds))
-			finalPredicate.add(getInPredicate(cb, accountIds, root.get("project").get("account").get("accountId")));
+			finalPredicate.add(getInPredicate(cb, accountIds, root.get(PROJECT).get(ACCOUNT).get("accountId")));
 
 		if (!CollectionUtils.isEmpty(projectIds))
-			finalPredicate.add(getInPredicate(cb, projectIds, root.get("project").get("projectId")));
+			finalPredicate.add(getInPredicate(cb, projectIds, root.get(PROJECT).get("projectId")));
 
 		if (!CollectionUtils.isEmpty(titleIds))
 			finalPredicate.add(getInPredicate(cb, titleIds, titleId));
@@ -107,21 +108,19 @@ public class AllocationReportSpecification implements Specification<Allocation> 
 
 		// Include on hold projects too if the flag is false
 		if (onlyActive)
-			finalPredicate.add(cb.equal(root.get("project").get("currentStatus"), "PMO_APPROVED"));
+			finalPredicate.add(cb.equal(root.get(PROJECT).get("currentStatus"), "PMO_APPROVED"));
 		else
 			finalPredicate.add(getStringInPredicate(cb, Arrays.asList("PMO_APPROVED", "PROJECT_ON_HOLD"),
-					root.get("project").get("currentStatus")));
+					root.get(PROJECT).get("currentStatus")));
 
 		query.distinct(true);
-		final Predicate and = cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
-		return and;
+		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
 
 	}
 
 	private Predicate getInPredicate(CriteriaBuilder cb, List<? extends Number> primarySkillIds,
 			Path<Object> primarySkillId) {
-		final Predicate primarySkillsPredicate = cb.in(primarySkillId).value(primarySkillIds);
-		return primarySkillsPredicate;
+		return cb.in(primarySkillId).value(primarySkillIds);
 	}
 
 	private Predicate getStringInPredicate(CriteriaBuilder cb, List<String> values, Path<Object> pathObject) {
@@ -131,27 +130,15 @@ public class AllocationReportSpecification implements Specification<Allocation> 
 	private List<Long> convertToLong(List<String> input) {
 		if (CollectionUtils.isEmpty(input))
 			return new ArrayList<>();
-		return input.stream().filter(i -> (null != i)).map(Long::parseLong).collect(Collectors.toList());
-	}
-
-	private List<Integer> convertToIntegers(final String primarySkillId) {
-		return convertToIntegers(convertToStringList(primarySkillId));
+		return input.stream().filter(Objects::nonNull).map(Long::parseLong).collect(Collectors.toList());
 	}
 
 	private List<Integer> convertToIntegers(final List<String> input) {
 		if (CollectionUtils.isEmpty(input))
 			return new ArrayList<>();
-		return input.stream().filter(i -> (null != i)).map(Integer::parseInt).collect(Collectors.toList());
+		return input.stream().filter(Objects::nonNull).map(Integer::parseInt).collect(Collectors.toList());
 	}
-
-	private List<String> convertToStringList(String commaSeparatedString) {
-		if (StringUtils.isEmpty(StringUtils.trim(commaSeparatedString)))
-			return new ArrayList<>();
-
-		return Stream.of(commaSeparatedString.split(",")).map(String::trim).collect(Collectors.toList());
-
-	}
-
+	
 	public static Date localDateToDate(LocalDate localDate) {
 		if (null == localDate)
 			return null;

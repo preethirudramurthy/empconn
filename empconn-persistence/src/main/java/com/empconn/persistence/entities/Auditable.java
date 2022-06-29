@@ -29,7 +29,7 @@ public class Auditable<U> {
 	private Timestamp modifiedOn;
 
 	@Column(name = "is_active")
-	private Boolean isActive;
+	private boolean isActive;
 
 	public U getCreatedBy() {
 		return this.createdBy;
@@ -63,11 +63,11 @@ public class Auditable<U> {
 		this.modifiedOn = modifiedOn;
 	}
 
-	public Boolean getIsActive() {
+	public boolean getIsActive() {
 		return isActive;
 	}
 
-	public void setIsActive(Boolean isActive) {
+	public void setIsActive(boolean isActive) {
 		this.isActive = isActive;
 	}
 

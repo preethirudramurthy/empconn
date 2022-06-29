@@ -11,7 +11,6 @@ public class ResourceInformationDto {
 
 	public ResourceInformationDto() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public ResourceInformationDto(String location, String title, int numberOfResources, int allocationPercentage,

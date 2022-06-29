@@ -9,7 +9,7 @@ import com.empconn.persistence.entities.Role;
 
 public class RolesUtil {
 
-	public static Boolean isAManager(Employee employee) {
+	public static boolean isAManager(Employee employee) {
 		final Optional<EmployeeRole> employeeRole = employee.getEmployeeRoles().stream()
 				.filter(EmployeeRole::getIsActive)
 				.filter(e -> e.getRole().getName().equalsIgnoreCase(Roles.MANAGER.name())).findAny();
@@ -17,7 +17,7 @@ public class RolesUtil {
 		return employeeRole.isPresent();
 	}
 
-	public static Boolean isOnlyGDM(Employee employee) {
+	public static boolean isOnlyGDM(Employee employee) {
 		final Optional<EmployeeRole> employeeRoleGDM = employee.getEmployeeRoles().stream()
 				.filter(EmployeeRole::getIsActive).filter(e -> e.getRole().getName().equalsIgnoreCase(Roles.GDM.name()))
 				.findAny();
@@ -33,7 +33,7 @@ public class RolesUtil {
 		return employeeRoleGDM.isPresent() && !employeeRoleOthers.isPresent();
 	}
 
-	public static Boolean isGDMAndManager(Employee employee) {
+	public static boolean isGDMAndManager(Employee employee) {
 		final Optional<EmployeeRole> employeeRoleGDM = employee.getEmployeeRoles().stream()
 				.filter(EmployeeRole::getIsActive).filter(e -> e.getRole().getName().equalsIgnoreCase(Roles.GDM.name()))
 				.findAny();
@@ -44,7 +44,7 @@ public class RolesUtil {
 		return employeeRoleGDM.isPresent() && employeeRoleManager.isPresent();
 	}
 
-	public static Boolean isGDM(Employee employee) {
+	public static boolean isGDM(Employee employee) {
 		final Optional<EmployeeRole> employeeRole = employee.getEmployeeRoles().stream()
 				.filter(EmployeeRole::getIsActive).filter(e -> e.getRole().getName().equalsIgnoreCase(Roles.GDM.name()))
 				.findAny();
@@ -52,7 +52,7 @@ public class RolesUtil {
 		return employeeRole.isPresent();
 	}
 
-	public static Boolean isPMO(Employee employee) {
+	public static boolean isPMO(Employee employee) {
 		final Optional<EmployeeRole> employeeRole = employee.getEmployeeRoles().stream()
 				.filter(EmployeeRole::getIsActive).filter(e -> e.getRole().getName().equalsIgnoreCase(Roles.PMO.name())
 						|| e.getRole().getName().equalsIgnoreCase(Roles.PMO_ADMIN.name()))
@@ -61,7 +61,7 @@ public class RolesUtil {
 		return employeeRole.isPresent();
 	}
 
-	public static Boolean isRMG(Employee employee) {
+	public static boolean isRMG(Employee employee) {
 		final Optional<EmployeeRole> employeeRole = employee.getEmployeeRoles().stream()
 				.filter(EmployeeRole::getIsActive).filter(e -> e.getRole().getName().equalsIgnoreCase(Roles.RMG.name())
 						|| e.getRole().getName().equalsIgnoreCase(Roles.RMG_ADMIN.name()))
@@ -70,7 +70,7 @@ public class RolesUtil {
 		return employeeRole.isPresent();
 	}
 
-	public static Boolean isSystemUser(Employee employee) {
+	public static boolean isSystemUser(Employee employee) {
 		final Optional<EmployeeRole> employeeRole = employee.getEmployeeRoles().stream()
 				.filter(EmployeeRole::getIsActive)
 				.filter(e -> e.getRole().getName().equalsIgnoreCase(Roles.SYSTEM_USER.name())).findAny();
@@ -78,9 +78,9 @@ public class RolesUtil {
 		return employeeRole.isPresent();
 	}
 
-	public static boolean isValidRoleForUser(Employee employee, Role Role) {
+	public static boolean isValidRoleForUser(Employee employee, Role role) {
 		final Optional<EmployeeRole> employeeRole = employee.getEmployeeRoles().stream()
-				.filter(EmployeeRole::getIsActive).filter(e -> e.getRole().getName().equalsIgnoreCase(Role.getName()))
+				.filter(EmployeeRole::getIsActive).filter(e -> e.getRole().getName().equalsIgnoreCase(role.getName()))
 				.findAny();
 
 		return employeeRole.isPresent();

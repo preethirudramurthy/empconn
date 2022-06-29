@@ -5,9 +5,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -18,8 +16,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.empconn.constants.ApplicationConstants;
 
 
 public class DateUtils2 {
@@ -45,11 +41,7 @@ public class DateUtils2 {
 		}
 		return "";
 	}
-
-	public static String currentDatetoString(String dateFormat) {
-		return DateTimeFormatter.ofPattern(ApplicationConstants.DATE_FORMAT_YYYYMMDD).format(LocalDateTime.now());
-	}
-
+	
 	public static LocalDate addDaysSkippingWeekends(LocalDate date, int days) {
 		LocalDate result = date;
 		int addedDays = 0;
@@ -62,7 +54,7 @@ public class DateUtils2 {
 		return result;
 	}
 
-	public static List<LocalDate> BusinessDaysBetween(LocalDate startDate, LocalDate endDate)
+	public static List<LocalDate> businessDaysBetween(LocalDate startDate, LocalDate endDate)
 	{
 		if (startDate == null || endDate == null) {
 			throw new IllegalArgumentException("Invalid method argument(s) to countBusinessDaysBetween(" + startDate
@@ -78,9 +70,9 @@ public class DateUtils2 {
 				.filter((isWeekend).negate()).collect(Collectors.toList());
 	}
 
-	public static List<LocalDate> BusinessDaysBetween(Date startDate, Date endDate){
+	public static List<LocalDate> businessDaysBetween(Date startDate, Date endDate){
 
-		return BusinessDaysBetween(Instant.ofEpochMilli(startDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate(),
+		return businessDaysBetween(Instant.ofEpochMilli(startDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate(),
 				Instant.ofEpochMilli(endDate.getTime()).atZone(ZoneId.systemDefault()).toLocalDate());
 	}
 

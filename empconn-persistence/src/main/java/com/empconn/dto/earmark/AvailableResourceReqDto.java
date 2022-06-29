@@ -1,5 +1,6 @@
 package com.empconn.dto.earmark;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -9,8 +10,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 
-public class AvailableResourceReqDto {
+public class AvailableResourceReqDto implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -757181491972965292L;
 	private String resourceType;
 	private List<String> titleId;
 	private String primarySkillId;

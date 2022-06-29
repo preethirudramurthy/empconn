@@ -1,5 +1,6 @@
 package com.empconn.enums;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +17,7 @@ class AccountCategoryTest {
 	@Test
 	final void testGetByValue() {
 		final AccountCategory client = AccountCategory.getByValue("Client");
-		assertTrue(null != client);
+		assertNotNull(client);
 	}
-
-	/*
-	 * @Test public void shouldReturnAccountCategoriesAsUnitValues() throws
-	 * Exception { final Set<UnitValue> unitValues =
-	 * AccountCategory.getUnitValues(); assertEquals(2, unitValues.size()); }
-	 */
 
 }

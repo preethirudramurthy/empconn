@@ -36,8 +36,6 @@ public class ProjectSubCategory extends Auditable<Long> implements Serializable 
 	@OneToMany(mappedBy="projectSubCategory")
 	private Set<Project> projects;
 
-	public ProjectSubCategory() {
-	}
 
 	public Integer getProjectSubCategoryId() {
 		return this.projectSubCategoryId;

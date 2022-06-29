@@ -37,7 +37,6 @@ import com.empconn.dto.ndallocation.NDAllocateRequest;
 import com.empconn.dto.ndallocation.NDAllocateResponseDto;
 import com.empconn.dto.ndallocation.NdRequestDetailsForAllocationResponseDto;
 import com.empconn.persistence.entities.Project;
-import com.empconn.repositories.EmployeeSkillRepository;
 import com.empconn.repositories.ProjectRepository;
 import com.empconn.service.AllocateEarmarkedService;
 import com.empconn.service.AllocateNDService;
@@ -70,8 +69,6 @@ public class AllocationController {
 	@Autowired
 	private ProjectRepository projectRepository;
 
-	@Autowired
-	private EmployeeSkillRepository employeeSkillRepository;
 
 	@PostMapping("get-n-d-request-list-for-allocation")
 	public List<NdRequestListForAllocationResponseDto> getNdRequestListForAllocation(
@@ -156,18 +153,8 @@ public class AllocationController {
 
 	@GetMapping("test")
 	public String test(@RequestParam String name) {
-		/*		final List<EmployeeSkill> empSkills = employeeSkillRepository.findByEmployeeEmployeeId(1265L);
+		
 
-		empSkills.stream().forEach(e -> System.out.println(e.getSecondarySkill().getName()));*/
-
-
-		/*final Employee emp = employeeRepository.findByEmpCodeAndIsActiveTrue("K0152");
-		System.out.println(emp.getFullName());*/
-		projectRepository.findAll();
-		/*final Optional<Project> bench = projectRepository.findById(1L);
-		System.out.println(bench.get().getName());*/
-
-		System.out.println("Is this cached");
 		final Project bench2 = projectRepository.findByName(name);
 		if (bench2 != null) {
 			return bench2.getName();

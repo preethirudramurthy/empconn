@@ -15,15 +15,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterables;
-import com.empconn.activedirectory.ActiveDirectoryDeltaUpdateService;
 import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.allocation.AllocationRequestDto;
 import com.empconn.persistence.entities.Allocation;
@@ -50,11 +45,12 @@ import com.empconn.successfactors.dto.ProjectChangeDto;
 import com.empconn.util.AllocationUtil;
 import com.empconn.utilities.DateUtils;
 import com.empconn.utilities.TimeUtils;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 
 @Service
 @Transactional(readOnly = true)
 public class AllocationService {
-	private static final Logger logger = LoggerFactory.getLogger(AllocationService.class);
 
 	@Autowired
 	private AllocationRepository allocationRepository;
@@ -101,8 +97,6 @@ public class AllocationService {
 	@Autowired
 	private SyncToTimesheetService syncToTimesheetService;
 
-	@Autowired
-	private ActiveDirectoryDeltaUpdateService activeDirectoryDeltaUpdateService;
 
 	@Autowired
 	private TimesheetAllocationRepository timesheetAllocationRepository;
@@ -110,25 +104,22 @@ public class AllocationService {
 	@Transactional
 	public void createAllocationForAll() {
 
-		/*final List<Employee> allEmployees = employeeRepository.findAll();
-		allocationRepository.deleteAll();
-		allEmployees.forEach(this::createAllocation);*/
 		List<Employee> allEmployees = employeeRepository.findAll();
 		allEmployees = allEmployees.stream().filter(e -> !e.getEmpCode().equals("1A003")).collect(Collectors.toList());
 
 		final AllocationStatus pureBenchStatus = allocationStatusRepository
 				.findByStatus(ApplicationConstants.ALLOCATION_STATUS_PB);
 
-		final Map<Boolean, Project> benchProjectMap = new HashMap<Boolean, Project>();
+		final Map<Boolean, Project> benchProjectMap = new HashMap<>();
 		benchProjectMap.put(Boolean.TRUE, projectService.getBenchProject(true));
 		benchProjectMap.put(Boolean.FALSE, projectService.getBenchProject(false));
 
-		final Map<Boolean, ProjectLocation> benchProjectLocationMap = new HashMap<Boolean, ProjectLocation>();
+		final Map<Boolean, ProjectLocation> benchProjectLocationMap = new HashMap<>();
 		benchProjectLocationMap.put(Boolean.TRUE, benchService.getGlobalBenchProjectLocation(benchProjectMap.get(true)));
 		benchProjectLocationMap.put(Boolean.FALSE, benchService.getGlobalBenchProjectLocation(benchProjectMap.get(false)));
 
 
-		final Map<Boolean, WorkGroup> workgroupMap = new HashMap<Boolean, WorkGroup>();
+		final Map<Boolean, WorkGroup> workgroupMap = new HashMap<>();
 		workgroupMap.put(Boolean.TRUE, workGroupRepository.findByName(ApplicationConstants.WORK_GROUP_DEV));
 		workgroupMap.put(Boolean.FALSE, workGroupRepository.findByName(ApplicationConstants.WORK_GROUP_SUPPORT_1));
 
@@ -138,7 +129,7 @@ public class AllocationService {
 			final long createdBy = 1L;
 			final boolean allocationIsPrimary = true;
 			Employee manager = null;
-			final Boolean isDelivery = employeeService.isDelivery(employee);
+			final boolean isDelivery = employeeService.isDelivery(employee);
 			final Project bench = benchProjectMap.get(isDelivery);
 			final ProjectLocation globalBenchProjectLocation = benchProjectLocationMap.get(isDelivery);
 			final WorkGroup workGroup = workgroupMap.get(isDelivery);
@@ -160,7 +151,7 @@ public class AllocationService {
 			final boolean allocationIsPrimary, final Employee reportingManager) {
 		final AllocationStatus pureBenchStatus = allocationStatusRepository
 				.findByStatus(ApplicationConstants.ALLOCATION_STATUS_PB);
-		final Boolean isDelivery = employeeService.isDelivery(e);
+		final boolean isDelivery = employeeService.isDelivery(e);
 		final Project bench = projectService.getBenchProject(isDelivery);
 		final ProjectLocation globalBenchProjectLocation = benchService.getGlobalBenchProjectLocation(bench);
 		final WorkGroup workGroup = workGroupRepository.findByName(
@@ -202,17 +193,18 @@ public class AllocationService {
 	}
 
 	public Allocation allocate(AllocationRequestDto request) {
-		final Allocation currentAllocation = allocationRepository.findById(Long.valueOf(request.getAllocationId()))
-				.get();
-		final Employee employee = employeeRepository.findById(request.getResourceId()).get();
+		Optional<Allocation> a = allocationRepository.findById(request.getAllocationId());
+		final Allocation currentAllocation = a.isPresent()? a.get():null;
+		Optional<Employee> e = employeeRepository.findById(request.getResourceId());
+		final Employee employee = e.isPresent()? e.get():null;
 		final AllocationStatus allocatedStatus = allocationStatusRepository.findByStatus("Allocated");
 		final Integer availablePercentage = allocationUtilityService.getMergedAllocatedPercentage(currentAllocation);
 		final boolean isPartial = (request.getPercentage().intValue() < availablePercentage.intValue());
 		final Integer remainingPercentage = (availablePercentage.intValue() - request.getPercentage().intValue());
 		final Optional<Project> project = projectRepository.findById(Long.valueOf(request.getProjectId()));
 		Iterables.removeIf(request.getExtraSalesforceIdList(), Predicates.isNull());
-		if (request.getExtraSalesforceIdList().size() > 0) {
-			final Set<SalesforceIdentifier> set = project.get().getSalesforceIdentifiers();
+		if (!request.getExtraSalesforceIdList().isEmpty() && project.isPresent()) {
+			final Set<SalesforceIdentifier> set =  project.get().getSalesforceIdentifiers();
 			final List<String> values = project.get().getSalesforceIdentifiers().stream()
 					.map(SalesforceIdentifier::getValue).collect(Collectors.toList());
 			request.getExtraSalesforceIdList().forEach(s -> {
@@ -224,61 +216,66 @@ public class AllocationService {
 		}
 		final Optional<ProjectLocation> projectLocation = projectLocationRespository.findById(Long.valueOf(request.getProjectLocationId()));
 		final WorkGroup workgroup = workGroupRepository.findByName(request.getWorkgroup());
-		final Employee reportingManagerId = employeeRepository.findById(Long.valueOf(request.getReportingManagerId())).get();
+		Optional<Employee> rep = employeeRepository.findById(Long.valueOf(request.getReportingManagerId()));
+		final Employee reportingManagerId = rep.isPresent()? rep.get():null;
 
-		final Optional<Allocation> existingAllocation = allocationRepository
-				.findByEmployeeEmployeeIdAndProjectProjectIdAndProjectLocationProjectLocationIdAndWorkGroupWorkGroupIdAndIsBillableAndReleaseDateAndIsActive(
-						employee.getEmployeeId(), Long.valueOf(request.getProjectId()),
-						Long.valueOf(request.getProjectLocationId()), workgroup.getWorkGroupId(), request.getBillable(),
-						Timestamp.valueOf(request.getReleaseDate()), true);
+		Allocation existingAllocation = null;
+		Allocation toAllocation = null;
+		if (employee != null) {
+			Optional<Allocation> existingAlloc = allocationRepository
+					.findByEmployeeEmployeeIdAndProjectProjectIdAndProjectLocationProjectLocationIdAndWorkGroupWorkGroupIdAndIsBillableAndReleaseDateAndIsActive(
+							employee.getEmployeeId(), Long.valueOf(request.getProjectId()),
+							Long.valueOf(request.getProjectLocationId()), workgroup.getWorkGroupId(), request.getBillable(),
+							Timestamp.valueOf(request.getReleaseDate()), true);
+			existingAllocation = existingAlloc.isPresent()?existingAlloc.get():null;
+			final boolean isNew = !existingAlloc.isPresent();
 
-		final boolean isNew = !existingAllocation.isPresent();
+			if (project.isPresent() && projectLocation.isPresent()) {
+				final Employee allocationManagerId = allocationUtilityService.getAllocationManagerId(project.get(),
+						projectLocation.get(), reportingManagerId, workgroup.getName());
+				toAllocation = (isNew)
+						? populateToAllocation(employee, project.get(), projectLocation.get(), workgroup,
+								reportingManagerId, allocationManagerId, request.getBillable(), request.getReleaseDate(),
+								allocatedStatus)
+						: existingAllocation;
 
-		final Employee allocationManagerId = allocationUtilityService.getAllocationManagerId(project.get(), projectLocation.get(),
-				reportingManagerId, workgroup.getName());
+				// Logic for partial / complete is different
+				if (!isPartial) {
+					completeAllocation(request, currentAllocation, toAllocation);
+				} else {
+					partialAllocation(request, currentAllocation, toAllocation);
 
-		final Allocation toAllocation = (isNew)? populateToAllocation(employee, project.get(), projectLocation.get(), workgroup, reportingManagerId,
-				allocationManagerId, request.getBillable(), request.getReleaseDate(), allocatedStatus): existingAllocation.get();
+				}
 
-		//Logic for partial / complete is different
-		if (!isPartial) {
-			completeAllocation(request, currentAllocation, toAllocation);
-		} else {
-			partialAllocation(request, currentAllocation, toAllocation);
+				final Allocation primaryAllocation = allocationUtilityService.getPrimaryManager(currentAllocation, employee.getEmployeeId(),
+						request.getIsPrimaryManager(), isPartial, toAllocation, isNew);
 
-		}
-		final Allocation primaryAllocation = allocationUtilityService.getPrimaryManager(currentAllocation, employee.getEmployeeId(),
-				request.getIsPrimaryManager(), isPartial, toAllocation, isNew, request.getPercentage());
+				if (!isPartial && remainingPercentage.intValue() == 0) {
+						currentAllocation.setIsActive(false);
+						currentAllocation.setReleaseDate(TimeUtils.getToday());
+				}
 
-		if (!isPartial) {
-			if (remainingPercentage.intValue() == 0) {
-				currentAllocation.setIsActive(false);
-				currentAllocation.setReleaseDate(TimeUtils.getToday());
+				employee.setPrimaryAllocation(primaryAllocation);
+
+				//separate for current and to allocation as current allocation requires clearing of allocation details
+				allocationHoursService.updateCurrLocationBillableHrs(currentAllocation);
+				allocationHoursService.updateToAllocationBillableHrs(toAllocation);
+
+				allocationRepository.save(toAllocation);
+				allocationRepository.save(currentAllocation);
+
+				//Integration call with SF starts here
+				if(AllocationUtil.allocationIsActiveAndPrimary(toAllocation)) {
+					sfCall(request, employee, toAllocation);
+				}
+
+				syncToTimesheetService.syncAllocationWithHoursForAllocation(currentAllocation, toAllocation);
+
 			}
+
+			
+			
 		}
-
-		employee.setPrimaryAllocation(primaryAllocation);
-
-		//separate for current and to allocation as current allocation requires clearing of allocation details
-		allocationHoursService.updateCurrLocationBillableHrs(currentAllocation);
-		allocationHoursService.updateToAllocationBillableHrs(toAllocation);
-
-		allocationRepository.save(toAllocation);
-		allocationRepository.save(currentAllocation);
-
-		//Integration call with SF starts here
-		if(AllocationUtil.allocationIsActiveAndPrimary(toAllocation)) {
-			sfCall(request, employee, toAllocation);
-		}
-
-		syncToTimesheetService.syncAllocationWithHoursForAllocation(currentAllocation, toAllocation);
-
-		/*
-		 * activeDirectoryDeltaUpdateService.update(
-		 * CommonUtil.loginIdToMailId(toAllocation.getEmployee().getLoginId()),
-		 * CommonUtil.loginIdToMailId(toAllocation.getEmployee().getPrimaryAllocation().
-		 * getReportingManagerId().getLoginId()), toAllocation.getProject().getName());
-		 */
 
 		return toAllocation;
 	}
@@ -364,7 +361,7 @@ public class AllocationService {
 	public void createTimesheetAllocationForAll() {
 		final List<Allocation> activeAllocations = allocationRepository.findByIsActive(true);
 
-		final List<TimesheetAllocation> timesheetAllocations = new ArrayList<TimesheetAllocation>();
+		final List<TimesheetAllocation> timesheetAllocations = new ArrayList<>();
 
 		activeAllocations.forEach(allocation -> {
 			final TimesheetAllocation timesheetAllocation = new TimesheetAllocation();

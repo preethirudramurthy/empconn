@@ -1,29 +1,18 @@
 package com.empconn.mapper;
 
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 
-import com.google.common.base.Strings;
 import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.AllocationReportResponseDto;
 import com.empconn.persistence.entities.Allocation;
-import com.empconn.persistence.entities.Employee;
-import com.empconn.persistence.entities.EmployeeSkill;
-import com.empconn.repositories.EmployeeSkillRepository;
+import com.google.common.base.Strings;
 
 @Mapper(componentModel = "spring", uses = {CommonQualifiedMapper.class})
 public abstract class AllocationToAllocationReportResponseDtoMapper {
-
-	@Autowired
-	private EmployeeSkillRepository employeeSkillRepository;
 
 	@Mapping(source = "allocationId", target = "allocationDetailId")
 	@Mapping(source = "project.account.name", target = "accountName")
@@ -43,31 +32,6 @@ public abstract class AllocationToAllocationReportResponseDtoMapper {
 	public abstract AllocationReportResponseDto convert(Allocation allocation);
 
 	public abstract List<AllocationReportResponseDto> convert(List<Allocation> allocations);
-
-	/*@Named("getStartDate")
-	public static LocalDate getStartDate(List<AllocationDetail> allocationDetails) {
-
-		final Comparator<AllocationDetail> allocationDetailStartDateComparator = Comparator
-				.comparing(AllocationDetail::getStartDate, Date::compareTo);
-
-		final AllocationDetail allocationDetail = sortAndGetAllocationDetail(allocationDetails,
-				allocationDetailStartDateComparator);
-
-		if (null == allocationDetail)
-			return null;
-		return dateToLocalDate(allocationDetail.getStartDate());
-
-	}
-
-	private static AllocationDetail sortAndGetAllocationDetail(final List<AllocationDetail> allocationDetails,
-			final Comparator<AllocationDetail> comparator) {
-		allocationDetails.sort(comparator);
-
-		if (allocationDetails.isEmpty())
-			return null;
-		else
-			return allocationDetails.get(allocationDetails.size() - 1);
-	}*/
 
 	@Named("getGdmName")
 	public static String getGdmName(Allocation allocation) {

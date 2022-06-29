@@ -63,7 +63,8 @@ public abstract class ProjectChecklistDtoMapper {
 	public Checklist checklistIdToChecklist(String checklistId) {
 		if (checklistId != null) {
 			final Optional<Checklist> checklist = checklistRespository.findById(Integer.parseInt(checklistId));
-			return checklist.get();
+			if (checklist.isPresent()) 
+				return checklist.get();
 		}
 		return null;
 

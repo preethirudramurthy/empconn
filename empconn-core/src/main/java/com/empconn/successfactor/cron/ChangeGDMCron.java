@@ -33,9 +33,9 @@ public class ChangeGDMCron {
 		logger.info("{} starts execution successfully", METHOD_NAME);
 		try {
 			final Set<ManagerChange> pendingRequests = managerChangeRepository.findPendingRequests(true);
-			logger.debug("Total number of Pending/Failed GDM Change requests : "+pendingRequests.size());
+			logger.debug("Total number of Pending/Failed GDM Change requests : {}",pendingRequests.size());
 
-			if(pendingRequests != null && !pendingRequests.isEmpty()) {
+			if(!pendingRequests.isEmpty()) {
 				final Set<GdmChangeDto> gdmChangeDtos = gdmChangeDtoToManagerChangeMapper.mapToDtos(pendingRequests);
 
 				final Boolean isProcessed = successFactorGdmChangeOutboundService.syncGdmChanges(gdmChangeDtos);

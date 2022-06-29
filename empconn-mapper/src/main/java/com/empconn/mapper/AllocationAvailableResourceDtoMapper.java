@@ -21,14 +21,10 @@ import com.empconn.persistence.entities.AllocationDetail;
 import com.empconn.persistence.entities.Earmark;
 import com.empconn.persistence.entities.Employee;
 import com.empconn.persistence.entities.EmployeeSkill;
-import com.empconn.repositories.EarmarkRepository;
 import com.empconn.repositories.EmployeeSkillRepository;
 
 @Mapper(componentModel = "spring", uses = { CommonQualifiedMapper.class })
 public abstract class AllocationAvailableResourceDtoMapper {
-
-	@Autowired
-	private EarmarkRepository earmarkRepository;
 
 	@Autowired
 	private EmployeeSkillRepository employeeSkillRepository;
@@ -84,9 +80,8 @@ public abstract class AllocationAvailableResourceDtoMapper {
 
 		if (CollectionUtils.isEmpty(employeeSkills))
 			return new ArrayList<>();
-		final List<String> primarySkills = employeeSkills.stream().filter(EmployeeSkill::getIsActive)
+		return employeeSkills.stream().filter(EmployeeSkill::getIsActive)
 				.map(s -> s.getSecondarySkill().getPrimarySkill().getName()).collect(Collectors.toList());
-		return primarySkills;
 	}
 
 	@Named("employeeToSecondarySkillSetList")
@@ -106,7 +101,7 @@ public abstract class AllocationAvailableResourceDtoMapper {
 							ApplicationConstants.DEFAULT_SECONDARY_SKILL))
 					.map(getNameFromSkill).collect(Collectors.toList());
 		}
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	@Named("allocationToEarmarkProjectNameList")
