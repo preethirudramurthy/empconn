@@ -28,7 +28,7 @@ public abstract class AccountMapAccountDtoMapper {
 	@Mapping(target = "practice", constant = "Vertical")
 	@Mapping(source = "startDate", target = "projectSince")
 	@Mapping(source = "status", target = "isClientActive", qualifiedByName = "statusToIsClientActive")
-	@Mapping(source = "mapAccountId", target = "_id")
+	@Mapping(source = "mapAccountId", target = "id")
 	public abstract MapAccountDto accountToMapAccountDto(Account source);
 
 	@Named("statusToIsClientActive")

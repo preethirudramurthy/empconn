@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.google.common.base.Strings;
 import com.empconn.constants.ApplicationConstants;
 import com.empconn.constants.ExceptionConstants;
 import com.empconn.dto.ChecklistInactivateDto;
@@ -57,6 +56,7 @@ import com.empconn.repositories.ProjectSubCategoryRepository;
 import com.empconn.repositories.SecondarySkillRepository;
 import com.empconn.repositories.VerticalRepository;
 import com.empconn.security.SecurityUtil;
+import com.google.common.base.Strings;
 
 @Service
 public class BootstrapService {
@@ -154,7 +154,7 @@ public class BootstrapService {
 				final List<String> alreadyPresentSkills = new ArrayList<>();
 				if (!CollectionUtils.isEmpty(employeeSkillsList)) {
 					employeeSkillsList.stream().forEach(es -> 
-						alreadyPresentSkills.add(es.getSecondarySkill().getName().toLowerCase());
+						alreadyPresentSkills.add(es.getSecondarySkill().getName().toLowerCase())
 					);
 				}
 				if (!CollectionUtils.isEmpty(skills.getSecondarySkills())) {

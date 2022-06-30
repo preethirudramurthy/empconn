@@ -144,8 +144,7 @@ public class DeallocationService {
 							: existingBenchAllocation.get();
 
 					if (!request.getPartial()) {
-						completeDeallocate(request, loggedInEmployee, currentAllocation, employee, isNew, toAllocation,
-								benchProject);
+						completeDeallocate(request, loggedInEmployee, currentAllocation, employee, isNew, toAllocation);
 					} else {
 						partialDeallocate(request, loggedInEmployee, currentAllocation, toAllocation);
 					}

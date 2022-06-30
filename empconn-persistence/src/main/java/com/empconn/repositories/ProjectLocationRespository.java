@@ -13,7 +13,7 @@ import com.empconn.vo.UnitValue;
 
 public interface ProjectLocationRespository extends JpaRepository<ProjectLocation, Long> {
 
-	@Query("SELECT new com.empconn.cranium.vo.UnitValue(pl.projectLocationId, pl.location.name) FROM ProjectLocation pl WHERE pl.project.projectId = ?1 AND pl.isActive = 'TRUE'")
+	@Query("SELECT new com.empconn.vo.UnitValue(pl.projectLocationId, pl.location.name) FROM ProjectLocation pl WHERE pl.project.projectId = ?1 AND pl.isActive = 'TRUE'")
 	public Set<UnitValue> findLocationsForProjectId(Long projectId);
 
 	@Query("SELECT pl.projectLocationId FROM ProjectLocation pl WHERE pl.project.projectId = ?1 AND pl.isActive = 'TRUE'")

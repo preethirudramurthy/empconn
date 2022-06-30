@@ -19,7 +19,7 @@ public abstract class ProjectMapProjectDtoMapper {
 	@Mapping(source = "account.name", target = "account")
 	@Mapping(source = "account.mapAccountId", target = "clientId")
 	@Mapping(source = "description", target = "projectDescription")
-	@Mapping(source = "mapProjectId", target = "_id")
+	@Mapping(source = "mapProjectId", target = "id")
 	public abstract MapProjectDto projectToMapProjectDto(Project source);
 
 	@Named("currentStatusToIsProjectActive")

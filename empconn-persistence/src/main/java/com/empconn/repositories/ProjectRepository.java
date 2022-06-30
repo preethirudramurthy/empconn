@@ -68,7 +68,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 	@Query("SELECT DISTINCT p FROM Project p WHERE (p.employee1.employeeId = :empId OR (p.employee1 = null AND p.employee2.employeeId = :empId)) AND p.isActive = 'true' AND p.currentStatus IN('INITIATED', 'RESUBMITTED') Order by p.createdOn desc")
 	public List<Project> getPinsForReviewList(Long empId);
 
-	@Query("SELECT p FROM Project p WHERE p.account.accountId IN (:Ids) AND p.isActive = :isActive")
+	@Query("SELECT p FROM Project p WHERE p.account.accountId IN (:ids) AND p.isActive = :isActive")
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	public Set<Project> findByAccount(List<Integer> ids, Boolean isActive);
 
@@ -123,7 +123,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long>, JpaSpec
 	public Set<Project> findProjectsInAccountForNameValidationOtherThanProject(String projectName, Long projectId,
 			Integer accountId);
 
-	@Query("SELECT p FROM Project p WHERE p.employee1.employeeId IN (:Ids) OR  p.employee2.employeeId IN (:Ids)")
+	@Query("SELECT p FROM Project p WHERE p.employee1.employeeId IN (:ids) OR  p.employee2.employeeId IN (:ids)")
 	public Set<Project> findGdmForProject(List<Long> ids);
 
 	@Query("SELECT p FROM Project p WHERE p.currentStatus IN('PMO_APPROVED', 'PROJECT_ON_HOLD') AND p.isActive = 'TRUE'")
