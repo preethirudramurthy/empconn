@@ -20,34 +20,32 @@ import com.empconn.response.MockResponse;
 @SpringBootTest
 class ThymeLeafTemplateEngineTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(ThymeLeafTemplateEngineTest.class);
-
-	@Autowired
-	private SpringTemplateEngine thymeleafTemplateEngine;
-
-	ProjectInformationDto projectInformation = null;
-
-	@BeforeEach
-	void setup() {
-		projectInformation = MockResponse.getMockProjectInformation();
-	}
-
-	@Test
-	void shouldCreateTemplateBasedOnCollectionFromModel() throws FileNotFoundException {
-		final Map<String, Object> templateModel = new HashMap<>();
-		templateModel.put("contentTemplate", "collection-test");
-		templateModel.put("projectInformation", projectInformation);
-
-		final Context thymeleafContext = new Context();
-		thymeleafContext.setVariables(templateModel);
-
-		final String htmlBody = thymeleafTemplateEngine.process("text-attachment-layout.html", thymeleafContext);
-
-		try (PrintWriter out = new PrintWriter("checklist.html")) {
-			out.print(htmlBody);
-			logger.info("File created successfully");
-		}
-
-	}
-
+	/*
+	 * private static final Logger logger =
+	 * LoggerFactory.getLogger(ThymeLeafTemplateEngineTest.class);
+	 * 
+	 * @Autowired private SpringTemplateEngine thymeleafTemplateEngine;
+	 * 
+	 * ProjectInformationDto projectInformation = null;
+	 * 
+	 * @BeforeEach void setup() { projectInformation =
+	 * MockResponse.getMockProjectInformation(); }
+	 * 
+	 * @Test void shouldCreateTemplateBasedOnCollectionFromModel() throws
+	 * FileNotFoundException { final Map<String, Object> templateModel = new
+	 * HashMap<>(); templateModel.put("contentTemplate", "collection-test");
+	 * templateModel.put("projectInformation", projectInformation);
+	 * 
+	 * final Context thymeleafContext = new Context();
+	 * thymeleafContext.setVariables(templateModel);
+	 * 
+	 * final String htmlBody =
+	 * thymeleafTemplateEngine.process("text-attachment-layout.html",
+	 * thymeleafContext);
+	 * 
+	 * try (PrintWriter out = new PrintWriter("checklist.html")) {
+	 * out.print(htmlBody); logger.info("File created successfully"); }
+	 * 
+	 * }
+	 */
 }

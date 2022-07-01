@@ -24,7 +24,7 @@ class StringTemplateResolverTest {
 		model.put("roleName", "Manager");
 		model.put("projectName", "EmpConn");
 
-		final String result = stringTemplateEngine.render("New #{roleName} has been assigned for #{projectName}",
+		final String result = stringTemplateEngine.render("New ${roleName} has been assigned for ${projectName}",
 				model);
 		final String expectedResult = "New Manager has been assigned for EmpConn";
 		assertTrue(StringUtils.equalsIgnoreCase(expectedResult, result));
