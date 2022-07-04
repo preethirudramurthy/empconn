@@ -1,6 +1,7 @@
 package com.empconn.mapper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.mapstruct.Mapper;
@@ -42,8 +43,9 @@ public abstract class ProjectLocationToLocationManagersValidateDtoMapper {
 
 	@Named("locationUnitValueToLocation")
 	Location locationUnitValueToLocation(UnitValue location) {
-		if (location != null && location.getId() != null && locationRepository.findById(Integer.valueOf(location.getId())).isPresent()) {
-			return locationRepository.findById(Integer.valueOf(location.getId())).get();
+		Optional<Location> locOpt = locationRepository.findById(Integer.valueOf(location.getId()));
+		if (location.getId() != null && locOpt.isPresent()) {
+			return locOpt.get();
 		}
 		return null;
 
@@ -51,8 +53,9 @@ public abstract class ProjectLocationToLocationManagersValidateDtoMapper {
 
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(ManagerInfoDto manager) {
-		if (manager != null && manager.getId() != null && employeeRepository.findById(Long.valueOf(manager.getId())).isPresent()) {
-			return employeeRepository.findById(Long.valueOf(manager.getId())).get();
+		Optional<Employee> empOpt = employeeRepository.findById(Long.valueOf(manager.getId()));
+		if (manager.getId() != null && empOpt.isPresent()) {
+			return empOpt.get();
 		}
 		return null;
 	}

@@ -139,7 +139,7 @@ public class AllocateSwitchOverService {
 				allocationSummary.forEach(a -> {
 					a.setReportingMangerName(a.getReportingManager().getFullName());
 					a.setIsPrimary(employeeAllocationMap.get(a.getProjectId()).stream()
-							.filter(i -> i.getAllocationId().equals(primaryAllocationId)).findAny().isPresent());
+							.anyMatch(i -> i.getAllocationId().equals(primaryAllocationId)));
 				});	
 			}
 		}

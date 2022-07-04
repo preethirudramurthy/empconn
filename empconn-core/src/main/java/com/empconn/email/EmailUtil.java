@@ -67,7 +67,7 @@ public class EmailUtil {
 	}
 
 	private String[] getMergedMailList(String[] mailFromDto, final Object mailFromModel, String[] mailIdsFromDB,
-			Boolean shouldAppendMailIds) {
+			boolean shouldAppendMailIds) {
 
 		try {
 			// if append flag is set to false, mail id from the DB will replace everything

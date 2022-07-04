@@ -2,6 +2,8 @@ package com.empconn.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -152,7 +154,7 @@ public class PinService {
 	ResourceService resourceService;
 
 	public void approvePin(PinStatusChangeDto approveDto) {
-		final Project project = projectRepository.findByProjectId(Long.valueOf(approveDto.getProjectId()));
+		final Project project = projectRepository.findByProjectId(approveDto.getProjectId());
 
 		if (!CollectionUtils.isEmpty(approveDto.getManagerAssignResources()))
 			resourceService.assignUserRole(approveDto.getManagerAssignResources(), Roles.MANAGER.name());
@@ -204,7 +206,7 @@ public class PinService {
 				else
 					return null;
 
-			}).filter(r -> r != null).flatMap(Collection::stream).collect(Collectors.toSet());
+			}).filter(Objects::nonNull).flatMap(Collection::stream).collect(Collectors.toSet());
 			if (CollectionUtils.isEmpty(savedSecondaryIds))
 				projectResourcesSecondarySkillRepository.softDeleteAllSecondariesForProjectResourceIds(Stream
 						.of(savedResourceIds, deletedResourceIds).flatMap(Set::stream).collect(Collectors.toSet()));
@@ -236,7 +238,7 @@ public class PinService {
 	}
 
 	public void submitPin(PinStatusChangeDto submitDto) {
-		final Project project = projectRepository.findByProjectId(Long.valueOf(submitDto.getProjectId()));
+		final Project project = projectRepository.findByProjectId(submitDto.getProjectId());
 		if (project.getCurrentStatus().equalsIgnoreCase(ProjectStatus.OPEN.name())) {
 			doPinSubmit(project);
 		} else if (project.getCurrentStatus().equalsIgnoreCase(ProjectStatus.SENT_BACK.name())) {
@@ -257,13 +259,15 @@ public class PinService {
 	public boolean isPinSubmitByProjectGdm(Project project) {
 		final Employee loginUser = jwtEmployeeUtil.getLoggedInEmployee();
 
+		boolean ret = false;
 		if (project.getEmployee1() != null && project.getEmployee1().getEmployeeId().equals(loginUser.getEmployeeId()))
-			return true;
+			ret = true;
 		else if (project.getEmployee1() == null && project.getEmployee2() != null
 				&& project.getEmployee2().getEmployeeId().equals(loginUser.getEmployeeId()))
-			return true;
+			ret = true;
 		else
-			return false;
+			ret = false;
+		return ret;
 	}
 
 	public void doPinReSubmit(Project project) {
@@ -272,12 +276,13 @@ public class PinService {
 	}
 
 	public PinDetailsDto getPinDetails(String projectId) {
-		final Project project = projectRepository.findById(Long.valueOf(projectId)).get();
+		Optional<Project> projectOpt = projectRepository.findById(Long.valueOf(projectId));
+		final Project project = projectOpt.isPresent()? projectOpt.get():null;
 		return pinUtilValueMapper.projectToPinDetailsDto(project);
 	}
 
 	public void rejectPin(PinStatusChangeCommentDto rejectDto) {
-		projectRepository.changeCurrentStatus(Long.valueOf(rejectDto.getProjectId()),
+		projectRepository.changeCurrentStatus(rejectDto.getProjectId(),
 				ProjectStatus.PMO_REJECTED.name());
 		final ProjectComment projectComment = projectCommentDtoMapper.commentDtoToProjectComment(rejectDto,
 				ProjectStatus.PMO_REJECTED.name());
@@ -287,7 +292,7 @@ public class PinService {
 	}
 
 	public void rejectPinOnReview(PinStatusChangeCommentDto rejectDto) {
-		projectRepository.changeCurrentStatus(Long.valueOf(rejectDto.getProjectId()),
+		projectRepository.changeCurrentStatus(rejectDto.getProjectId(),
 				ProjectStatus.GDM_REJECTED.name());
 		final ProjectComment projectComment = projectCommentDtoMapper.commentDtoToProjectComment(rejectDto,
 				ProjectStatus.GDM_REJECTED.name());
@@ -340,28 +345,32 @@ public class PinService {
 	}
 
 	private void validateExistSavePin(SavePinDto dto) {
-		final Account account = accountRepository.findById(Integer.valueOf(dto.getAccountId())).get();
+		Optional<Account> acOpt = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
+		final Account account = acOpt.isPresent() ? acOpt.get() : null;
+		if (account != null) {
 
-		if (!projectService.isValidProjectInAccountForProject(dto.getName(), Long.valueOf(dto.getProjectId()),
-				account.getAccountId()))
-			throw new EmpConnException("ProjectNameNotUniqueForAccount");
+			if (!projectService.isValidProjectInAccountForProject(dto.getName(), Long.valueOf(dto.getProjectId()),
+					account.getAccountId()))
+				throw new EmpConnException("ProjectNameNotUniqueForAccount");
 
-		if (account.getCategory().equalsIgnoreCase(AccountCategory.CLIENT.name())) {
-			final IsValidSalesforceDto isValidSalesforceDto = new IsValidSalesforceDto(dto.getProjectId(),
-					dto.getSalesforceIdList());
-			if (!isValidSalesForceIdsForTheProject(isValidSalesforceDto).getIsValid())
-				throw new EmpConnException("SalesforceIdNotExistsInOtherProject");
+			if (account.getCategory().equalsIgnoreCase(AccountCategory.CLIENT.name())) {
+				final IsValidSalesforceDto isValidSalesforceDto = new IsValidSalesforceDto(dto.getProjectId(),
+						dto.getSalesforceIdList());
+				if (!isValidSalesForceIdsForTheProject(isValidSalesforceDto).getIsValid())
+					throw new EmpConnException("SalesforceIdNotExistsInOtherProject");
+			}
 		}
 	}
 
 	private void validateNewSavePin(SavePinDto dto) {
-		final Account account = accountRepository.findById(Integer.valueOf(dto.getAccountId())).get();
+		Optional<Account> acOpt = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
+		final Account account = acOpt.isPresent() ? acOpt.get() : null;
 
 		if (!projectService.isValidNewProjectInAccount(dto.getName(), dto.getAccountId()).getIsValid())
 			throw new EmpConnException("ProjectNameNotUniqueForAccount");
 
-		if (account.getCategory().equalsIgnoreCase(AccountCategory.CLIENT.name())) {
-			if (!isValidSalesForceIds(dto.getSalesforceIdList()))
+		if (account!= null && account.getCategory().equalsIgnoreCase(AccountCategory.CLIENT.name()) && 
+				(!isValidSalesForceIds(dto.getSalesforceIdList()))){
 				throw new EmpConnException("SalesforceIdNotExistsInOtherProject");
 		}
 	}
@@ -410,7 +419,7 @@ public class PinService {
 
 	public void submitPinForApproval(PinStatusChangeDto submitApproveDto) {
 		final Project project = projectRepository.findByProjectId(submitApproveDto.getProjectId());
-		projectRepository.changeCurrentStatus(Long.valueOf(submitApproveDto.getProjectId()),
+		projectRepository.changeCurrentStatus(submitApproveDto.getProjectId(),
 				ProjectStatus.GDM_REVIEWED.name());
 		pinProjectMailService.sendEmailForPinStatusChange(project, ProjectStatus.GDM_REVIEWED.name());
 	}
@@ -477,7 +486,7 @@ public class PinService {
 		if (!(project.getCurrentStatus().equals(ProjectStatus.INITIATED.name())
 				|| project.getCurrentStatus().equals(ProjectStatus.RESUBMITTED.name())))
 			throw new PreConditionFailedException("PinStatusNotInitiatedOrResubmitted");
-		projectRepository.changeCurrentStatus(Long.valueOf(sendbackDto.getProjectId()), ProjectStatus.SENT_BACK.name());
+		projectRepository.changeCurrentStatus(sendbackDto.getProjectId(), ProjectStatus.SENT_BACK.name());
 		final ProjectComment projectComment = projectCommentDtoMapper.commentDtoToProjectComment(sendbackDto,
 				ProjectStatus.SENT_BACK.name());
 		projectCommentRepository.save(projectComment);

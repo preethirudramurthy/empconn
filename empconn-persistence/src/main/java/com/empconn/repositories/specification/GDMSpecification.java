@@ -34,10 +34,9 @@ public class GDMSpecification {
 			final Join<Employee,Project> devGDMJoin = root.join("projects1", JoinType.LEFT);
 			final Join<Employee,Project> qaGDMJoin = root.join("projects2", JoinType.LEFT);
 
-			if((request.getProjectNameList() == null || request.getProjectNameList().isEmpty()) &&
+			if(((request.getProjectNameList() == null || request.getProjectNameList().isEmpty()) &&
 					(request.getAccountNameList() == null || request.getAccountNameList().isEmpty()) &&
-					(request.getVerticalIdList() == null || request.getVerticalIdList().isEmpty())) {
-				if (request.getAllProjects() != null) {
+					(request.getVerticalIdList() == null || request.getVerticalIdList().isEmpty())) && (request.getAllProjects() != null)) {
 					final List<Predicate> gdmForProjectPredicate = new ArrayList<>();
 					gdmForProjectPredicate.add(devGDMJoin.get(PROJECT_ID).in(
 							request.getAllProjects().stream().map(Project::getProjectId).collect(Collectors.toList())));
@@ -45,7 +44,6 @@ public class GDMSpecification {
 							request.getAllProjects().stream().map(Project::getProjectId).collect(Collectors.toList())));
 
 					finalPredicate.add(cb.or(gdmForProjectPredicate.toArray(new Predicate[gdmForProjectPredicate.size()])));
-				}
 
 			}
 

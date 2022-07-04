@@ -77,9 +77,9 @@ public abstract class ProjectResourceDtoMapper {
 	public Set<ProjectResource> resourceItemListToProjectResources(List<ResourceItemDto> resourceItemList) {
 		final Set<ProjectResource> set = new HashSet<>();
 		for (final ResourceItemDto dto : resourceItemList) {
-			if (dto.getRrId() != null && projectResourceRepository.findById(Long.valueOf(dto.getRrId())).isPresent()) {
-				final ProjectResource projectResource = projectResourceRepository.findById(Long.valueOf(dto.getRrId()))
-						.get();
+			Optional<ProjectResource> prOpt = projectResourceRepository.findById(Long.valueOf(dto.getRrId()));
+			if (dto.getRrId() != null && prOpt.isPresent()) {
+				final ProjectResource projectResource = prOpt.get();
 				set.add(resourceItemDtoToProjectResource(dto, projectResource));
 			} else
 				set.add(resourceItemDtoToProjectResource(dto));

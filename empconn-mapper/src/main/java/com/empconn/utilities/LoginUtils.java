@@ -9,22 +9,11 @@ import com.empconn.persistence.entities.Role;
 
 public class LoginUtils {
 
-	@SuppressWarnings("unused")
-	private static Employee loginUser = null;
+	
 
 	protected static final Set<Employee> dummyUsers = new HashSet<>();
-
-	public static void assignMockLogin(String loginId) {
-		if (dummyUsers != null) {
-			final Employee employee = dummyUsers.stream().filter(emp -> emp.getLoginId().equals(loginId)).findFirst()
-					.get();
-			if (employee != null)
-				loginUser = employee;
-			else
-				loginUser = new Employee();
-		}
-	}
-
+	
+	
 	public static void createDummyUsers() {
 
 		final Set<Employee> mockUsers = new HashSet<>();

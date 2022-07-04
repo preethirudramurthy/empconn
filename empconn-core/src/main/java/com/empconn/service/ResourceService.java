@@ -83,11 +83,10 @@ public class ResourceService {
 
 	public List<ResourceViewResponseDto> getResourceList(ResourceViewRequestDto resourceViewReqDto) {
 
-		final Set<String> myProjects = getMyProjects(resourceViewReqDto);
-		if (myProjects != null && myProjects.size() > 0)
+		final Set<String> myProjects = getMyProjects();
+		if (!myProjects.isEmpty())
 			resourceViewReqDto.getProhectIdsForManager().addAll(myProjects);
-		if (resourceViewReqDto.getGdmIdListId() != null && !resourceViewReqDto.getGdmIdListId().isEmpty()
-				&& resourceViewReqDto.getGdmIdListId().size() > 0) {
+		if (resourceViewReqDto.getGdmIdListId() != null && !resourceViewReqDto.getGdmIdListId().isEmpty()) {
 
 			final Set<Project> projectGdms = projectRespository.findGdmForProject(
 					resourceViewReqDto.getGdmIdListId().stream().map(Long::valueOf).collect(Collectors.toList())
@@ -101,14 +100,14 @@ public class ResourceService {
 				allocationRepository.findAll(new ResourceViewSpecification(resourceViewReqDto)));
 	}
 
-	private Set<String> getMyProjects(ResourceViewRequestDto filter) {
+	private Set<String> getMyProjects() {
 		final Employee loggedInUser = securityUtil.getLoggedInEmployee();
 		final Boolean amIManager = RolesUtil.isAManager(loggedInUser);
 
-		final Boolean amIGDM = RolesUtil.isGDM(loggedInUser);
+		final boolean amIGDM = RolesUtil.isGDM(loggedInUser);
 
 		final Boolean amIGDMManager = RolesUtil.isGDMAndManager(loggedInUser);
-		final Set<String> projectIdList = new HashSet<String>();
+		final Set<String> projectIdList = new HashSet<>();
 		if (amIManager || amIGDMManager) {
 
 			final List<ProjectLocation> myProjectLocations = projectLocationRespository.findAll().stream()
@@ -120,10 +119,8 @@ public class ResourceService {
 		}
 		if (amIGDM)
 			projectIdList.addAll(projectRespository.findAll().stream()
-					.filter(a -> (a.getEmployee1() == null ? false
-							: a.getEmployee1().getEmployeeId().equals(loggedInUser.getEmployeeId()))
-							|| (a.getEmployee2() == null ? false
-									: a.getEmployee2().getEmployeeId().equals(loggedInUser.getEmployeeId())))
+					.filter(a -> (a.getEmployee1() == null && a.getEmployee1().getEmployeeId().equals(loggedInUser.getEmployeeId()))
+							|| (a.getEmployee2() == null && a.getEmployee2().getEmployeeId().equals(loggedInUser.getEmployeeId())))
 					.map(s -> s.getProjectId().toString()).collect(Collectors.toSet()));
 
 		return projectIdList;
@@ -150,8 +147,10 @@ public class ResourceService {
 						earmarkService.unearmarkBySystem(earmark, ApplicationConstants.UNEARMARK_ON_LONG_LEAVE_COMMENT);
 					}
 					final Optional<Allocation> a = allocationRepository.findById(allocation.getAllocationId());
+					if (a.isPresent()) {
 					a.get().setAllocationStatus(longLeave);
 					allocationRepository.save(a.get());
+					}
 				} else {
 					allocation.setAllocationStatus(longLeave);
 					allocationRepository.save(allocation);
@@ -182,8 +181,10 @@ public class ResourceService {
 								ApplicationConstants.UNEARMARK_ON_SABATICAL_LEAVE_COMMENT);
 					}
 					final Optional<Allocation> a = allocationRepository.findById(allocation.getAllocationId());
+					if (a.isPresent()) {
 					a.get().setAllocationStatus(sbLeave);
 					allocationRepository.save(a.get());
+					}
 				} else {
 					allocation.setAllocationStatus(sbLeave);
 					allocationRepository.save(allocation);
@@ -203,7 +204,7 @@ public class ResourceService {
 	}
 
 	public List<UserInfoDto> getAllUsers() {
-		final List<Order> orders = new ArrayList<Order>();
+		final List<Order> orders = new ArrayList<>();
 		final Order statusOrder = new Order(Sort.Direction.DESC, "isActive");
 		final Order fullNameOrder = new Order(Sort.Direction.ASC, "fullName");
 		orders.add(statusOrder);
@@ -213,12 +214,14 @@ public class ResourceService {
 	}
 
 	public void updateUserRoles(UpdateUserRoleDto dto) {
-		final Employee employee = employeeRepository.findById(Long.valueOf(dto.getResourceId())).get();
+		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(dto.getResourceId()));
+		if (emOpt.isPresent()) {
+		final Employee employee = emOpt.get();
 		final List<String> currentRoles = employee.getEmployeeRoles().stream().filter(EmployeeRole::getIsActive)
 				.map(e -> e.getRole().getName()).collect(Collectors.toList());
 
 		final List<String> updateRoles = dto.getRoleList().stream()
-				.filter(r -> !currentRoles.stream().filter(c -> c.equals(r)).findAny().isPresent())
+				.filter(r -> !currentRoles.stream().anyMatch(c -> c.equals(r)))
 				.collect(Collectors.toList());
 
 		for (final EmployeeRole empRole : employee.getEmployeeRoles()) {
@@ -233,6 +236,7 @@ public class ResourceService {
 			employee.addEmployeeRole(roleEmployeeRoleMapper.roleToEmployeeRole(role));
 
 		employeeRepository.save(employee);
+		}
 
 	}
 
@@ -250,7 +254,7 @@ public class ResourceService {
 				invalidRoleUsers.add(new UnitValue(emp.getEmployeeId(), emp.getFullName()));
 		}
 		response.setResources(invalidRoleUsers);
-		response.setIsValid(!(invalidRoleUsers.size() > 0));
+		response.setIsValid(invalidRoleUsers.isEmpty());
 		return response;
 	}
 

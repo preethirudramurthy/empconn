@@ -1,8 +1,11 @@
 package com.empconn.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ResourceDto {
+public class ResourceDto implements Serializable {
+	
+	private static final long serialVersionUID = -3241226936999335797L;
 	private List<String> resourceIdList;
 	private List<String> orgLocationIdList;
 	private List<String> titleIdList;

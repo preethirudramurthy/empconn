@@ -35,6 +35,10 @@ import com.empconn.utilities.DateUtils;
 @CrossOrigin(origins = { "${app.domain}" })
 public class ReportController {
 
+	private static final String APPLICATION_VND_MS_EXCEL = "application/vnd.ms-excel";
+
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+
 	private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
 
 	@Autowired
@@ -66,10 +70,10 @@ public class ReportController {
 		final ByteArrayInputStream in = allocationReportService.generateExcelReport(request);
 
 		final HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", String
-				.format("attachment; filename=Allocation_Report_%s.xlsx", DateUtils.currentDatetoStringForReport()).toString());
+		headers.add(CONTENT_DISPOSITION, String
+				.format("attachment; filename=Allocation_Report_%s.xlsx", DateUtils.currentDatetoStringForReport()));
 
-		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType(APPLICATION_VND_MS_EXCEL))
 				.body(new InputStreamResource(in));
 	}
 
@@ -80,10 +84,10 @@ public class ReportController {
 		final ByteArrayInputStream in = benchReportService.generateExcelReport(request);
 
 		final HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition",
-				String.format("attachment; filename=Bench_Report_%s.xlsx", DateUtils.currentDatetoStringForReport()).toString());
+		headers.add(CONTENT_DISPOSITION,
+				String.format("attachment; filename=Bench_Report_%s.xlsx", DateUtils.currentDatetoStringForReport()));
 
-		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType(APPLICATION_VND_MS_EXCEL))
 				.body(new InputStreamResource(in));
 	}
 
@@ -106,10 +110,10 @@ public class ReportController {
 		final ByteArrayInputStream in = forecastReportService.generateExcelReportData(request);
 
 		final HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", String
-				.format("attachment; filename=Forecast_Report_For_"+request.getTitle()+"_%s.xlsx", DateUtils.currentDatetoStringForReport()).toString());
+		headers.add(CONTENT_DISPOSITION, String
+				.format("attachment; filename=Forecast_Report_For_%s_%s.xlsx", request.getTitle(), DateUtils.currentDatetoStringForReport()));
 
-		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType(APPLICATION_VND_MS_EXCEL))
 				.body(new InputStreamResource(in));
 	}
 
@@ -120,10 +124,10 @@ public class ReportController {
 		final ByteArrayInputStream in = forecastReportService.generateExcelCumulativeReport(request);
 
 		final HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Disposition", String
-				.format("attachment; filename=Forecast_Cumulative_Report_%s.xlsx", DateUtils.currentDatetoStringForReport()).toString());
+		headers.add(CONTENT_DISPOSITION, String
+				.format("attachment; filename=Forecast_Cumulative_Report_%s.xlsx", DateUtils.currentDatetoStringForReport()));
 
-		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
+		return ResponseEntity.ok().headers(headers).contentType(MediaType.parseMediaType(APPLICATION_VND_MS_EXCEL))
 				.body(new InputStreamResource(in));
 	}
 

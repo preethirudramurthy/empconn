@@ -144,7 +144,7 @@ public class AllocateEarmarkedService {
 				a.setReportingMangerName(String.join(" ", a.getReportingManager().getFirstName(),
 						a.getReportingManager().getLastName()));
 				a.setIsPrimary(employeeAllocationMap.get(a.getProjectId()).stream()
-						.filter(i -> i.getAllocationId().equals(primaryAllocationId)).findAny().isPresent());
+						.anyMatch(i -> i.getAllocationId().equals(primaryAllocationId)));
 			});
 
 			ExistingAllocationDto existingAllocationDto = null;
@@ -380,8 +380,7 @@ public class AllocateEarmarkedService {
 					}
 				}
 			} else {
-				for (final Earmark e : earmarks)
-					unearmarks.add(e);
+				unearmarks.addAll(earmarks);
 			}
 			if (!CollectionUtils.isEmpty(unearmarks)) {
 				unearmarks.forEach(e -> 

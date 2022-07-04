@@ -25,12 +25,7 @@ import com.empconn.security.JwtRequestFilter;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	// @Autowired
-	// private CustomAuthenticationProvider customAuthenticationProvider;
-
-	// @Autowired
-	// private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
+	
 	@Autowired
 	private UserDetailsService jwtUserDetailsService;
 
@@ -39,13 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Value("${app.domain}")
 	private String domain;
-
-	// @Override
-	// protected void configure(AuthenticationManagerBuilder auth) throws Exception
-	// {
-	// auth.authenticationProvider(customAuthenticationProvider);
-	// }
-
+	
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		// configure AuthenticationManager so that it knows from where to load

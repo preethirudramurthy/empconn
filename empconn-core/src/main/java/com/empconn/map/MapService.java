@@ -20,12 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.empconn.dto.map.MapAccountDto;
 import com.empconn.dto.map.MapMigrateProjectDto;
 import com.empconn.dto.map.MapMigrateResponseDto;
@@ -40,9 +34,16 @@ import com.empconn.persistence.entities.Account;
 import com.empconn.persistence.entities.Project;
 import com.empconn.repositories.AccountRepository;
 import com.empconn.repositories.ProjectRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 
 @Component
 public class MapService {
+
+	private static final String MAP_API_FAILURE = "Map Api failure";
 
 	private static final Logger logger = LoggerFactory.getLogger(MapService.class);
 
@@ -82,7 +83,7 @@ public class MapService {
 			final String requestBody = mapper.writer(filters).writeValueAsString(mapAccountDto);
 
 			final String responseBody = doMapAsyncRequest(accountUrl, requestMethod, requestBody);
-			logger.info("Response from asynchronous process - save-account" + responseBody);
+			logger.info("Response from asynchronous process - save-account: {}", responseBody);
 
 			final MapAccountDto responseDto = mapper.readValue(responseBody, MapAccountDto.class);
 
@@ -93,7 +94,7 @@ public class MapService {
 			saveProject(mapProjectDto, projectId);
 
 		} catch (final Exception e) {
-			logger.error("Exception in Map saveAccount : " + e.getMessage());
+			logger.error("Exception in Map saveAccount: {}", e.getMessage());
 		}
 
 	}
@@ -109,14 +110,14 @@ public class MapService {
 			final String requestBody = mapper.writer(filters).writeValueAsString(mapAccountDto);
 
 			final String responseBody = doMapAsyncRequest(accountUrl, requestMethod, requestBody);
-			logger.info("Response from asynchronous process - save-account" + responseBody);
+			logger.info("Response from asynchronous process - save-account: {}", responseBody);
 
 			final MapAccountDto responseDto = mapper.readValue(responseBody, MapAccountDto.class);
 			if (requestMethod.equals(HttpMethod.POST))
 				accountRepository.updateMapAccountId(responseDto.getId(), accountId);
 
 		} catch (final Exception e) {
-			logger.error("Exception in Map saveAccount : " + e.getMessage());
+			logger.error("Exception in Map saveAccount: {}" , e.getMessage());
 		}
 	}
 
@@ -131,14 +132,14 @@ public class MapService {
 			final String requestBody = mapper.writer(filters).writeValueAsString(mapProjectDto);
 
 			final String responseBody = doMapAsyncRequest(projectUrl, requestMethod, requestBody);
-			logger.info("Response from asynchronous process - save-project" + responseBody);
+			logger.info("Response from asynchronous process - save-project: {}",responseBody);
 
 			final MapProjectDto responseDto = mapper.readValue(responseBody, MapProjectDto.class);
 			if (requestMethod.equals(HttpMethod.POST))
 				projectRepository.updateMapProjectId(responseDto.getId(), projectId);
 
 		} catch (final Exception e) {
-			logger.error("Exception in Map saveProject : " + e.getMessage());
+			logger.error("Exception in Map saveProject : {}",e.getMessage());
 		}
 	}
 
@@ -159,21 +160,29 @@ public class MapService {
 	}
 
 	private String doMapAsyncRequest(String url, HttpMethod requestMethod, String requestBody)
-			throws HttpException, InterruptedException, ExecutionException {
+			throws HttpException {
 
 		final Future<ResponseEntity<String>> futureResponse = mapApiService.doMapRequest(url, requestMethod,
 				requestBody);
 
 		while (true) {
 			if (futureResponse.isDone()) {
-				if (futureResponse != null && futureResponse.get() != null
-						&& futureResponse.get().getStatusCode().equals(HttpStatus.OK)) {
-					return futureResponse.get().getBody();
+				try {
+					if (futureResponse.get() != null
+							&& futureResponse.get().getStatusCode().equals(HttpStatus.OK)) {
+						return futureResponse.get().getBody();
+					}
+				} catch (InterruptedException | ExecutionException e) {
+					Thread.currentThread().interrupt(); 
 				}
-				throw new HttpException("Map Api failure");
+				throw new HttpException(MAP_API_FAILURE);
 			}
 			logger.info("Continue to wait for the save-project response.");
-			Thread.sleep(1000);
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt(); 
+			}
 		}
 	}
 
@@ -192,14 +201,14 @@ public class MapService {
 			}
 			return migratedAccountsProjects;
 		} catch (final Exception e) {
-			logger.error("Exception in Map Accounts and Projects migration : " + e.getMessage());
+			logger.error("Exception in Map Accounts and Projects migration : {}",e.getMessage());
 			throw new EmpConnException("DefaultError");
 		}
 
 	}
 
 	public MapMigrateResponseDto migrateAccountAndItsProjectsToMap(Account account)
-			throws JsonProcessingException, HttpException, InterruptedException, ExecutionException {
+			throws JsonProcessingException, HttpException {
 
 		final Set<MapMigrateProjectDto> migratedProjects = new HashSet<>();
 
@@ -210,7 +219,7 @@ public class MapService {
 
 		final String requestBody = mapper.writer(filters).writeValueAsString(mapAccountDto);
 		final String responseBody = doMapAsyncRequest(accountUrl, HttpMethod.POST, requestBody);
-		logger.info("Response from asynchronous process - save-account-migration" + responseBody);
+		logger.info("Response from asynchronous process - save-account-migration: {}", responseBody);
 
 		final MapAccountDto responseDto = mapper.readValue(responseBody, MapAccountDto.class);
 		final String mapAccountId = responseDto.getId();
@@ -229,8 +238,7 @@ public class MapService {
 		return new MapMigrateResponseDto(account.getName(), mapAccountId, migratedProjects);
 	}
 
-	public String migrateProjectToMap(Project project, String mapAccountId) throws HttpException, InterruptedException,
-			ExecutionException, JsonMappingException, JsonProcessingException {
+	public String migrateProjectToMap(Project project, String mapAccountId) throws HttpException, JsonProcessingException {
 
 		final MapProjectDto mapProjectDto = projectMapper.projectToMapProjectDto(project);
 		mapProjectDto.setClientId(mapAccountId);
@@ -240,7 +248,7 @@ public class MapService {
 
 		final String requestBody = mapper.writer(filters).writeValueAsString(mapProjectDto);
 		final String responseBody = doMapAsyncRequest(projectUrl, HttpMethod.POST, requestBody);
-		logger.info("Response from asynchronous process - save-project-migration" + responseBody);
+		logger.info("Response from asynchronous process - save-project-migration: {}",responseBody);
 
 		final MapProjectDto responseDto = mapper.readValue(responseBody, MapProjectDto.class);
 		final String mapProjecttId = responseDto.getId();

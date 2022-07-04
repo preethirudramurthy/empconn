@@ -116,7 +116,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 			final ResponseEntity<JwtADResponseDto> response = restTemplate.exchange(authUrl, HttpMethod.GET,
 					new HttpEntity<>(headers), JwtADResponseDto.class, 1);
 
-			if (response.getStatusCode() == HttpStatus.OK)
+			if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null)
 				return response.getBody().getUserPrincipalName();
 			else
 				throw new BadCredentialsException("Invalid Token!!!");

@@ -1,21 +1,24 @@
 package com.empconn.dto;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.empconn.persistence.entities.Project;
+import com.empconn.persistence.entities.WorkGroup;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.empconn.persistence.entities.Project;
-import com.empconn.persistence.entities.WorkGroup;
 
-public class ResourceViewRequestDto {
+public class ResourceViewRequestDto implements Serializable {
 
+	
+	private static final long serialVersionUID = 4054488143463125306L;
 	private List<String> verticalIdList;
 	private List<String> accountIdList;
 	private List<String> projectIdList;

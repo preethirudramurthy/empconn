@@ -24,6 +24,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenUtil implements Serializable {
 
+	private static final String BEARER = "Bearer ";
+
 	private static final long serialVersionUID = -2550185165626007488L;
 
 	@Value("${jwt.secret}")
@@ -57,7 +59,7 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	// check if the token has expired
-	public Boolean isTokenExpired(String token) {
+	public boolean isTokenExpired(String token) {
 		final Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
@@ -83,7 +85,7 @@ public class JwtTokenUtil implements Serializable {
 	}
 
 	// validate token
-	public Boolean validateToken(String token, UserDetails userDetails) {
+	public boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
@@ -104,8 +106,8 @@ public class JwtTokenUtil implements Serializable {
 
 		final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-		if (StringUtils.isNotEmpty(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
-			final String token = authorizationHeader.replace("Bearer ", "");
+		if (StringUtils.isNotEmpty(authorizationHeader) && authorizationHeader.startsWith(BEARER)) {
+			final String token = authorizationHeader.replace(BEARER, "");
 			if (StringUtils.isNotEmpty(token) && !token.contains("undefined")) {
 				return token;
 			}
@@ -130,7 +132,7 @@ public class JwtTokenUtil implements Serializable {
 
 		final String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-		if (StringUtils.isNotEmpty(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
+		if (StringUtils.isNotEmpty(authorizationHeader) && authorizationHeader.startsWith(BEARER)) {
 			return HttpHeaders.AUTHORIZATION;
 		}
 

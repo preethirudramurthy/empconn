@@ -156,7 +156,7 @@ public abstract class ProjectPinMapper {
 	}
 
 	public static LocalDateTime getInitiationMeetingDeadline(Project project) {
-		if (project.getProjectKickoffIsRequired() != null && project.getProjectKickoffIsRequired()
+		if (project.getProjectKickoffIsRequired()
 				&& project.getStartDate() != null) {
 			final LocalDate startDate = CommonQualifiedMapper.dateToLocalDate(project.getStartDate());
 			return startDate.plusDays(ApplicationConstants.PROJECT_INIT_DEADLINE_BY).atStartOfDay();

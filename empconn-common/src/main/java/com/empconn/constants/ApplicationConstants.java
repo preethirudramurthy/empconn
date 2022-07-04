@@ -52,7 +52,7 @@ public class ApplicationConstants {
 	public static final String DATE_FORMAT_YYYYMMDD = "yyyy-MM-dd";
 	public static final String DATE_FORMAT_YYYYMMDD_HHMMSS = "yyyy-MM-dd-HH-mm-ss";
 	public static final String DATE_FORMAT_SLASH_MM_DD_YYYY = "MM/dd/yyyy";
-	public static final String DATE_FORMAT_DD_MMM_YYYY = "dd-MMM-YYYY";
+	public static final String DATE_FORMAT_DD_MMM_YYYY = "dd-MMM-yyyy";
 
 	public static final String QA_WORK_GROUP = "QA";
 

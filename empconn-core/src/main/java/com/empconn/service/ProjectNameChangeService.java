@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.empconn.activedirectory.ActiveDirectoryDeltaUpdateService;
 import com.empconn.util.ProjectUtil;
-import com.empconn.utilities.CommonUtil;;
+import com.empconn.utilities.CommonUtil;
 
 @Service
 public class ProjectNameChangeService {
@@ -32,7 +32,6 @@ public class ProjectNameChangeService {
 
 		logger.debug("Trigger project name change related events");
 
-		//		final List<String> employeeLoginMailIds = getEmployeesToUpdateProjectNameChange(projectId, projectName);
 		employeeLoginMailIds.forEach(e -> activeDirectoryDeltaUpdateService.updateProject(e, projectName));
 
 

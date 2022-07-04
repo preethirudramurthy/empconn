@@ -28,8 +28,9 @@ public enum AccountCategory {
 	}
 
 	public static String getValue(String id) {
-		if (null != getById(id))
-			return getById(id).getValue();
+		AccountCategory ac = getById(id);
+		if (ac != null)
+			return ac.getValue();
 		return null;
 	}
 

@@ -2,6 +2,7 @@ package com.empconn.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -48,8 +49,9 @@ public class PulseService {
 
 	public EmployeeInfoResponseDto getEmployeeDetail(String loginId) {
 		logger.debug("Inside Service for getEmployeeDetail");
-		final Employee employee = employeeRepository.findByLoginIdIgnoreCaseAndIsActiveTrue(loginId).get();
-		return allocationToEmployeeInfoResponseDto.allocationToEmployeeInfoResponseDto(employee.getPrimaryAllocation());
+		Optional<Employee> emOpt = employeeRepository.findByLoginIdIgnoreCaseAndIsActiveTrue(loginId);
+		final Employee employee = emOpt.isPresent()? emOpt.get():null;
+		return (employee != null)?allocationToEmployeeInfoResponseDto.allocationToEmployeeInfoResponseDto(employee.getPrimaryAllocation()):null;
 	}
 
 	public Set<EmployeeDataResponseDto> getAllEmployeesBasedOnProject(String empCode) {
@@ -57,28 +59,28 @@ public class PulseService {
 		final Employee employee = employeeRepository.findByEmpCodeIgnoreCaseAndIsActiveTrue(empCode);
 		final Set<Allocation> employeeAllocationSetNonBench = allocationRepository.findByEmployeeIdAndIsActive(employee.getEmployeeId(),true);
 		final Set<Allocation> employeeAllocationSetBench = allocationRepository.findByEmployeeIdAndBenchProject(employee.getEmployeeId(),true);
-		Set<EmployeeDataResponseDto> dataResponseDtos = new HashSet<EmployeeDataResponseDto>();
-		if(employeeAllocationSetNonBench.size() > 0) {
-			dataResponseDtos = getEmployeesList(employeeAllocationSetNonBench, dataResponseDtos);
+		Set<EmployeeDataResponseDto> dataResponseDtos = new HashSet<>();
+		if(!employeeAllocationSetNonBench.isEmpty()) {
+			getEmployeesList(employeeAllocationSetNonBench, dataResponseDtos);
 		}
 		else {
-			dataResponseDtos = getEmployeesList(employeeAllocationSetBench, dataResponseDtos);
+			getEmployeesList(employeeAllocationSetBench, dataResponseDtos);
 		}
-		logger.debug("Size of EmployeeDataResponseDto Set : "+dataResponseDtos.size());
+		logger.debug("Size of EmployeeDataResponseDto Set : {}",dataResponseDtos.size());
 		return dataResponseDtos;
 	}
 
-	private Set<EmployeeDataResponseDto> getEmployeesList(final Set<Allocation> employeeAllocationSet,
+	private void getEmployeesList(final Set<Allocation> employeeAllocationSet,
 			final Set<EmployeeDataResponseDto> dataResponseDtos) {
-		final Set<Long> projectSet = new HashSet<Long>();
+		final Set<Long> projectSet = new HashSet<>();
 		employeeAllocationSet.stream().forEach(a-> projectSet.add(a.getProject().getProjectId()));
 		final Set<Allocation> allocationSet = allocationRepository.findByProjectProjectIdInAndIsActiveTrue(projectSet);
 		allocationSet.removeAll(employeeAllocationSet);
 		dataResponseDtos.addAll(allocationToEmployeeDataResponseDto.allocationsToEmployeeDataResponseDto(allocationSet));
-		logger.debug("Size of EmployeeDataResponseDto Set : "+dataResponseDtos.size());
+		logger.debug("Size of EmployeeDataResponseDto Set : {}", dataResponseDtos.size());
 		final List<Project> projectList = projectRepository.findAllById(projectSet);
 		for(final Project p : projectList) {
-			final Set<Employee> employeeSet = new HashSet<Employee>();
+			final Set<Employee> employeeSet = new HashSet<>();
 			employeeSet.addAll(p.getGdms().values());
 			p.getProjectLocations().stream().forEach(pl -> employeeSet.addAll(pl.getAllManagers().values()));
 			final Set<EmployeeDataResponseDto> dto = allocationToEmployeeDataResponseDto.employeesToEmployeeDataResponseDto(employeeSet);
@@ -88,7 +90,6 @@ public class PulseService {
 			});
 			dataResponseDtos.addAll(dto);
 		}
-		return dataResponseDtos;
 	}
 
 	public List<EmployeeDataResponseDto> getAllEmployeesPartialSearch(String empName) {

@@ -298,7 +298,7 @@ public class UpdateProjectDetailsDto {
 		this.subCategory = subCategory;
 	}
 
-	public boolean SubProject() {
+	public boolean subProject() {
 		return subProject;
 	}
 

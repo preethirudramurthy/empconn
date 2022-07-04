@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.empconn.persistence.entities.Horizontal;
 
-public interface HorizontalRepository extends JpaRepository<Horizontal, Integer> {
 
+public interface HorizontalRepository extends JpaRepository<Horizontal, Integer> {
 	Iterable<Horizontal> findByIsActiveTrue(Sort sort);
 
 	Optional<Horizontal> findByNameIgnoreCaseAndIsActiveTrue(String name);

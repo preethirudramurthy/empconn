@@ -16,12 +16,12 @@ public class EmailUtilityService {
 		final Employee devGdm = gdms.get("DEV");
 		final Employee qaGdm = gdms.get("QA");
 
-		if ((workgroup.getName().equalsIgnoreCase("QA") && qaGdm != null) ||
-				(!workgroup.getName().equalsIgnoreCase("QA") && devGdm == null)) {
+		if (((workgroup.getName().equalsIgnoreCase("QA") && qaGdm != null) ||
+				(!workgroup.getName().equalsIgnoreCase("QA") && devGdm == null)) && qaGdm != null ){
 			return qaGdm.getEmail();
 		}
 
-		return devGdm.getEmail();
+		return (devGdm != null && devGdm.getEmail() != null)?devGdm.getEmail():null;
 	}
 
 }

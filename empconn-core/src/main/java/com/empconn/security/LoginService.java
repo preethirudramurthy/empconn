@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.jasypt.encryption.StringEncryptor;
@@ -17,8 +16,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -67,29 +64,26 @@ public class LoginService {
 	@Value("${cranium.system.user.request.password.encrypted}")
 	private boolean isSystemUserRequestPwdEncrypted;
 
-	private String createAuthenticationTokenForSSO(JwtRequest authenticationRequest) throws Exception {
+	private String createAuthenticationTokenForSSO(JwtRequest authenticationRequest) {
 		final String userPrincipal = userDetailsService.getAuthorizedUserFromActiveDirectory(authenticationRequest);
 		authenticate(userPrincipal, "");
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(userPrincipal);
-		final String token = jwtTokenUtil.generateToken(userDetails);
-		return token;
+		return jwtTokenUtil.generateToken(userDetails);
 	}
 
 	private String createAuthenticationTokenForNonProd(UsernameAndPasswordRequest authenticationRequest)
-			throws Exception {
+	{
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-		final String token = jwtTokenUtil.generateToken(userDetails);
-		return token;
+		return jwtTokenUtil.generateToken(userDetails);
 	}
 
 	private String createAuthenticationTokenForSystemUser(UsernameAndPasswordRequest authenticationRequest)
-			throws Exception {
+	{
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
 		validateRequestShouldBeFromSystemUser(userDetails);
-		final String token = jwtTokenUtil.generateToken(userDetails);
-		return token;
+		return jwtTokenUtil.generateToken(userDetails);
 	}
 
 	private void validateRequestShouldBeFromSystemUser(UserDetails userDetails) {
@@ -99,14 +93,8 @@ public class LoginService {
 			throw new AccessDeniedException("Access Denied for User");
 	}
 
-	private void authenticate(String username, String password) throws Exception {
-		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-		} catch (final DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
-		} catch (final BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
-		}
+	private void authenticate(String username, String password) {
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 	}
 
 	private UserDto getUser(String username) {
@@ -115,7 +103,7 @@ public class LoginService {
 	}
 
 	public UserDto authenticateSSOUser(HttpServletResponse httpResponse, JwtRequest authenticationRequest)
-			throws Exception {
+	 {
 		final String token = createAuthenticationTokenForSSO(authenticationRequest);
 		final Cookie cookie = new Cookie(ApplicationConstants.CRAN_SESSION, token);
 		cookie.setPath("/");
@@ -130,7 +118,7 @@ public class LoginService {
 	}
 
 	public UserDto authenticateUser(HttpServletResponse httpResponse, UsernameAndPasswordRequest authenticationRequest)
-			throws Exception {
+	{
 		final String token = createAuthenticationTokenForNonProd(authenticationRequest);
 		final Cookie cookie = new Cookie(ApplicationConstants.CRAN_SESSION, token);
 		cookie.setPath("/");
@@ -139,8 +127,7 @@ public class LoginService {
 			cookie.setHttpOnly(true);
 		}
 		httpResponse.addCookie(cookie);
-		final UserDto userDto = getUser(authenticationRequest.getUsername());
-		return userDto;
+		return getUser(authenticationRequest.getUsername());
 	}
 
 	public TokenDto authenticateServiceUser(UsernameAndPasswordRequest authenticationRequest) {
@@ -177,8 +164,7 @@ public class LoginService {
 		return null;
 	}
 
-	public void doLogout(HttpServletRequest request, HttpServletResponse response) {
-		// TODO: Need to do invalidation of tokens after user logout
+	public void doLogout(HttpServletResponse response) {
 		final Cookie removeCookie = new Cookie(ApplicationConstants.CRAN_SESSION, null);
 		removeCookie.setMaxAge(0);
 		removeCookie.setPath("/");
@@ -194,8 +180,7 @@ public class LoginService {
 	}
 
 	public String getDecryptedSystemUserPassword(String password) {
-		final String decryptPassword = jasyptSystemUserEncryptor.decrypt(password);
-		return decryptPassword;
+		return jasyptSystemUserEncryptor.decrypt(password);
 	}
 
 }

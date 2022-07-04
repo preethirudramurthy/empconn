@@ -3,6 +3,7 @@ package com.empconn.mapper;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.mapstruct.Mapper;
@@ -68,10 +69,10 @@ public abstract class ProjectLocationDtoMapper {
 		}
 		final Set<ProjectLocation> set = new HashSet<>();
 		for (final LocationManagersValidateDto dto : locationsManagersDto) {
-			if (dto.getProjectLocationId() != null && projectLocationRespository
-					.findById(Long.valueOf(dto.getProjectLocationId())).isPresent()) {
-				final ProjectLocation location = projectLocationRespository
-						.findById(Long.valueOf(dto.getProjectLocationId())).get();
+			Optional<ProjectLocation> plOpt = projectLocationRespository
+					.findById(Long.valueOf(dto.getProjectLocationId()));
+			if (dto.getProjectLocationId() != null && plOpt.isPresent()) {
+				final ProjectLocation location = plOpt.get();
 				set.add(locationManagersDtoToProjectLocation(dto, location));
 			} else
 				set.add(locationManagersDtoToProjectLocation(dto));
@@ -112,9 +113,10 @@ public abstract class ProjectLocationDtoMapper {
 
 	@Named("locationUnitValueToLocation")
 	Location locationUnitValueToLocation(UnitValue location) {
-		if (location != null && location.getId() != null && locationRepository.findById(Integer.valueOf(location.getId())).isPresent())
+		Optional<Location> locOpt = locationRepository.findById(Integer.valueOf(location.getId()));
+		if (location.getId() != null && locOpt.isPresent())
 		{
-			return locationRepository.findById(Integer.valueOf(location.getId())).get();
+			return locOpt.get();
 		}
 		return null;
 
@@ -122,8 +124,9 @@ public abstract class ProjectLocationDtoMapper {
 
 	@Named("managerInfoToEmployee")
 	Employee managerInfoToEmployee(ManagerInfoDto manager) {
-		if (manager != null && manager.getId() != null && employeeRepository.findById(Long.valueOf(manager.getId())).isPresent()) {
-			return employeeRepository.findById(Long.valueOf(manager.getId())).get();
+		Optional<Employee> managerOpt = employeeRepository.findById(Long.valueOf(manager.getId()));
+		if (manager.getId() != null && managerOpt.isPresent()) {
+			return managerOpt.get();
 		}
 		return null;
 	}

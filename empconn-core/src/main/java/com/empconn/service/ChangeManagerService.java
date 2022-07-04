@@ -346,26 +346,28 @@ public class ChangeManagerService {
 		final Employee oldReportingManager = allocation != null? allocation.getReportingManagerId():null;
 		final Employee newReportingManager = employeeRepository
 				.findByEmployeeId(changReportingManagerDto.getNewReportingMangerId());
-		allocation.setReportingManagerId(newReportingManager);
+		if (allocation != null) {
+			allocation.setReportingManagerId(newReportingManager);
 
-		final Employee allocationManager = allocationUtilityService.getAllocationManagerId(
-				allocation.getProjectLocation().getProject(), allocation.getProjectLocation(), newReportingManager,
-				allocation.getWorkGroup().getName());
-		if (!allocation.getAllocationManagerId().getEmployeeId().equals(allocationManager.getEmployeeId())) {
-			allocation.setAllocationManagerId(allocationManager);
+			final Employee allocationManager = allocationUtilityService.getAllocationManagerId(
+					allocation.getProjectLocation().getProject(), allocation.getProjectLocation(), newReportingManager,
+					allocation.getWorkGroup().getName());
+			if (!allocation.getAllocationManagerId().getEmployeeId().equals(allocationManager.getEmployeeId())) {
+				allocation.setAllocationManagerId(allocationManager);
+			}
+
+			allocationRepository.save(allocation);
+
+			final Allocation primaryAllocation = allocation.getEmployee().getPrimaryAllocation();
+
+			mailForChangeReportingManagerForResource(newReportingManager, oldReportingManager, allocation, false);
+			if (primaryAllocation.getAllocationId().equals(allocation.getAllocationId())) {
+				mailForChangeReportingManagerForResource(newReportingManager, oldReportingManager, allocation, true);
+				sfCallPrimaryManagerChange(newReportingManager, allocation);
+			}
+
+			syncToTimesheetService.syncProjectAllocation(allocation);
 		}
-
-		allocationRepository.save(allocation);
-
-		final Allocation primaryAllocation = allocation.getEmployee().getPrimaryAllocation();
-
-		mailForChangeReportingManagerForResource(newReportingManager, oldReportingManager, allocation, false);
-		if (primaryAllocation.getAllocationId().equals(allocation.getAllocationId())) {
-			mailForChangeReportingManagerForResource(newReportingManager, oldReportingManager, allocation, true);
-			sfCallPrimaryManagerChange(newReportingManager, allocation);
-		}
-
-		syncToTimesheetService.syncProjectAllocation(allocation);
 
 	}
 
@@ -422,8 +424,11 @@ public class ChangeManagerService {
 
 		for (final ChangeProjectManagerRequestDto request : changeProjectManagerWrapperDto
 				.getChangeProjectMangerList()) {
-			final ProjectLocation projectLocation = projectLocationRespository
-					.findById(Long.valueOf(request.getProjectLocationId())).get();
+			Optional<ProjectLocation> plOpt = projectLocationRespository
+					.findById(Long.valueOf(request.getProjectLocationId()));
+			final ProjectLocation projectLocation = plOpt.isPresent()? plOpt.get():null;  
+			
+			if (projectLocation != null) {
 			final Map<String, Employee> existingManagers = projectLocation.getAllManagers();
 
 			if (request.getDevManagerId() != null) {
@@ -451,6 +456,7 @@ public class ChangeManagerService {
 						ApplicationConstants.WORK_GROUP_SUPPORT_2);
 			}
 			projectLocationRespository.save(projectLocation);
+			}
 		}
 	}
 

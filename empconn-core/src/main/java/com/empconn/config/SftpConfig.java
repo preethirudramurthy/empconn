@@ -61,7 +61,7 @@ public class SftpConfig {
 			factory.setPassword(sftpPasword);
 		}
 		factory.setAllowUnknownKeys(true);
-		return new CachingSessionFactory<LsEntry>(factory);
+		return new CachingSessionFactory<>(factory);
 	}
 
 	@Bean

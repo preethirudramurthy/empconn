@@ -1,8 +1,11 @@
 package com.empconn.dto.earmark;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class NdRequestListForAllocationDto {
+public class NdRequestListForAllocationDto implements Serializable {
+	
+	private static final long serialVersionUID = 5850467123590229944L;
 	private List<String> accountIdList;
 	private List<String> locationIdList;
 	private List<String> projectIdList;

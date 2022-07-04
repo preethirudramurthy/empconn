@@ -1,5 +1,6 @@
 package com.empconn.dto.allocation;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,8 +13,9 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.empconn.persistence.entities.Project;
 import com.empconn.persistence.entities.WorkGroup;
 
-public class EditReleaseDateResourceListRequestDto {
+public class EditReleaseDateResourceListRequestDto implements Serializable {
 
+	private static final long serialVersionUID = 4625210070670049479L;
 	private List<String> verticalIdList;
 	private List<String> accountIdList;
 	private List<String> projectIdList;

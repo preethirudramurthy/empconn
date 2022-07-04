@@ -358,8 +358,7 @@ public class DeallocationService {
 				sb.append(entry.getValue().getEmail() + ",");
 			}
 		}
-		final String[] emailToList = new String[] { a.getEmployee() == null ? "" : a.getEmployee().getEmail(),
-				sb == null ? "" : sb.toString() + "" };
+		final String[] emailToList = new String[] { a.getEmployee() == null ? "" : a.getEmployee().getEmail(),sb.toString() };
 		final String[] emailCCList = new String[] {
 				a.getProject().getEmployee1() == null ? "" : a.getProject().getEmployee1().getEmail(),
 						a.getProject().getEmployee2() == null ? "" : a.getProject().getEmployee2().getEmail(),

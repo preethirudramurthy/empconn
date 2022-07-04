@@ -78,6 +78,8 @@ import com.empconn.vo.UnitValue;
 @Transactional
 public class MasterService {
 
+	private static final String ACTIVE = "ACTIVE";
+
 	private static final Logger logger = LoggerFactory.getLogger(MasterService.class);
 
 	@Autowired
@@ -226,12 +228,6 @@ public class MasterService {
 		return locationUnitValueMapper.locationsToUnitValues(locations);
 	}
 
-	/*
-	 * public Set<MasterResourceDto> getResources(String partial) { final
-	 * Set<Employee> employees =
-	 * IterableUtils.toSet(employeeRepository.findByMatchingName(partial)); return
-	 * employeeMasterResourceDtoMapper.employeesToMasterResourcesDto(employees); }
-	 */
 
 	public Set<MasterResourceDto> getNDResources(String partial) {
 		final Set<Employee> employees = IterableUtils.toSet(employeeRepository.findByMatchingNameForND(partial))
@@ -323,14 +319,14 @@ public class MasterService {
 								&& p.getEmployee1().getEmployeeId().equals(employee.getEmployeeId()))
 										|| (p.getEmployee2() != null
 										&& p.getEmployee2().getEmployeeId().equals(employee.getEmployeeId()))))
-								.filter(p -> p.getAccount().getStatus().equals("ACTIVE")
+								.filter(p -> p.getAccount().getStatus().equals(ACTIVE)
 										&& p.getIsActive()
 										&& p.getAccount().getIsActive())
 								.map(Project::getProjectId).collect(Collectors.toSet());
 						projectIds.addAll(projectLocationRespository.findAll().stream()
 								.filter(a -> a.getAllManagers().values().stream()
 										.anyMatch(e -> e.getEmployeeId().equals(employee.getEmployeeId())))
-								.filter(p -> p.getProject().getAccount().getStatus().equals("ACTIVE")
+								.filter(p -> p.getProject().getAccount().getStatus().equals(ACTIVE)
 										&& p.getIsActive()
 										&& p.getProject().getAccount().getIsActive())
 								.map(p -> p.getProject().getProjectId()).collect(Collectors.toSet()));
@@ -340,7 +336,7 @@ public class MasterService {
 								&& p.getEmployee1().getEmployeeId().equals(employee.getEmployeeId()))
 										|| (p.getEmployee2() != null
 										&& p.getEmployee2().getEmployeeId().equals(employee.getEmployeeId()))))
-								.filter(p -> p.getAccount().getStatus().equals("ACTIVE")
+								.filter(p -> p.getAccount().getStatus().equals(ACTIVE)
 										&& p.getIsActive()
 										&& p.getAccount().getIsActive())
 								.map(Project::getProjectId).collect(Collectors.toSet());
@@ -348,7 +344,7 @@ public class MasterService {
 						projectIds = projectLocationRespository.findAll().stream()
 								.filter(a -> a.getAllManagers().values().stream()
 										.anyMatch(e -> e.getEmployeeId().equals(employee.getEmployeeId())))
-								.filter(p -> p.getProject().getAccount().getStatus().equals("ACTIVE")
+								.filter(p -> p.getProject().getAccount().getStatus().equals(ACTIVE)
 										&& p.getIsActive()
 										&& p.getProject().getAccount().getIsActive())
 								.map(p -> p.getProject().getProjectId()).collect(Collectors.toSet());
@@ -375,7 +371,7 @@ public class MasterService {
 		} catch (final Exception exception) {
 			logger.error("{} Exception raised as : {}", METHOD_NAME, exception);
 		}
-		logger.info("{} exits with return data size : {}", METHOD_NAME, projectDropdownData.size());
+		logger.info("{} exits with return data size : {}", METHOD_NAME, (projectDropdownData == null || projectDropdownData.isEmpty())?0:projectDropdownData.size());
 		return projectDropdownData;
 	}
 
@@ -390,7 +386,6 @@ public class MasterService {
 					? requestparams.getVerticalIdList().stream().map(Integer::parseInt).collect(Collectors.toList())
 							: null;
 					final Employee employee = jwtEmployeeUtil.getLoggedInEmployee();
-					// final Long loggedInEmployee = employee.getEmployeeId();
 
 					if (requestparams.isIgnoreRole()) {
 						if (CollectionUtils.isEmpty(verticalIdList)) {
@@ -413,7 +408,7 @@ public class MasterService {
 											&& p.getEmployee2().getEmployeeId().equals(employee.getEmployeeId()))))
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList)
 											|| verticalIdList.contains(p.getAccount().getVertical().getVerticalId()))
-											&& p.getAccount().getStatus().equals("ACTIVE")
+											&& p.getAccount().getStatus().equals(ACTIVE)
 											&& p.getIsActive()
 											&& Arrays.asList(ProjectStatus.PMO_APPROVED.name(),
 													ProjectStatus.PROJECT_ON_HOLD.name()).contains(p.getCurrentStatus())
@@ -424,7 +419,7 @@ public class MasterService {
 											.anyMatch(e -> e.getEmployeeId().equals(employee.getEmployeeId())))
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList) || verticalIdList
 											.contains(p.getProject().getAccount().getVertical().getVerticalId()))
-											&& p.getProject().getAccount().getStatus().equals("ACTIVE")
+											&& p.getProject().getAccount().getStatus().equals(ACTIVE)
 											&& p.getIsActive()
 											&& Arrays
 											.asList(ProjectStatus.PMO_APPROVED.name(),
@@ -440,7 +435,7 @@ public class MasterService {
 											&& p.getEmployee2().getEmployeeId().equals(employee.getEmployeeId()))))
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList)
 											|| verticalIdList.contains(p.getAccount().getVertical().getVerticalId()))
-											&& p.getAccount().getStatus().equals("ACTIVE")
+											&& p.getAccount().getStatus().equals(ACTIVE)
 											&& p.getIsActive()
 											&& Arrays.asList(ProjectStatus.PMO_APPROVED.name(),
 													ProjectStatus.PROJECT_ON_HOLD.name()).contains(p.getCurrentStatus())
@@ -452,7 +447,7 @@ public class MasterService {
 											.anyMatch(e -> e.getEmployeeId().equals(employee.getEmployeeId())))
 									.filter(p -> (CollectionUtils.isEmpty(verticalIdList) || verticalIdList
 											.contains(p.getProject().getAccount().getVertical().getVerticalId()))
-											&& p.getProject().getAccount().getStatus().equals("ACTIVE")
+											&& p.getProject().getAccount().getStatus().equals(ACTIVE)
 											&& p.getIsActive()
 											&& Arrays
 											.asList(ProjectStatus.PMO_APPROVED.name(),

@@ -101,11 +101,11 @@ public class NonDeliveryService {
 		final List<NDResourcesDto> ndResourcesDtos = empToNDResourcesDtoMapper.employeeToNDResourcesDto(empList);
 		int sumAllocation = 0;
 		final int totalAllocation = 100;
-		final List<NDResourcesDto> ndResourcesDtos2 = new ArrayList<NDResourcesDto>();
+		final List<NDResourcesDto> ndResourcesDtos2 = new ArrayList<>();
 		for (final NDResourcesDto allocationDto : ndResourcesDtos) {
 			sumAllocation = 0;
 			final List<AllocationDto> allocationDtos = allocationDto.getAllocationList();
-			if (allocationDtos != null && allocationDtos.size() > 0) {
+			if (allocationDtos != null && !allocationDtos.isEmpty()) {
 				for (final AllocationDto allocationDto2 : allocationDtos) {
 					if (!allocationDto2.getProjectName().equals("NDBench"))
 						sumAllocation = sumAllocation + allocationDto2.getAllocationPercentage();
@@ -123,9 +123,9 @@ public class NonDeliveryService {
 	@Transactional
 	public void createNDRequest(ResourceRequestDto resourceRequestDto) {
 		final String METHOD_NAME = "createNDRequest";
-		logger.debug("{} starts execution successfully.", METHOD_NAME);
+		logger.debug("createNDRequest starts execution successfully.");
 		isValidCreateNDRequest(resourceRequestDto);
-		final List<NdRequest> ndRequestsList = new ArrayList<NdRequest>();
+		final List<NdRequest> ndRequestsList = new ArrayList<>();
 		for (final RequestDto requestDto : resourceRequestDto.getRequestList()) {
 			// Validating Extra SalesForce ID list. It should not be used by other
 			// Project/Opportunity.
@@ -135,7 +135,7 @@ public class NonDeliveryService {
 			if (extraSalesForceIdList != null && !extraSalesForceIdList.isEmpty()) {
 				for (final String extraSalesforceId : extraSalesForceIdList) {
 					logger.debug("{} extraSalesforceId : {}", METHOD_NAME, extraSalesforceId);
-					final Boolean isValidSalesForceId = identifierService
+					final boolean isValidSalesForceId = identifierService
 							.isValidSalesforceIdForProject(extraSalesforceId, Long.valueOf(requestDto.getProjectId()));
 
 					if (!isValidSalesForceId) {
@@ -151,10 +151,10 @@ public class NonDeliveryService {
 
 		}
 		final List<NdRequest> ndRequest = ndRequestRepository.saveAll(ndRequestsList);
-		ndRequest.stream().forEach(nd -> {
-			allocateNDService.mailNdResourceAllocation(nd);
-		});
-		logger.info("{} exits successfully.");
+		ndRequest.stream().forEach(nd -> 
+			allocateNDService.mailNdResourceAllocation(nd)
+		);
+		logger.info("{} exits successfully.",METHOD_NAME );
 	}
 
 	private void isValidCreateNDRequest(ResourceRequestDto resourceRequestDto) {
@@ -181,7 +181,7 @@ public class NonDeliveryService {
 			final Optional<Project> project = projectRepository.findById(projectId);
 			final Date releaseDate = DateUtils
 					.convertToDateViaInstant(DateUtils.convertToLocalDateViaMilisecond(requestDto.getReleaseDate()));
-			if (project.get().getEndDate().compareTo(releaseDate) < 0) {
+			if (project.isPresent() && project.get().getEndDate().compareTo(releaseDate) < 0) {
 				throw new EmpConnException("ReleaseDateCanNotBeGreaterThanProjectEndDate");
 			}
 
@@ -202,7 +202,7 @@ public class NonDeliveryService {
 
 		final List<NdRequest> ndRequests = ndRequestRepository.findExistingNdRequest(
 				Long.valueOf(requestDto.getProjectId()), Long.valueOf(requestDto.getResourceId()));
-		if (ndRequests != null && ndRequests.size() > 0) {
+		if (ndRequests != null && !ndRequests.isEmpty()) {
 			return ndRequests.size();
 		}
 		return 0;
@@ -212,12 +212,12 @@ public class NonDeliveryService {
 		final String METHOD_NAME = "getMyRequestList";
 		logger.info("{} starts execution successfully.", METHOD_NAME);
 		List<GetMyRequestListResponseDto> responseList = new ArrayList<>();
-		List<NdRequest> ndRequests = new ArrayList<>();
+		List<NdRequest> ndRequests = null;
 		final Employee loginUser = jwtEmployeeUtil.getLoggedInEmployee();
 		logger.debug("{} loginUser : {}", METHOD_NAME, loginUser);
 
 		if (RolesUtil.isGDMAndManager(loginUser)) {
-			logger.debug("{} getting ndrequests as GDM");
+			logger.debug("Getting ndrequests as GDM");
 			ndRequests = ndRequestRepository.getNDRequestsAsGDM(loginUser.getEmployeeId());
 			responseList.addAll(
 					ndRequestToGetMyRequestListResponseDtoMapper.ndRequestsToGetMyRequestListResponses(ndRequests));
@@ -226,7 +226,7 @@ public class NonDeliveryService {
 					.collect(Collectors.toList());
 
 		} else if (RolesUtil.isOnlyGDM(loginUser)) {
-			logger.debug("{} getting ndrequests as GDM");
+			logger.debug("Getting ndrequests as GDM");
 			ndRequests = ndRequestRepository.getNDRequestsAsGDM(loginUser.getEmployeeId());
 			responseList = ndRequestToGetMyRequestListResponseDtoMapper
 					.ndRequestsToGetMyRequestListResponses(ndRequests);
@@ -238,9 +238,9 @@ public class NonDeliveryService {
 	}
 
 	private List<GetMyRequestListResponseDto> getNdRequestsAsManager(final Employee loginUser) {
-		logger.debug("{} getting ndrequests as manager");
+		logger.debug("Getting ndrequests as manager");
 		final List<NdRequest> ndRequests = ndRequestRepository.getNDRequestsAsManager(loginUser.getEmployeeId());
-		final List<NdRequest> filteredData = new ArrayList<NdRequest>();
+		final List<NdRequest> filteredData = new ArrayList<>();
 
 		// Filter only those records where logged in User is the Manager of any of the
 		// type DEV/QA.
@@ -262,11 +262,11 @@ public class NonDeliveryService {
 	}
 
 	Function<ProjectLocation, List<Map<String, String>>> getProjectManagers = projectLocation -> {
-		final List<Map<String, String>> locationManagerList = new ArrayList<Map<String, String>>();
+		final List<Map<String, String>> locationManagerList = new ArrayList<>();
 		final Map<String, Employee> allManagers = projectLocation.getAllManagers();
 		allManagers.entrySet().stream().forEach(y -> {
 			if (y.getValue() != null) {
-				final Map<String, String> locationManagerMap = new HashMap<String, String>();
+				final Map<String, String> locationManagerMap = new HashMap<>();
 				locationManagerMap.put("projectLocationName", projectLocation.getLocation().getName());
 				locationManagerMap.put("workgroup", y.getKey());
 				locationManagerMap.put("mangerName", y.getValue().getFirstName());
@@ -287,17 +287,12 @@ public class NonDeliveryService {
 			for (final Long requestId : requestIdList) {
 				logger.debug("{} cancelling request with id : {}", METHOD_NAME, requestId);
 				ndRequestRepository.updateNDRequestStatus(requestId, Boolean.FALSE);
-				try {
-					// Manual cancellation for sending Email
-					mailForCancelRequestNd(requestId);
-				} catch (final Exception exception) {
-					exception.printStackTrace();
-					logger.error("{} exception raised while sendin gthe email : {}", METHOD_NAME, exception);
-				}
+				// Manual cancellation for sending Email
+				mailForCancelRequestNd(requestId);
 			}
 		} catch (final Exception exception) {
 			exception.printStackTrace();
-			logger.error("{} exception raised as : {}", METHOD_NAME);
+			logger.error("{} exception raised as : {}", METHOD_NAME,exception.getMessage());
 		}
 	}
 

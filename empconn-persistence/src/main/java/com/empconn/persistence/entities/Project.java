@@ -70,7 +70,7 @@ public class Project extends Auditable<Long> implements Serializable {
 	private Date endDate;
 
 	@Column(name = "is_sub_project")
-	private Boolean isSubProject;
+	private boolean isSubProject;
 
 	private String name;
 
@@ -78,13 +78,13 @@ public class Project extends Auditable<Long> implements Serializable {
 	private String operatingSystem;
 
 	@Column(name = "project_kickoff_is_required")
-	private Boolean projectKickoffIsRequired;
+	private boolean projectKickoffIsRequired;
 
 	@Column(name = "project_tok_link")
 	private String projectTokLink;
 
 	@Column(name = "send_notification_to_pin_group")
-	private Boolean sendNotificationToPinGroup;
+	private boolean sendNotificationToPinGroup;
 
 	@Temporal(TemporalType.DATE)
 	@Column(name = "start_date")
@@ -227,11 +227,11 @@ public class Project extends Auditable<Long> implements Serializable {
 		this.endDate = endDate;
 	}
 
-	public Boolean getIsSubProject() {
+	public boolean getIsSubProject() {
 		return this.isSubProject;
 	}
 
-	public void setIsSubProject(Boolean isSubProject) {
+	public void setIsSubProject(boolean isSubProject) {
 		this.isSubProject = isSubProject;
 	}
 
@@ -251,11 +251,11 @@ public class Project extends Auditable<Long> implements Serializable {
 		this.operatingSystem = operatingSystem;
 	}
 
-	public Boolean getProjectKickoffIsRequired() {
+	public boolean getProjectKickoffIsRequired() {
 		return this.projectKickoffIsRequired;
 	}
 
-	public void setProjectKickoffIsRequired(Boolean projectKickoffIsRequired) {
+	public void setProjectKickoffIsRequired(boolean projectKickoffIsRequired) {
 		this.projectKickoffIsRequired = projectKickoffIsRequired;
 	}
 
@@ -267,11 +267,11 @@ public class Project extends Auditable<Long> implements Serializable {
 		this.projectTokLink = projectTokLink;
 	}
 
-	public Boolean getSendNotificationToPinGroup() {
+	public boolean getSendNotificationToPinGroup() {
 		return this.sendNotificationToPinGroup;
 	}
 
-	public void setSendNotificationToPinGroup(Boolean sendNotificationToPinGroup) {
+	public void setSendNotificationToPinGroup(boolean sendNotificationToPinGroup) {
 		this.sendNotificationToPinGroup = sendNotificationToPinGroup;
 	}
 

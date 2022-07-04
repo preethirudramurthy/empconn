@@ -221,16 +221,18 @@ public abstract class ProjectDtoMapper {
 
 	@Named("subCategoryIdToProjectSubCategory")
 	ProjectSubCategory subCategoryIdToProjectSubCategory(String subCategoryId) {
-		if (subCategoryId != null && projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId)).isPresent()) {
-			return projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId)).get();
+		Optional<ProjectSubCategory> psOpt = projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId)); 
+		if (subCategoryId != null && psOpt.isPresent()) {
+			return psOpt.get();
 		}
 		return null;
 	}
 
 	@Named("horizontalIdToHorizontal")
 	Horizontal horizontalIdToHorizontal(String horizontalId) {
-		if (horizontalId != null && horizontalRepository.findById(Integer.valueOf(horizontalId)).isPresent()) {
-			return horizontalRepository.findById(Integer.valueOf(horizontalId)).get();
+		Optional<Horizontal> horiOpt = horizontalRepository.findById(Integer.valueOf(horizontalId)); 
+		if (horizontalId != null && horiOpt.isPresent()) {
+			return horiOpt.get();
 		}
 		return null;
 
@@ -247,8 +249,9 @@ public abstract class ProjectDtoMapper {
 
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(String employeeId) {
-		if (employeeId != null && employeeRepository.findById(Long.valueOf(employeeId)).isPresent()) {
-			return employeeRepository.findById(Long.valueOf(employeeId)).get();
+		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(employeeId)); 
+		if (employeeId != null && emOpt.isPresent()) {
+			return emOpt.get();
 		}
 		return null;
 	}
@@ -267,8 +270,9 @@ public abstract class ProjectDtoMapper {
 
 	@Named("accountIdToAccount")
 	Account accountIdToAccount(String accountId) {
-		if (accountId != null && accountRepository.findById(Integer.valueOf(accountId)).isPresent()) {
-			return accountRepository.findById(Integer.valueOf(accountId)).get();
+		Optional<Account> acOpt = accountRepository.findById(Integer.valueOf(accountId));
+		if (accountId != null && acOpt.isPresent()) {
+			return acOpt.get();
 		}
 		return null;
 	}

@@ -30,9 +30,9 @@ public class MapApiServiceImpl implements MapApiService {
 		final HttpHeaders headers = new HttpHeaders();
 		headers.add("content-type", "application/json");
 		headers.add("Cookie", mapSessionId);
-		final HttpEntity<Object> entity = new HttpEntity<Object>(requestObject, headers);
+		final HttpEntity<Object> entity = new HttpEntity<>(requestObject, headers);
 		final ResponseEntity<String> response = restTemplate.exchange(url, requestMethod, entity, String.class);
-		return new AsyncResult<ResponseEntity<String>>(response);
+		return new AsyncResult<>(response);
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class MapApiServiceImpl implements MapApiService {
 			T requestObject) {
 		final String apiError = e.getMessage() + " :: " + "URL: " + url + " :: " + "requestMethod: " + requestMethod
 				+ " :: " + "requestObject: " + requestObject;
-		logger.error("Map API error: " + apiError);
+		logger.error("Map API error: {} ", apiError);
 		return null;
 	}
 

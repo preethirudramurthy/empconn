@@ -142,7 +142,7 @@ public class EmployeeOnboardingService {
 	}
 
 	@Transactional
-	private void onboardOrEmployee(SFEmployeeDto sfEmployee) {
+	public void onboardOrEmployee(SFEmployeeDto sfEmployee) {
 
 		try {
 			final Employee employee = employeeRepository.findByEmpCodeAndIsActiveTrue(sfEmployee.getEmpCode());
@@ -265,9 +265,9 @@ public class EmployeeOnboardingService {
 
 	private void unEarmark(final Employee savedEmployee) {
 		final List<Earmark> earmarks = earmarkRepository.findByAllocationEmployee(savedEmployee);
-		earmarks.forEach(e -> {
-			earmarkService.unearmarkBySystem(e, ApplicationConstants.UNEARMARK_ON_EMPLOYEE_UPDATE_COMMENT);
-		});
+		earmarks.forEach(e -> 
+			earmarkService.unearmarkBySystem(e, ApplicationConstants.UNEARMARK_ON_EMPLOYEE_UPDATE_COMMENT)
+		);
 	}
 
 	private void cancelNdRequest(final Employee savedEmployee) {
@@ -294,7 +294,6 @@ public class EmployeeOnboardingService {
 
 		// Set Primary manager and Gdm of the employee
 		if (employeeService.isDelivery(savedEmployee)) {
-			// savedEmployee.setEmployee(centralBenchService.getDevManager());
 			savedEmployee.setEmployee2(centralBenchService.getDevGdm());
 			savedEmployee = employeeRepository.save(savedEmployee);
 		} else {
@@ -337,7 +336,7 @@ public class EmployeeOnboardingService {
 
 		final AllocationStatus pureBenchStatus = allocationStatusRepository
 				.findByStatus(ApplicationConstants.ALLOCATION_STATUS_PB);
-		final Boolean isDelivery = employeeService.isDelivery(employee);
+		final boolean isDelivery = employeeService.isDelivery(employee);
 		final Project bench = projectService.getBenchProject(isDelivery);
 		final Location location = locationRepository.findByName(ApplicationConstants.LOCATION_GLOBAL);
 		final ProjectLocation globalBenchProjectLocation = projectLocationRespository
@@ -348,7 +347,6 @@ public class EmployeeOnboardingService {
 		final Employee manager = (isDelivery) ? globalBenchProjectLocation.getEmployee1()
 				: employeeRepository.findByEmpCodeAndIsActiveTrue(reportingManagerEmpCode);
 
-		// allocation.setAllocatedPercentage(100);
 		allocation.setAllocationManagerId(manager);
 		allocation.setReportingManagerId(manager);
 		allocation.setAllocationStatus(pureBenchStatus);
@@ -357,7 +355,6 @@ public class EmployeeOnboardingService {
 		allocation.setIsActive(Boolean.TRUE);
 		allocation.setProject(bench);
 		allocation.setProjectLocation(globalBenchProjectLocation);
-		// allocation.setStartDate(TimeUtils.getToday());
 		allocation.setWorkGroup(workGroup);
 		allocation.setCreatedOn(TimeUtils.getCreatedOn());
 		allocation.setIsBillable(false);

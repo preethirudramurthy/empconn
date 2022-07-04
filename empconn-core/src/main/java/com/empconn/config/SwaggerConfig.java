@@ -21,7 +21,7 @@ public class SwaggerConfig {
 	public static final ApiInfo DEFAULT_API_INFO = new ApiInfo("EmpConn API", "EmpConn API Description", "1.0",
 			"termsOfServiceUrl", new Contact("", "", ""), "license", "licenseUrl", Arrays.asList());
 
-	private static final Set<String> DEFAULT_PRODUCES_AND_CONSUMES = new HashSet<String>(
+	private static final Set<String> DEFAULT_PRODUCES_AND_CONSUMES = new HashSet<>(
 			Arrays.asList("application/json"));
 
 	@Bean

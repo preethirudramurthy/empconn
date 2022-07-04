@@ -18,8 +18,6 @@ public class SameSiteConfig extends GenericFilterBean {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		final HttpServletResponse resp = (HttpServletResponse) response;
-		// TODO: Seems like this configuration itself not needed. There is no
-		// cookie(key=value) info we are setting here
 		resp.addHeader("Set-Cookie", "HttpOnly;Secure; SameSite=NONE");
 		chain.doFilter(request, response);
 

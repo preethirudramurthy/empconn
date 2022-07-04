@@ -11,10 +11,10 @@ public class SslCiphersConfig {
 
 	@Bean
 	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> servletContainerCustomizer() {
-		return factory -> {
+		return factory -> 
 			factory.addConnectorCustomizers(
-					c -> ((AbstractHttp11Protocol<?>) c.getProtocolHandler()).setUseServerCipherSuitesOrder(true));
-		};
+					c -> ((AbstractHttp11Protocol<?>) c.getProtocolHandler()).setUseServerCipherSuitesOrder(true))
+		;
 	}
 
 }

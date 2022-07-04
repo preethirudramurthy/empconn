@@ -58,25 +58,25 @@ public class MasterAdditionService {
 			Location location = null;
 			Title title = null;
 
-			if(businessUnitShouldBeCreated(sfEmployee, employee))
+			if(businessUnitShouldBeCreated(sfEmployee))
 				businessUnit = businessUnitRepository.save(initialize(BusinessUnit.class, sfEmployee.getBusinessUnit()));
 			else
 				businessUnit = getBusinessUnit(sfEmployee.getBusinessUnit());
 			employee.setBusinessUnit(businessUnit);
 
-			if(divisionShouldBeCreated(sfEmployee, employee))
+			if(divisionShouldBeCreated(sfEmployee))
 				division = divisionRepository.save(initialize(Division.class, sfEmployee.getDivision()));
 			else
 				division = getDivision(sfEmployee.getDivision());
 			employee.setDivision(division);
 
-			if(departmentShouldBeCreated(sfEmployee, employee))
+			if(departmentShouldBeCreated(sfEmployee))
 				department = departmentRepository.save(initialize(Department.class, sfEmployee.getDepartment()));
 			else
 				department = getDepartment(sfEmployee.getDepartment());
 			employee.setDepartment(department);
 
-			if(locationShouldBeCreated(sfEmployee, employee)) {
+			if(locationShouldBeCreated(sfEmployee)) {
 				final Location l = initialize(Location.class, sfEmployee.getLocationGroup());
 				l.setHierarchy(locationRepository.findMaxHierarchy());
 				location = locationRepository.save(l);
@@ -85,7 +85,7 @@ public class MasterAdditionService {
 				location = getLocation(sfEmployee.getLocationGroup());
 			employee.setLocation(location);
 
-			if(titleShouldBeCreated(sfEmployee, employee))
+			if(titleShouldBeCreated(sfEmployee))
 				title = titleRepository.save(initialize(Title.class, sfEmployee.getTitle()));
 			else
 				title = getTitle(sfEmployee.getTitle());
@@ -104,28 +104,23 @@ public class MasterAdditionService {
 		return employee;
 	}
 
-	private boolean divisionShouldBeCreated(SFEmployeeDto sfEmployee, Employee employee) {
-		//		return null == employee.getDivision() && StringUtils.isNotEmpty(sfEmployee.getDivision());
+	private boolean divisionShouldBeCreated(SFEmployeeDto sfEmployee) {
 		return StringUtils.isNotEmpty(sfEmployee.getDivision()) && null == getDivision(sfEmployee.getDivision());
 	}
 
-	private boolean titleShouldBeCreated(SFEmployeeDto sfEmployee, Employee employee) {
-		//		return null == employee.getTitle() && StringUtils.isNotEmpty(sfEmployee.getTitle());
+	private boolean titleShouldBeCreated(SFEmployeeDto sfEmployee) {
 		return StringUtils.isNotEmpty(sfEmployee.getTitle()) && null == getTitle(sfEmployee.getTitle());
 	}
 
-	private boolean locationShouldBeCreated(SFEmployeeDto sfEmployee, Employee employee) {
-		//		return null == employee.getLocation() && StringUtils.isNotEmpty(sfEmployee.getLocationGroup());
+	private boolean locationShouldBeCreated(SFEmployeeDto sfEmployee) {
 		return StringUtils.isNotEmpty(sfEmployee.getLocationGroup()) && null == getLocation(sfEmployee.getLocationGroup());
 	}
 
-	private boolean departmentShouldBeCreated(SFEmployeeDto sfEmployee, Employee employee) {
-		//		return null == employee.getDepartment() && StringUtils.isNotEmpty(sfEmployee.getDepartment());
+	private boolean departmentShouldBeCreated(SFEmployeeDto sfEmployee) {
 		return StringUtils.isNotEmpty(sfEmployee.getDepartment()) && null == getDepartment(sfEmployee.getDepartment());
 	}
 
-	private boolean businessUnitShouldBeCreated(SFEmployeeDto sfEmployee, Employee employee) {
-		//		return null == employee.getBusinessUnit() && StringUtils.isNotEmpty(sfEmployee.getBusinessUnit());
+	private boolean businessUnitShouldBeCreated(SFEmployeeDto sfEmployee) {
 		return StringUtils.isNotEmpty(sfEmployee.getBusinessUnit()) && null == getBusinessUnit(sfEmployee.getBusinessUnit());
 	}
 

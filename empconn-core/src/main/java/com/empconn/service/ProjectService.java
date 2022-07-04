@@ -66,6 +66,8 @@ import com.empconn.vo.UnitValue;
 @Component
 public class ProjectService {
 
+	private static final String EDIT_PROJECT = "EDIT-PROJECT";
+
 	@Autowired
 	private ProjectRepository projectRepository;
 
@@ -132,7 +134,7 @@ public class ProjectService {
 	public IsValidDto isValidNewProjectInAccount(String projectName, String accountId) {
 		final Set<Project> projectsInAccount = projectRepository.findProjectsInAccountForNameValidation(projectName,
 				Integer.parseInt(accountId));
-		if (projectsInAccount.size() == 0)
+		if (projectsInAccount.isEmpty())
 			return new IsValidDto(true);
 		return new IsValidDto(false);
 	}
@@ -140,9 +142,7 @@ public class ProjectService {
 	public boolean isValidProjectInAccountForProject(String projectName, Long projectId, Integer accountId) {
 		final Set<Project> projectsInAccount = projectRepository
 				.findProjectsInAccountForNameValidationOtherThanProject(projectName, projectId, accountId);
-		if (projectsInAccount.size() == 0)
-			return true;
-		return false;
+		return (projectsInAccount.isEmpty());
 	}
 
 	public List<UnitValue> getProjects(String accountId, Boolean isActive, Boolean onlyFutureReleaseDate,
@@ -166,7 +166,7 @@ public class ProjectService {
 
 	public ProjectDetailsDto getProjectDetails(String projectId) {
 		final Optional<Project> project = projectRepository.findById(Long.parseLong(projectId));
-		return projectDetailsMapper.projectToProjectDetailsDto(project.get());
+		return project.isPresent()? projectDetailsMapper.projectToProjectDetailsDto(project.get()):null;
 	}
 
 	public List<ProjectSummaryDto> getProjectSummaryList(ProjectSummarySearchDto searchDto) {
@@ -178,12 +178,12 @@ public class ProjectService {
 		else if (leadUserRole.equals(UserRoles.GDM.name()))
 			return gdmProjectSummary(searchDto);
 		else
-			return managerProjectSummary(searchDto);
+			return managerProjectSummary();
 	}
 
 	private List<ProjectSummaryDto> pmoProjectSummary(ProjectSummarySearchDto searchDto) {
 		final Set<String> pmoStatuses;
-		if (searchDto.getIncludeInactive() == null || searchDto.getIncludeInactive() == false)
+		if (searchDto.getIncludeInactive() == null || !searchDto.getIncludeInactive())
 			pmoStatuses = Arrays.stream(ProjectSpec.searchStatusesWithOutInactive).collect(Collectors.toSet());
 		else
 			pmoStatuses = Arrays.stream(ProjectSpec.searchStatuses).collect(Collectors.toSet());
@@ -205,7 +205,7 @@ public class ProjectService {
 		final Long empId = jwtEmployeeUtil.getLoggedInEmployee().getEmployeeId();
 		final Set<Long> projectIds = projectLocationRespository.findProjectsWhereOneOfManagerIs(empId);
 		final Set<String> gdmStatuses;
-		if (searchDto.getIncludeInactive() == null || searchDto.getIncludeInactive() == false)
+		if (searchDto.getIncludeInactive() == null || !searchDto.getIncludeInactive())
 			gdmStatuses = Arrays.stream(ProjectSpec.searchStatusesWithOutInactive).collect(Collectors.toSet());
 		else
 			gdmStatuses = Arrays.stream(ProjectSpec.searchStatuses).collect(Collectors.toSet());
@@ -219,7 +219,7 @@ public class ProjectService {
 		return projectProjectSummaryDtoMapper.projectsToProjectSummaryDtos(projects);
 	}
 
-	private List<ProjectSummaryDto> managerProjectSummary(ProjectSummarySearchDto searchDto) {
+	private List<ProjectSummaryDto> managerProjectSummary() {
 		final Set<Long> projectIds = projectLocationRespository
 				.findProjectsWhereOneOfManagerIs(jwtEmployeeUtil.getLoggedInEmployee().getEmployeeId());
 		final List<Project> managerProjects = projectRepository.findProjectSummaryForManager(projectIds);
@@ -266,7 +266,7 @@ public class ProjectService {
 		return searchSpec;
 	}
 
-	public Project getBenchProject(Boolean isDelivery) {
+	public Project getBenchProject(boolean isDelivery) {
 		if (isDelivery) {
 			return projectRepository.findByAccountCategoryAndName(ApplicationConstants.INTERNAL_CATEGORY,
 					ApplicationConstants.DELIVERY_BENCH_PROJECT_NAME);
@@ -289,7 +289,7 @@ public class ProjectService {
 	@Transactional
 	public PinStatusChangedDto activateProject(PinStatusChangeDto dto) {
 		final PinStatusChangedDto changedDto = new PinStatusChangedDto();
-		final Project project = projectRepository.findByProjectId(Long.valueOf(dto.getProjectId()));
+		final Project project = projectRepository.findByProjectId(dto.getProjectId());
 		String oldStatus = "";
 		if (project.getCurrentStatus().equalsIgnoreCase(ProjectStatus.PROJECT_ON_HOLD.toString()))
 			oldStatus = ApplicationConstants.ON_HOLD;
@@ -298,7 +298,7 @@ public class ProjectService {
 			final Project saveProject = projectRepository.save(project);
 			changedDto.setNewState(ProjectStatus.PMO_APPROVED.toString());
 			pinProjectMailService.mailForProjectStatusChangeActive(project, ApplicationConstants.ACTIVE, oldStatus);
-			mapHandler.integrateWithMap(saveProject, "EDIT-PROJECT");
+			mapHandler.integrateWithMap(saveProject, EDIT_PROJECT);
 			syncToTimesheetService.syncProject(saveProject);
 		} else {
 			throw new EmpConnException("CheckProjectStatus");
@@ -324,7 +324,7 @@ public class ProjectService {
 				}
 			});
 			final Set<Allocation> allocation = allocationRepository.findByProjectId(dto.getProjectId());
-			if (allocation.size() > 0) {
+			if (!allocation.isEmpty()) {
 				throw new EmpConnException("NoResourceAllocated");
 			} else {
 				project.setCurrentStatus(ProjectStatus.PROJECT_INACTIVE.toString());
@@ -332,7 +332,7 @@ public class ProjectService {
 				changedDto.setNewState(ProjectStatus.PROJECT_INACTIVE.toString());
 				pinProjectMailService.mailForProjectStatusChangeInactive(project, ApplicationConstants.INACTIVE,
 						oldStatus);
-				mapHandler.integrateWithMap(saveProject, "EDIT-PROJECT");
+				mapHandler.integrateWithMap(saveProject, EDIT_PROJECT);
 				syncToTimesheetService.syncProject(saveProject);
 			}
 		} else {
@@ -345,7 +345,7 @@ public class ProjectService {
 	@Transactional
 	public ProjectStatusChangeCommentDto projectOnHold(PinStatusChangeCommentDto dto) {
 		final ProjectStatusChangeCommentDto changedDto = new ProjectStatusChangeCommentDto();
-		final Project project = projectRepository.findByProjectId(Long.valueOf(dto.getProjectId()));
+		final Project project = projectRepository.findByProjectId(dto.getProjectId());
 		String oldStatus = "";
 		if (project.getCurrentStatus().equalsIgnoreCase(ProjectStatus.PMO_APPROVED.toString()))
 			oldStatus = ApplicationConstants.ACTIVE;
@@ -360,7 +360,7 @@ public class ProjectService {
 
 			changedDto.setNewState(ProjectStatus.PROJECT_ON_HOLD.toString());
 			changedDto.setComment(dto.getComment());
-			mapHandler.integrateWithMap(saveProject, "EDIT-PROJECT");
+			mapHandler.integrateWithMap(saveProject, EDIT_PROJECT);
 			pinProjectMailService.mailForProjectStatusChangeOnHold(project, ApplicationConstants.ON_HOLD, oldStatus);
 		} else {
 			throw new EmpConnException("CheckProjectStatus");
@@ -379,7 +379,7 @@ public class ProjectService {
 		if (value > 0) {
 			changedDto.setNewEndDate(dto.getEndDate());
 			final ChangeReleaseDateDto changeReleaseDateDto = new ChangeReleaseDateDto();
-			final List<ChangeReleaseDateListDto> changeReleaseDateList = new ArrayList<ChangeReleaseDateListDto>();
+			final List<ChangeReleaseDateListDto> changeReleaseDateList = new ArrayList<>();
 			for (final Allocation allocation : allocations) {
 				changeReleaseDateList
 						.add(new ChangeReleaseDateListDto(allocation.getAllocationId().toString(), dto.getEndDate(),
@@ -438,7 +438,7 @@ public class ProjectService {
 		if (isProjectNameIsChanged)
 			doPostProjectNameUpdateIntegrations(updateProjectDto, savedProject);
 
-		mapHandler.integrateWithMap(savedProject, "EDIT-PROJECT");
+		mapHandler.integrateWithMap(savedProject, EDIT_PROJECT);
 	}
 
 	private boolean isProjectDetailsChanged(UpdateProjectDetailsDto updateDetails, Project currentDetails) {
@@ -457,11 +457,9 @@ public class ProjectService {
 				&& !isStringListAndCommaStringsAreEqual(updateDetails.getDbList(), currentDetails.getDatabase()))
 			return true;
 
-		if (!CollectionUtils.isEmpty(updateDetails.getOsList())
-				&& !isStringListAndCommaStringsAreEqual(updateDetails.getOsList(), currentDetails.getOperatingSystem()))
-			return true;
+		return (!CollectionUtils.isEmpty(updateDetails.getOsList())
+				&& !isStringListAndCommaStringsAreEqual(updateDetails.getOsList(), currentDetails.getOperatingSystem()));
 
-		return false;
 	}
 
 	private boolean isStringListAndCommaStringsAreEqual(List<String> list1, String s) {
@@ -477,11 +475,11 @@ public class ProjectService {
 			project.setName(updateProjectDto.getProjectName());
 		if (!isNullOrEmpty(updateProjectDto.getDescription()))
 			project.setDescription(updateProjectDto.getDescription());
-		if (updateProjectDto.getTechList().size() > 0)
+		if (!updateProjectDto.getTechList().isEmpty())
 			project.setTechnology(String.join(",", updateProjectDto.getTechList()));
-		if (updateProjectDto.getOsList().size() > 0)
+		if (!updateProjectDto.getOsList().isEmpty())
 			project.setOperatingSystem(String.join(",", updateProjectDto.getOsList()));
-		if (updateProjectDto.getDbList().size() > 0)
+		if (!updateProjectDto.getDbList().isEmpty())
 			project.setDatabase(String.join(",", updateProjectDto.getDbList()));
 
 		return project;
@@ -493,35 +491,35 @@ public class ProjectService {
 					.filter(p -> p.getProjectLocationId().equals(Long.valueOf(dto.getProjectLocationId()))).findFirst();
 			if (pl.isPresent()) {
 				final ProjectLocation projectLocation = pl.get();
-				if (dto.getDevManager() != null && dto.getDevManager().getIsEdited() == true) {
+				if (dto.getDevManager() != null && dto.getDevManager().getIsEdited()) {
 					final Employee devemp = employeeRepository
 							.findByEmployeeId(Long.valueOf(dto.getDevManager().getId()));
 					projectLocation.setEmployee1(devemp);
 					syncToTimesheetService.syncProjectManager(projectLocation, devemp,
 							ApplicationConstants.WORK_GROUP_DEV);
 				}
-				if (dto.getQaManager() != null && dto.getQaManager().getIsEdited() == true) {
+				if (dto.getQaManager() != null && dto.getQaManager().getIsEdited()) {
 					final Employee qaemp = employeeRepository
 							.findByEmployeeId(Long.valueOf(dto.getQaManager().getId()));
 					projectLocation.setEmployee2(qaemp);
 					syncToTimesheetService.syncProjectManager(projectLocation, qaemp,
 							ApplicationConstants.QA_WORK_GROUP);
 				}
-				if (dto.getUiManager() != null && dto.getUiManager().getIsEdited() == true) {
+				if (dto.getUiManager() != null && dto.getUiManager().getIsEdited()) {
 					final Employee uiemp = employeeRepository
 							.findByEmployeeId(Long.valueOf(dto.getUiManager().getId()));
 					projectLocation.setEmployee3(uiemp);
 					syncToTimesheetService.syncProjectManager(projectLocation, uiemp,
 							ApplicationConstants.WORK_GROUP_UI);
 				}
-				if (dto.getManager1() != null && dto.getManager1().getIsEdited() == true) {
+				if (dto.getManager1() != null && dto.getManager1().getIsEdited()) {
 					final Employee man1emp = employeeRepository
 							.findByEmployeeId(Long.valueOf(dto.getManager1().getId()));
 					projectLocation.setEmployee4(man1emp);
 					syncToTimesheetService.syncProjectManager(projectLocation, man1emp,
 							ApplicationConstants.WORK_GROUP_SUPPORT_1);
 				}
-				if (dto.getManager2() != null && dto.getManager2().getIsEdited() == true) {
+				if (dto.getManager2() != null && dto.getManager2().getIsEdited()) {
 					final Employee man2emp = employeeRepository
 							.findByEmployeeId(Long.valueOf(dto.getManager2().getId()));
 					projectLocation.setEmployee5(man2emp);
@@ -541,27 +539,27 @@ public class ProjectService {
 					.filter(p -> p.getProjectLocationId().equals(Long.valueOf(dto.getProjectLocationId()))).findFirst();
 			if (pl.isPresent()) {
 				final ProjectLocation projectLocation = pl.get();
-				if (dto.getDevManager() != null && dto.getDevManager().getIsEdited() == true
+				if (dto.getDevManager() != null && dto.getDevManager().getIsEdited()
 						&& projectLocation.getEmployee1() != null)
 					pinProjectMailService.mailForProjectManagerChange(project, projectLocation.getEmployee1(),
 							projectLocation, "DEV");
 
-				if (dto.getQaManager() != null && dto.getQaManager().getIsEdited() == true
+				if (dto.getQaManager() != null && dto.getQaManager().getIsEdited()
 						&& projectLocation.getEmployee2() != null)
 					pinProjectMailService.mailForProjectManagerChange(project, projectLocation.getEmployee2(),
 							projectLocation, "QA");
 
-				if (dto.getUiManager() != null && dto.getUiManager().getIsEdited() == true
+				if (dto.getUiManager() != null && dto.getUiManager().getIsEdited()
 						&& projectLocation.getEmployee3() != null) {
 					pinProjectMailService.mailForProjectManagerChange(project, projectLocation.getEmployee3(),
 							projectLocation, "UI");
 				}
-				if (dto.getManager1() != null && dto.getManager1().getIsEdited() == true
+				if (dto.getManager1() != null && dto.getManager1().getIsEdited()
 						&& projectLocation.getEmployee4() != null) {
 					pinProjectMailService.mailForProjectManagerChange(project, projectLocation.getEmployee4(),
 							projectLocation, "SUPPORT1");
 				}
-				if (dto.getManager2() != null && dto.getManager2().getIsEdited() == true
+				if (dto.getManager2() != null && dto.getManager2().getIsEdited()
 						&& projectLocation.getEmployee5() != null) {
 					pinProjectMailService.mailForProjectManagerChange(project, projectLocation.getEmployee5(),
 							projectLocation, "SUPPORT2");
@@ -589,18 +587,15 @@ public class ProjectService {
 
 	public static boolean isNullOrEmpty(String str) {
 		StringUtils.isEmpty("");
-		if (str != null && !str.isEmpty())
-			return false;
-		return true;
+		return !(str != null && !str.isEmpty());
 	}
 
 	public void sfCall(Project project) {
 		final Set<Allocation> allocations = allocationRepository.findByProjectId(project.getProjectId());
-		final List<ProjectChangeDto> projectChangeDtos = new ArrayList<ProjectChangeDto>();
+		final List<ProjectChangeDto> projectChangeDtos = new ArrayList<>();
 		for (final Allocation a : allocations) {
 			final Allocation primaryAllocation = a.getEmployee().getPrimaryAllocation();
 			if (primaryAllocation.getAllocationId().equals(a.getAllocationId())) {
-				// final Date startDate = a.getProject().getStartDate();
 				final ProjectChangeDto projectChangeDto = new ProjectChangeDto(
 						String.valueOf(a.getEmployee().getEmployeeId()), new Date(),
 						String.valueOf(a.getProject().getProjectId()),

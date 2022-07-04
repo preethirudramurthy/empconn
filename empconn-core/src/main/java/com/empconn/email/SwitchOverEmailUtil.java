@@ -10,9 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.empconn.persistence.entities.Allocation;
 import com.empconn.persistence.entities.AllocationDetail;
+import com.empconn.persistence.entities.Auditable;
 
 @Component
 public class SwitchOverEmailUtil {
+
+	private static final String OLD_PROJECT_NAME = "oldProjectName";
 
 	public Map<String, Object> computeSwitchOverToTemplate(Allocation a, LocalDate dateOfMovement) {
 		final Map<String, Object> templateModel = commonParameters(a, dateOfMovement);
@@ -29,10 +32,10 @@ public class SwitchOverEmailUtil {
 	public Map<String, Object> computePartialSwitchOverTemplate(Allocation a, LocalDate dateOfMovement, Allocation newAllocation) {
 		final Map<String, Object> templateModel = commonParameters(a, dateOfMovement);
 		templateModel.put("existingProject", a.getProject().getName());
-		templateModel.put("existingProjectPercentage", a.getAllocationDetails().stream().filter(x-> x.getIsActive())
+		templateModel.put("existingProjectPercentage", a.getAllocationDetails().stream().filter(Auditable::getIsActive)
 				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum));
 		templateModel.put("newProject", newAllocation.getProject().getName());
-		templateModel.put("newProjectPercentage", newAllocation.getAllocationDetails().stream().filter(x-> x.getIsActive())
+		templateModel.put("newProjectPercentage", newAllocation.getAllocationDetails().stream().filter(Auditable::getIsActive)
 				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum));
 		return templateModel;
 
@@ -40,9 +43,9 @@ public class SwitchOverEmailUtil {
 
 	public Map<String, Object> computeSwitchOverFromTemplate(Allocation a, LocalDate dateOfMovement) {
 		final Map<String, Object> templateModel = commonParameters(a, dateOfMovement);
-		templateModel.put("oldProjectName", a.getProject().getName());
+		templateModel.put(OLD_PROJECT_NAME, a.getProject().getName());
 
-		templateModel.put("oldProjectName", a.getProject().getName());
+		templateModel.put(OLD_PROJECT_NAME, a.getProject().getName());
 		templateModel.put("oldManagerName",
 				a.getReportingManagerId().getFirstName() + " " + a.getReportingManagerId().getLastName());
 		templateModel.put("oldManagerId", a.getReportingManagerId().getEmpCode());
@@ -56,7 +59,7 @@ public class SwitchOverEmailUtil {
 		templateModel.put("empName", a.getEmployee().getFirstName() + " " + a.getEmployee().getLastName());
 		templateModel.put("empId", a.getEmployee().getEmpCode());
 		templateModel.put("empTitle", a.getEmployee().getTitle().getName());
-		templateModel.put("allocationPercentage", a.getAllocationDetails().stream().filter(x-> x.getIsActive())
+		templateModel.put("allocationPercentage", a.getAllocationDetails().stream().filter(Auditable::getIsActive)
 				.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum));
 		templateModel.put("dateOfMovement", dateOfMovement.format(DateTimeFormatter.ofPattern("dd-MMM-yy")));
 		return templateModel;

@@ -22,7 +22,7 @@ public class EmployeeService {
 
 	}
 
-	public Boolean isNotDelivery(Employee employee) {
+	public boolean isNotDelivery(Employee employee) {
 		return !isDelivery(employee);
 	}
 

@@ -170,7 +170,7 @@ public class EarmarkService {
 	}
 
 	public void mailForUnEarmark(Earmark earmark) {
-		final Map<String, Object> templateModel = new HashMap<String, Object>();
+		final Map<String, Object> templateModel = new HashMap<>();
 		final List<String> emailToList = new ArrayList<>();
 		final List<String> emailCCList = new ArrayList<>();
 		
@@ -275,7 +275,7 @@ public class EarmarkService {
 
 	public Set<ManagerInfoDto> getManagerDropdown(DropdownManagerDto managerDropdownDto) {
 		final Set<ManagerInfoDto> managerInfoDtos = new HashSet<>();
-		final Set<Employee> empList = new HashSet<Employee>();
+		final Set<Employee> empList = new HashSet<>();
 		final Employee loginUser = jwtEmployeeUtil.getLoggedInEmployee();
 
 		final List<Project> projects = projectRepository
@@ -338,7 +338,7 @@ public class EarmarkService {
 	}
 
 	public void mailForEarmark(List<Earmark> earMarks) {
-		final Map<String, Object> templateModel = new HashMap<String, Object>();
+		final Map<String, Object> templateModel = new HashMap<>();
 		final List<String> emailToList = new ArrayList<>();
 		final List<String> emailCCList = new ArrayList<>();
 		
@@ -406,7 +406,7 @@ public class EarmarkService {
 	}
 
 	public void mailForUnEarmarkBySystem(Earmark earmark) {
-		final Map<String, Object> templateModel = new HashMap<String, Object>();
+		final Map<String, Object> templateModel = new HashMap<>();
 
 		final List<String> gdmEmails = (earmark.getProject() != null)
 				? earmark.getProject().getGdms().values().stream().map(Employee::getEmail).collect(Collectors.toList())
@@ -549,9 +549,8 @@ public class EarmarkService {
 	}
 
 	private boolean isUserGdmOfProject(Project project) {
-		final boolean isUserGdmOfProject = project.getGdms().values().stream()
-				.filter(e -> e.getEmployeeId().equals(jwtEmployeeUtil.getLoggedInEmployeeId())).findAny().isPresent();
-		return isUserGdmOfProject;
+		return project.getGdms().values().stream()
+				.anyMatch(e -> e.getEmployeeId().equals(jwtEmployeeUtil.getLoggedInEmployeeId()));
 	}
 
 }

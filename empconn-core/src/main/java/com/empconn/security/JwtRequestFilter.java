@@ -71,21 +71,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 				// that the current user is authenticated. So it passes the
 				// Spring Security Configurations successfully.
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-				refreshToken(request, response, jwtToken, userDetails);
+				refreshToken(request, response, userDetails);
 			}
 		}
 		chain.doFilter(request, response);
 	}
 
-	public void refreshToken(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String currentToken,
+	public void refreshToken(HttpServletRequest httpRequest, HttpServletResponse httpResponse, 
 			UserDetails userDetails) {
 
 		final String tokenKey = jwtTokenUtil.getTokenKey(httpRequest);
 		final String updatedToken = jwtTokenUtil.generateToken(userDetails);
-
-		// TODO: need to maintain user session in DB
-		// loginTokenRepository.delete(new LoginToken(currentToken));
-		// loginTokenRepository.save(new LoginToken(updatedToken));
 
 		if (tokenKey.equals(ApplicationConstants.CRAN_SESSION))
 			httpResponse.addHeader(ApplicationConstants.CRAN_SESSION, updatedToken);

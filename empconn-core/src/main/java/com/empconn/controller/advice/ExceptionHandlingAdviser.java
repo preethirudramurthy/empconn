@@ -37,8 +37,7 @@ public class ExceptionHandlingAdviser extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<Object> handleExceptions(Throwable throwable, WebRequest webRequest) {
 		final Set<ExceptionResponse> response = exceptionUtil.getExceptions(throwable);
-		final ResponseEntity<Object> entity = new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		return entity;
+		return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

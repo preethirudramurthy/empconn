@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class IsValidDto {
 	
 	@JsonProperty
-	private Boolean isValid;
+	private boolean isValid;
 
-	public IsValidDto(Boolean isValid) {
+	public IsValidDto(boolean isValid) {
 		super();
 		this.isValid = isValid;
 	}
@@ -16,11 +16,11 @@ public class IsValidDto {
 		super();
 	}
 
-	public Boolean getIsValid() {
+	public boolean getIsValid() {
 		return isValid;
 	}
 
-	public void setIsValid(Boolean isValid) {
+	public void setIsValid(boolean isValid) {
 		this.isValid = isValid;
 	}
 

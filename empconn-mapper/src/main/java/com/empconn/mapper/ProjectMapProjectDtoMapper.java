@@ -24,9 +24,6 @@ public abstract class ProjectMapProjectDtoMapper {
 
 	@Named("currentStatusToIsProjectActive")
 	public boolean currentStatusToIsProjectActive(String status) {
-		if (status.equals(ProjectStatus.PMO_APPROVED.name()))
-			return true;
-		
-		return false;
+		return (status.equals(ProjectStatus.PMO_APPROVED.name()));
 	}
 }

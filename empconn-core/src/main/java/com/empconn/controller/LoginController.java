@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.empconn.constants.ApplicationConstants;
 import com.empconn.dto.TokenDto;
 import com.empconn.dto.UserDto;
+import com.empconn.exception.EmpConnException;
 import com.empconn.security.JwtRequest;
 import com.empconn.security.LoginService;
 import com.empconn.security.UsernameAndPasswordRequest;
@@ -44,14 +45,14 @@ public class LoginController {
 
 	@PostMapping("authenticate")
 	public UserDto authenticateSSO(HttpServletResponse httpResponse, @RequestBody JwtRequest authenticationRequest)
-			throws Exception {
+	{
 		logger.debug("Authenticate the user");
 		return loginService.authenticateSSOUser(httpResponse, authenticationRequest);
 	}
 
 	@PostMapping("login")
 	public UserDto authenticate(HttpServletResponse httpResponse,
-			@RequestBody UsernameAndPasswordRequest authenticationRequest) throws Exception {
+			@RequestBody UsernameAndPasswordRequest authenticationRequest) {
 
 		if (activeProfile.equalsIgnoreCase(ApplicationConstants.PROFILE_PROD)) {
 			httpResponse.setStatus(404);
@@ -63,7 +64,7 @@ public class LoginController {
 
 	@PostMapping("/service/login")
 	public TokenDto authenticateServiceUser(HttpServletResponse httpResponse,
-			@RequestBody UsernameAndPasswordRequest authenticationRequest) throws Exception {
+			@RequestBody UsernameAndPasswordRequest authenticationRequest) throws EmpConnException {
 		logger.debug("Authenticate the service user");
 		return loginService.authenticateServiceUser(authenticationRequest);
 	}
@@ -80,7 +81,7 @@ public class LoginController {
 
 	@GetMapping("logout")
 	public void doLogout(HttpServletRequest request, HttpServletResponse response) {
-		loginService.doLogout(request, response);
+		loginService.doLogout(response);
 	}
 
 }

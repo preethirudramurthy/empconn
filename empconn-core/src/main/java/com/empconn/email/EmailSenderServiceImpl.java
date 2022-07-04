@@ -25,7 +25,6 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 	@Override
 	public void onError(Exception e, MimeMessage mimeMessage) {
 		logger.error("Exception[{}] in sending mail", e.getMessage());
-		// TODO: Log/report this failure for reference or further action? Consider this in future releases if needed
 	}
 
 }

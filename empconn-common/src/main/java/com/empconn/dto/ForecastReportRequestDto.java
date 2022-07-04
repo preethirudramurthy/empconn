@@ -1,9 +1,11 @@
 package com.empconn.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ForecastReportRequestDto {
+public class ForecastReportRequestDto implements Serializable {
 
+	private static final long serialVersionUID = 3140461280342415582L;
 	private String monthYear;
 	private List<String> titleIdList;
 	private List<String> primarySkillIdList;

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 
+import com.empconn.persistence.entities.Auditable;
 import com.empconn.persistence.entities.Employee;
 import com.empconn.persistence.entities.EmployeeRole;
 import com.empconn.persistence.entities.Role;
@@ -46,7 +47,7 @@ public class EmployeeRoleService {
 	}
 
 	@Transactional
-	private void addEmployeeRole(final Employee employee, final String roleName) {
+	public void addEmployeeRole(Employee employee, String roleName) {
 		final EmployeeRole employeeRole = new EmployeeRole();
 		employeeRole.setEmployee(employee);
 		final Role role = roleRepository
@@ -81,7 +82,7 @@ public class EmployeeRoleService {
 		// adding to the role name set to prevent this
 		roleNames.add("GENERAL");
 		final Set<EmployeeRole> employeeRoles = employee.getEmployeeRoles().stream()
-				.filter(er -> er.getIsActive() == true).collect(Collectors.toSet());
+				.filter(Auditable::getIsActive).collect(Collectors.toSet());
 		final List<EmployeeRole> currentRolesNotInNewRoles = employeeRoles.stream()
 				.filter(er -> !roleNames.contains(er.getRole().getName())).collect(Collectors.toList());
 

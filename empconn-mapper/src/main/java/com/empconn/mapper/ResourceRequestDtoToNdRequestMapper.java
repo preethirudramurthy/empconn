@@ -1,7 +1,9 @@
 package com.empconn.mapper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -51,7 +53,7 @@ public abstract class ResourceRequestDtoToNdRequestMapper {
 			}
 			return list;
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Mapping(target = "createdBy", expression = "java(jwtEmployeeUtil.getLoggedInEmployee().getEmployeeId())")
@@ -64,13 +66,13 @@ public abstract class ResourceRequestDtoToNdRequestMapper {
 
 	@Named("getProject")
 	public Project getProject(Long projectId) {
-		if (projectRepository.findById(projectId).isPresent()) return projectRepository.findById(projectId).get();
-		return null;
+		Optional<Project> projectOpt = projectRepository.findById(projectId);
+		return (projectOpt.isPresent())? projectOpt.get():null;
 	}
 
 	@Named("getEmployee")
 	public Employee getEmployee(Long resourceId) {
-		if (employeeRepository.findById(resourceId).isPresent()) return employeeRepository.findById(resourceId).get();
-		return null;
+		Optional<Employee> empOpt = employeeRepository.findById(resourceId);
+		return (empOpt.isPresent())? empOpt.get():null;
 	}
 }

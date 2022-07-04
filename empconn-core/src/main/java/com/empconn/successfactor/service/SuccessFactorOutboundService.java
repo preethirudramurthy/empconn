@@ -33,7 +33,7 @@ public abstract class SuccessFactorOutboundService {
 
 	public Boolean syncChanges(Set<SuccessFactorsOutboundData> successFactorData,String uploadType) {
 		final String METHOD_NAME = "syncChanges";
-		logger.info(METHOD_NAME + " starts execution successfully");
+		logger.info(" {} starts execution successfully",METHOD_NAME);
 		Boolean isProcessed = Boolean.FALSE;
 		try {
 			logger.debug("Converting {} details to csv file", description());
@@ -49,7 +49,7 @@ public abstract class SuccessFactorOutboundService {
 			FileUtils.deleteQuietly(file);
 			isProcessed = Boolean.TRUE;
 		}catch(final Exception exception) {
-			logger.error("{} exception raised as : {}", exception);
+			logger.error("exception raised as : {}", exception.getMessage());
 		}
 		logger.info("{} exits successfully with isProcessed : {}", METHOD_NAME, isProcessed);
 		return isProcessed;

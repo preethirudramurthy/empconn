@@ -132,7 +132,7 @@ public class SyncToTimesheetService {
 								.comparing(Allocation::getCreatedOn, Timestamp::compareTo).reversed();
 						timesheetAllocations.sort(allocationCreatedOnComparator);
 
-						toAllocation.setTimesheetAllocation((timesheetAllocations != null && !timesheetAllocations.isEmpty() &&
+						toAllocation.setTimesheetAllocation((!timesheetAllocations.isEmpty() &&
 								!timesheetAllocations.get(0).getAllocationId().equals(toAllocation.getAllocationId()))?timesheetAllocations.get(0):null);
 						allocationRepository.save(toAllocation);
 
@@ -199,13 +199,13 @@ public class SyncToTimesheetService {
 			syncAccountRepository.save(new SyncAccount(securityUtil.getLoggedInEmployee().getEmployeeId(), ApplicationConstants.STATUS_PENDING, account));
 			syncProjectRepository.save(new SyncProject(securityUtil.getLoggedInEmployee().getEmployeeId(), ApplicationConstants.STATUS_PENDING, project));
 
-			project.getProjectLocations().forEach(pl -> {
+			project.getProjectLocations().forEach(pl -> 
 				pl.getAllManagers().entrySet().forEach(e -> {
 					final SyncProjectManager s = new SyncProjectManager(securityUtil.getLoggedInEmployee().getEmployeeId(),
 							e.getValue(),project,pl,workGroupRepository.findByName(e.getKey()),ApplicationConstants.STATUS_PENDING);
 					syncProjectManagerRepository.save(s);
-				});
-			});
+				})
+			);
 
 		}
 	}

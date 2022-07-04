@@ -59,10 +59,6 @@ public class PinController {
 
 	private static final Logger logger = LoggerFactory.getLogger(PinController.class);
 
-	/*
-	 * @Value("${app.domain}") private String domain;
-	 */
-
 	@Autowired
 	private PinService pinService;
 
@@ -98,7 +94,6 @@ public class PinController {
 	@GetMapping("/pin/get-pin-details")
 	public PinDetailsDto getPinDetails(@RequestParam String projectId) {
 		return pinService.getPinDetails(projectId);
-		// return PinResponse.getpinDetails();
 	}
 
 	@GetMapping("/pin/is-valid-new-project")
@@ -194,7 +189,7 @@ public class PinController {
 	@PostMapping("/pin/cancel-pin")
 	public void cancelPin(@RequestBody PinStatusChangeDto cancelDto) {
 		pinService.cancelPin(cancelDto);
-		return;
+		
 	}
 
 	@PostMapping("/pin/is-valid-salesforce-ids-for-the-project")

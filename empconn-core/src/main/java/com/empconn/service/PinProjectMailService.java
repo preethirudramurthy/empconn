@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -39,7 +38,19 @@ import com.empconn.utilities.IterableUtils;
 @Component
 public class PinProjectMailService {
 
-	private static final Logger logger = LoggerFactory.getLogger(PinService.class);
+	private static final String NEW_PROJECT_STATUS = "newProjectStatus";
+
+	private static final String OLD_PROJECT_STATUS = "oldProjectStatus";
+
+	private static final String VERTICAL_NAME = "verticalName";
+
+	private static final String END_DATE = "endDate";
+
+	private static final String START_DATE = "startDate";
+
+	private static final String PROJECT_NAME = "projectName";
+
+	private static final Logger logger = LoggerFactory.getLogger(PinProjectMailService.class);
 
 	@Autowired
 	private EmailService emailService;
@@ -70,7 +81,8 @@ public class PinProjectMailService {
 				}
 			} else
 				emailToList.add(project.getEmployee2().getEmail());
-			templateModel.put("projectName", project.getName());
+			templateModel.put(PROJECT_NAME,
+					project.getName());
 			templateModel.put("link", applicationUrl);
 			emailService.send("pin-initiated", templateModel, emailToList.toArray(new String[emailToList.size()]),
 					emailCCList.toArray(new String[emailCCList.size()]));
@@ -78,25 +90,25 @@ public class PinProjectMailService {
 		case "GDM_REVIEWED":
 			pinInitiator = employeeRepository.findByEmployeeId(project.getCreatedBy());
 			emailCCList.add(pinInitiator.getEmail());
-			templateModel.put("projectName", project.getName());
+			templateModel.put(PROJECT_NAME, project.getName());
 			emailService.send("pin-reviewed", templateModel, emailToList.toArray(new String[emailToList.size()]),
 					emailCCList.toArray(new String[emailCCList.size()]));
 			break;
 		case "GDM_REJECTED":
 			pinInitiator = employeeRepository.findByEmployeeId(project.getCreatedBy());
 			emailToList.add(pinInitiator.getEmail());
-			templateModel.put("projectName", project.getName());
+			templateModel.put(PROJECT_NAME, project.getName());
 			final Optional<ProjectComment> projectComment = IterableUtils.toList(project.getProjectComments()).stream()
 					.filter(c -> c.getStatus().equals(ProjectStatus.GDM_REJECTED.name()))
 					.max(Comparator.comparing(ProjectComment::getCreatedOn));
-			templateModel.put("comment", projectComment.get().getValue());
+			if (projectComment.isPresent()) templateModel.put("comment", projectComment.get().getValue());
 			emailService.send("pin-rejected-gdm", templateModel, emailToList.toArray(new String[emailToList.size()]),
 					emailCCList.toArray(new String[emailCCList.size()]));
 			break;
 		case "SENT_BACK":
 			pinInitiator = employeeRepository.findByEmployeeId(project.getCreatedBy());
 			emailToList.add(pinInitiator.getEmail());
-			templateModel.put("projectName", project.getName());
+			templateModel.put(PROJECT_NAME, project.getName());
 			templateModel.put("link", applicationUrl);
 			emailService.send("pin-sentback", templateModel, emailToList.toArray(new String[emailToList.size()]),
 					emailCCList.toArray(new String[emailCCList.size()]));
@@ -109,7 +121,7 @@ public class PinProjectMailService {
 				}
 			} else
 				emailToList.add(project.getEmployee2().getEmail());
-			templateModel.put("projectName", project.getName());
+			templateModel.put(PROJECT_NAME, project.getName());
 			templateModel.put("link", applicationUrl);
 			emailService.send("pin-resubmit", templateModel, emailToList.toArray(new String[emailToList.size()]),
 					emailCCList.toArray(new String[emailCCList.size()]));
@@ -123,9 +135,10 @@ public class PinProjectMailService {
 		logger.debug("preparing data to send mail");
 		final Map<String, Object> templateModel = new HashMap<>();
 		final List<String> emailCCList = getDevGdmOrQaGdm(project);
+		Optional<Employee> emOpt = employeeRepository.findById(project.getCreatedBy());
 		final String[] emailToList = new String[] {
-				employeeRepository.findById(project.getCreatedBy()).get().getEmail() };
-		templateModel.put("projectName", project.getName());
+				emOpt.isPresent()? emOpt.get().getEmail():"" };
+		templateModel.put(PROJECT_NAME, project.getName());
 		templateModel.put("comments", rejectDto.getComment());
 		emailService.send("pin-reject-email", templateModel, emailToList,
 				emailCCList.toArray(new String[emailCCList.size()]));
@@ -133,7 +146,7 @@ public class PinProjectMailService {
 
 	public void sendEmailForPinApprove(Project project) {
 		String templateName = "";
-		Boolean sendAttachment = false;
+		boolean sendAttachment = false;
 		if (!project.getAccount().getCategory().equalsIgnoreCase("Internal")) {
 			if (project.getProjectKickoffIsRequired()) {
 				templateName = "PIN-approval-external-project-kickOff-yes";
@@ -154,8 +167,6 @@ public class PinProjectMailService {
 		mailForPinApproved(project, templateName);
 		if (sendAttachment) {
 			final ProjectInformationDto informationDto = projectDtoMapper.projectToProjectInformationDto(project);
-			project.getProjectLocations().stream().map(ProjectLocation::getProjectLocationId)
-					.collect(Collectors.toSet());
 			mailForPinApprovedAttachment(project, informationDto);
 		}
 	}
@@ -165,11 +176,11 @@ public class PinProjectMailService {
 		final Map<String, Object> templateModel = new HashMap<>();
 		final List<String> toEmailId = getManagerByProjectLocation(project.getProjectLocations());
 		final List<String> ccEmailId = getDevGdmOrQaGdm(project);
-		templateModel.put("projectName", project.getName());
+		templateModel.put(PROJECT_NAME, project.getName());
 		templateModel.put("accountName", project.getAccount().getName());
 		templateModel.put("GDMName", projectService.getProjectGdm(project).getFullName());
-		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getStartDate()));
-		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getEndDate()));
+		templateModel.put(START_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getStartDate()));
+		templateModel.put(END_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getEndDate()));
 		templateModel.put("date", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getEndDate()));
 		templateModel.put("link", applicationUrl);
 		emailService.send(templateName, templateModel, toEmailId.toArray(new String[toEmailId.size()]),
@@ -179,26 +190,28 @@ public class PinProjectMailService {
 	private void mailForPinApprovedAttachment(Project project, ProjectInformationDto informationDto) {
 		final Map<String, Object> templateModel = new HashMap<>();
 		final List<String> managerName = getManagerNameByProjectLocation(project.getProjectLocations());
-		final Employee employee = employeeRepository.findById(project.getCreatedBy()).get();
-		informationDto.setInitiatedBy(employee.getFullName());
-		final Employee employeeApproved = employeeRepository.findById(project.getApprovedBy()).get();
-		informationDto.setApprovedBy(employeeApproved.getFullName());
+		Optional<Employee> createdOpt = employeeRepository.findById(project.getCreatedBy());
+		final Employee employee = createdOpt.isPresent()?createdOpt.get():null;
+		if (employee != null)informationDto.setInitiatedBy(employee.getFullName());
+		Optional<Employee> approverOpt = employeeRepository.findById(project.getApprovedBy());
+		final Employee employeeApproved = approverOpt.isPresent()?approverOpt.get():null;
+		if (employeeApproved != null) informationDto.setApprovedBy(employeeApproved.getFullName());
 		informationDto.setProjectManagerName(managerName.get(0));
 		informationDto
 				.setBusinessManagerName(project.getEmployee3() == null ? "" : project.getEmployee3().getFullName());
 		String initiationMeetingDate = "-";
-		if (project.getProjectKickoffIsRequired() != null && project.getProjectKickoffIsRequired()) {
+		if (project.getProjectKickoffIsRequired()) {
 			initiationMeetingDate = new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY)
 					.format(DateUtils.addDays(project.getStartDate(), 14));
 		}
 		informationDto.setInitialMeetingDate(initiationMeetingDate);
 		templateModel.put("meetingDate", initiationMeetingDate);
-		templateModel.put("projectName", project.getName());
+		templateModel.put(PROJECT_NAME, project.getName());
 		templateModel.put("projectKickoffRequired", project.getProjectKickoffIsRequired());
 		templateModel.put("projectInitiator", informationDto.getInitiatedBy());
 		templateModel.put("projectManager", informationDto.getProjectManagerName());
 		templateModel.put("projectInformation", informationDto);
-		emailService.send("pin-approved", templateModel, new String[] {}, new String[] { employee.getEmail() });
+		emailService.send("pin-approved", templateModel, new String[] {}, new String[] {employee!=null? employee.getEmail():"" });
 	}
 
 	public void mailForProjectStatusChangeActive(Project p, String newStatus, String oldStatus) {
@@ -212,13 +225,13 @@ public class PinProjectMailService {
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
-		templateModel.put("projectName", p.getName());
-		templateModel.put("verticalName", p.getAccount().getVertical().getName());
-		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
-		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
-		templateModel.put("oldProjectStatus", oldStatus);
-		templateModel.put("newProjectStatus", newStatus);
-		final String[] emailToList = new String[] { sb == null ? "" : sb.toString() + "" };
+		templateModel.put(PROJECT_NAME, p.getName());
+		templateModel.put(VERTICAL_NAME, p.getAccount().getVertical().getName());
+		templateModel.put(START_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
+		templateModel.put(END_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
+		templateModel.put(OLD_PROJECT_STATUS, oldStatus);
+		templateModel.put(NEW_PROJECT_STATUS, newStatus);
+		final String[] emailToList = new String[] { sb.toString()};
 		final String[] emailCCList = new String[] { p.getEmployee1() == null ? "" : p.getEmployee1().getEmail(),
 				p.getEmployee2() == null ? "" : p.getEmployee2().getEmail() };
 		emailService.send("project-status-change-active", templateModel, emailToList, emailCCList);
@@ -235,13 +248,13 @@ public class PinProjectMailService {
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
-		templateModel.put("projectName", p.getName());
-		templateModel.put("verticalName", p.getAccount().getVertical().getName());
-		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
-		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
-		templateModel.put("oldProjectStatus", oldStatus);
-		templateModel.put("newProjectStatus", newStatus);
-		final String[] emailToList = new String[] { sb == null ? "" : sb.toString() + "" };
+		templateModel.put(PROJECT_NAME, p.getName());
+		templateModel.put(VERTICAL_NAME, p.getAccount().getVertical().getName());
+		templateModel.put(START_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
+		templateModel.put(END_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
+		templateModel.put(OLD_PROJECT_STATUS, oldStatus);
+		templateModel.put(NEW_PROJECT_STATUS, newStatus);
+		final String[] emailToList = new String[] {sb.toString() };
 		final String[] emailCCList = new String[] { p.getEmployee1() == null ? "" : p.getEmployee1().getEmail(),
 				p.getEmployee2() == null ? "" : p.getEmployee2().getEmail() };
 		emailService.send("project-status-change-onhold", templateModel, emailToList, emailCCList);
@@ -257,13 +270,13 @@ public class PinProjectMailService {
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
-		templateModel.put("projectName", p.getName());
-		templateModel.put("verticalName", p.getAccount().getVertical().getName());
-		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
-		templateModel.put("endDate", p.getEndDate().toString());
-		templateModel.put("oldProjectStatus", oldStatus);
-		templateModel.put("newProjectStatus", newStatus);
-		final String[] emailToList = new String[] { sb == null ? "" : sb.toString() + "" };
+		templateModel.put(PROJECT_NAME, p.getName());
+		templateModel.put(VERTICAL_NAME, p.getAccount().getVertical().getName());
+		templateModel.put(START_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getStartDate()));
+		templateModel.put(END_DATE, p.getEndDate().toString());
+		templateModel.put(OLD_PROJECT_STATUS, oldStatus);
+		templateModel.put(NEW_PROJECT_STATUS, newStatus);
+		final String[] emailToList = new String[] {sb.toString()};
 		final String[] emailCCList = new String[] { p.getEmployee1() == null ? "" : p.getEmployee1().getEmail(),
 				p.getEmployee2() == null ? "" : p.getEmployee2().getEmail() };
 		emailService.send("project-status-change-inactive", templateModel, emailToList, emailCCList);
@@ -280,13 +293,13 @@ public class PinProjectMailService {
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
-		templateModel.put("projectName", p.getName());
+		templateModel.put(PROJECT_NAME, p.getName());
 		templateModel.put("technology", p.getTechnology());
 		templateModel.put("os", p.getOperatingSystem());
 		templateModel.put("db", p.getDatabase());
 		templateModel.put("description", p.getDescription());
 		templateModel.put("link", applicationUrl);
-		final String[] emailToList = new String[] { sb == null ? "" : sb.toString() + "" };
+		final String[] emailToList = new String[] {sb.toString()};
 		final String[] emailCCList = new String[] { p.getEmployee1() == null ? "" : p.getEmployee1().getEmail(),
 				p.getEmployee2() == null ? "" : p.getEmployee2().getEmail() };
 		emailService.send("project-details-change", templateModel, emailToList, emailCCList);
@@ -316,10 +329,10 @@ public class PinProjectMailService {
 		templateModel.put("originalDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(p.getEndDate()));
 		templateModel.put("newDate",
 				new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(CommonQualifiedMapper.localDateToDate(dto.getEndDate())));
-		templateModel.put("projectName", p.getName());
+		templateModel.put(PROJECT_NAME, p.getName());
 		templateModel.put("allocation", dtoSet);
 		templateModel.put("link", applicationUrl);
-		final String[] emailToList = new String[] { sb == null ? "" : sb.toString() + "" };
+		final String[] emailToList = new String[] {sb.toString()};
 		final String[] emailCCList = new String[] { p.getEmployee1() == null ? "" : p.getEmployee1().getEmail(),
 				p.getEmployee2() == null ? "" : p.getEmployee2().getEmail() };
 		emailService.send("project-endDate-change", templateModel, emailToList, emailCCList);
@@ -330,8 +343,8 @@ public class PinProjectMailService {
 		logger.debug("Test Mail for mailForProjectManagerChange");
 		final Map<String, Object> templateModel = new HashMap<>();
 		templateModel.put("managerName", manager.getFullName());
-		templateModel.put("startDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(new Date()));
-		templateModel.put("projectName", p.getName());
+		templateModel.put(START_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(new Date()));
+		templateModel.put(PROJECT_NAME, p.getName());
 		templateModel.put("accountName", p.getAccount().getName());
 		templateModel.put("location", projectLocation.getLocation().getName());
 		templateModel.put("workgroup", workGroup);
@@ -343,7 +356,7 @@ public class PinProjectMailService {
 	}
 
 	private List<String> getDevGdmOrQaGdm(Project project) {
-		final List<String> emailId = new ArrayList<String>();
+		final List<String> emailId = new ArrayList<>();
 		if (project.getEmployee2() != null)
 			emailId.add(project.getEmployee2().getEmail());
 		if (project.getEmployee1() != null)
@@ -352,7 +365,7 @@ public class PinProjectMailService {
 	}
 
 	private List<String> getManagerByProjectLocation(Set<ProjectLocation> projectLocation) {
-		final List<String> emailId = new ArrayList<String>();
+		final List<String> emailId = new ArrayList<>();
 		projectLocation.forEach(e -> {
 			if (e.getIsActive()) {
 				if (e.getEmployee1() != null)
@@ -369,7 +382,7 @@ public class PinProjectMailService {
 	}
 
 	private List<String> getManagerNameByProjectLocation(Set<ProjectLocation> projectLocation) {
-		final List<String> name = new ArrayList<String>();
+		final List<String> name = new ArrayList<>();
 		projectLocation.forEach(e -> {
 			if (e.getIsActive()) {
 				if (e.getEmployee1() != null)

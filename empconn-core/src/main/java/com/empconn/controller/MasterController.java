@@ -72,7 +72,6 @@ public class MasterController {
 
 	@GetMapping("get-workgroup-dropdown")
 	public List<UnitValue> getWorkgroupDropdown() {
-		// return MasterResponse.getWorkgroupDropdown();
 		return masterService.getWorkgroupDropdown();
 	}
 
@@ -106,7 +105,6 @@ public class MasterController {
 
 	@GetMapping("get-n-d-departments")
 	public List<UnitValue> getNDDepartments() {
-		// return MasterResponse.getNDDepartments();
 		return masterService.getNDDepartments();
 	}
 
@@ -165,12 +163,6 @@ public class MasterController {
 	public IsValidStatusDto isValidNewAccount(@RequestParam String accountName) {
 		return accountService.isValidNewAccount(accountName);
 	}
-
-	/*
-	 * @GetMapping("get-active-accounts") public Set<UnitValue>
-	 * getActiveAccounts(@RequestParam String partial) { return
-	 * accountService.getActiveAccounts(partial); }
-	 */
 
 	@GetMapping("get-active-accounts")
 	public List<UnitValue> getActiveAccounts(@RequestParam(required = false) Boolean withBench) {

@@ -239,6 +239,7 @@ public class AllocationService {
 								allocatedStatus)
 						: existingAllocation;
 
+				if (currentAllocation != null && toAllocation != null) {
 				// Logic for partial / complete is different
 				if (!isPartial) {
 					completeAllocation(request, currentAllocation, toAllocation);
@@ -246,11 +247,12 @@ public class AllocationService {
 					partialAllocation(request, currentAllocation, toAllocation);
 
 				}
-
+				}
+				
 				final Allocation primaryAllocation = allocationUtilityService.getPrimaryManager(currentAllocation, employee.getEmployeeId(),
 						request.getIsPrimaryManager(), isPartial, toAllocation, isNew);
 
-				if (!isPartial && remainingPercentage.intValue() == 0) {
+				if (currentAllocation != null && !isPartial && remainingPercentage.intValue() == 0) {
 						currentAllocation.setIsActive(false);
 						currentAllocation.setReleaseDate(TimeUtils.getToday());
 				}
@@ -261,8 +263,8 @@ public class AllocationService {
 				allocationHoursService.updateCurrLocationBillableHrs(currentAllocation);
 				allocationHoursService.updateToAllocationBillableHrs(toAllocation);
 
-				allocationRepository.save(toAllocation);
-				allocationRepository.save(currentAllocation);
+				if (toAllocation != null) allocationRepository.save(toAllocation);
+				if (currentAllocation != null) allocationRepository.save(currentAllocation);
 
 				//Integration call with SF starts here
 				if(AllocationUtil.allocationIsActiveAndPrimary(toAllocation)) {

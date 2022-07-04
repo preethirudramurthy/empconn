@@ -416,11 +416,9 @@ public class EarmarkedEngineerProjectService {
 		}
 		if (!CollectionUtils.isEmpty(dto.getGdmIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> (e.getProject().getEmployee1() != null
-							? dto.getGdmIdList().contains(e.getProject().getEmployee1().getEmployeeId().toString())
-							: false)
-							|| (e.getProject().getEmployee2() != null ? dto.getGdmIdList()
-									.contains(e.getProject().getEmployee2().getEmployeeId().toString()) : false))
+					.filter(e -> (e.getProject().getEmployee1() != null && dto.getGdmIdList().contains(e.getProject().getEmployee1().getEmployeeId().toString()))
+							|| (e.getProject().getEmployee2() != null && dto.getGdmIdList()
+									.contains(e.getProject().getEmployee2().getEmployeeId().toString())))
 					.collect(Collectors.toList());
 		}
 		if (dto.getBillable() != null) {

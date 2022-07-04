@@ -69,23 +69,23 @@ public class ForecastReportService {
 		allocations.forEach(a -> Hibernate.initialize(a.getAllocationDetails()));
 		allocations.forEach(a -> a.getEmployee().getEmployeeAllocations().forEach(ad -> Hibernate.initialize(ad.getAllocationDetails())));
 		final Map<String, List<Allocation>> allocationMap = allocations.stream().collect(Collectors.groupingBy(a -> a.getEmployee().getTitle().getName()));
-		final Map<String,Map<String,List<ForecastDataDto>>> map = new HashMap<String,Map<String,List<ForecastDataDto>>>();
+		final Map<String,Map<String,List<ForecastDataDto>>> map = new HashMap<>();
 		populateMapForCumulativeReport(request, allocationMap, map);
-		final List<ForecastReportResponseDto> responseDtoList= new ArrayList<ForecastReportResponseDto>();
+		final List<ForecastReportResponseDto> responseDtoList= new ArrayList<>();
 
-		final Map<String,Map<String,BigDecimal>> finalMap=new TreeMap<String,Map<String,BigDecimal>>();
+		final Map<String,Map<String,BigDecimal>> finalMap=new TreeMap<>();
 		for (final Map.Entry<String,Map<String,List<ForecastDataDto>>> mapData : map.entrySet()) {
 			final Map<String, List<ForecastDataDto>> value = mapData.getValue();
 			final Map<String,BigDecimal> insideMap = new LinkedHashMap<>();
 			for (final Map.Entry<String, List<ForecastDataDto>> m : value.entrySet()) {
 				final String[] str = m.getKey().split("_");
-				final LocalDate current_date = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), 1);
-				final LocalDate previous_date = current_date.minusMonths(Integer.parseInt(ApplicationConstants.FORECAST_MINUS_MONTH));
+				final LocalDate currentDate = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), 1);
+				final LocalDate previousDate = currentDate.minusMonths(Integer.parseInt(ApplicationConstants.FORECAST_MINUS_MONTH));
 				final Integer percentageSum = m.getValue().stream().map(ForecastDataDto :: getPercentage).reduce(0, Integer::sum);
-				final String previous_month_year_key = previous_date.getMonthValue()+"_"+previous_date.getYear();
+				final String previous_month_year_key = previousDate.getMonthValue()+"_"+previousDate.getYear();
 				final BigDecimal prevCount = insideMap.get(previous_month_year_key);
 				final BigDecimal count = new BigDecimal(percentageSum).divide(new BigDecimal(100));
-				final String current_month_year_key = current_date.getMonthValue()+"_"+current_date.getYear();
+				final String current_month_year_key = currentDate.getMonthValue()+"_"+currentDate.getYear();
 				insideMap.computeIfAbsent(current_month_year_key, y-> (prevCount == null ? count : prevCount.add(count)));
 			}
 			finalMap.put(mapData.getKey(), insideMap);
@@ -106,17 +106,18 @@ public class ForecastReportService {
 		final ForecastReportSpecification forecastReportSpecification=new ForecastReportSpecification(request,forecastReportDays);
 		final List<Allocation> allocations = allocationRepository.findAll(forecastReportSpecification);
 		allocations.forEach(a -> Hibernate.initialize(a.getAllocationDetails()));
-		allocations.forEach(a -> a.getEmployee().getEmployeeAllocations().forEach(ad -> Hibernate.initialize(ad.getAllocationDetails())));
+		allocations.forEach(a -> a.getEmployee().getEmployeeAllocations().forEach(
+				ad -> Hibernate.initialize(ad.getAllocationDetails())));
 		final Map<String, List<Allocation>> allocationMap = allocations.stream().collect(Collectors.groupingBy(a -> a.getEmployee().getTitle().getName()));
-		final Map<String,Map<String,List<ForecastDataDto>>> map = new HashMap<String,Map<String,List<ForecastDataDto>>>();
+		final Map<String,Map<String,List<ForecastDataDto>>> map = new HashMap<>();
 		String key = "";
 		if(!Strings.isNullOrEmpty(request.getInsideMonthYear())){
 			final String[] str = request.getInsideMonthYear().split("_");
-			final LocalDate current_date = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), 1);
-			key = String.join("_",String.valueOf(current_date.getMonthValue()),String.valueOf(current_date.getYear()));
+			final LocalDate currentDate = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), 1);
+			key = String.join("_",String.valueOf(currentDate.getMonthValue()),String.valueOf(currentDate.getYear()));
 		}
 		for (final Map.Entry<String, List<Allocation>> entry : allocationMap.entrySet()) {
-			logger.debug(entry.getKey() + ":" + entry.getValue());
+			logger.debug("{}:{}",entry.getKey(),entry.getValue());
 			final Map<String,List<ForecastDataDto>> insideMap =  generateMapKeys(request.getMonthYear());
 			final List<ForecastDataDto> benchDto = new ArrayList<>();
 			populateForecastDataDto(entry, insideMap, benchDto);
@@ -129,15 +130,15 @@ public class ForecastReportService {
 
 		final List<ForecastDataDto> finalDto = new ArrayList<>();
 		final List<String> keysList = generateKeysList(key);
-		keysList.stream().forEach(k -> {
-			finalDto.addAll(mapValue.get(k));
-		});
+		keysList.stream().forEach(k -> 
+			finalDto.addAll(mapValue.get(k))
+		);
 		Collections.sort(finalDto, (p1, p2) -> p1.getEmpFullName().compareToIgnoreCase(p2.getEmpFullName()));
 		return finalDto;
 	}
 
 	private Map<String,List<ForecastDataDto>> generateMapKeys(String monthYear){
-		final Map<String,List<ForecastDataDto>> map=new LinkedHashMap<String,List<ForecastDataDto>>();
+		final Map<String,List<ForecastDataDto>> map=new LinkedHashMap<>();
 		final LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().getValue(), Integer.parseInt(ApplicationConstants.FORECAST_FIRSTDAY_OF_MONTH));
 		LocalDate endDate;
 		if(Strings.isNullOrEmpty(monthYear)) {
@@ -163,15 +164,15 @@ public class ForecastReportService {
 	}
 
 	private List<String> generateKeysList(String monthYear){
-		final List<String> list = new ArrayList<String>();
+		final List<String> list = new ArrayList<>();
 		final String[] str = monthYear.split("_");
 		final LocalDate startDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().getValue(), Integer.parseInt(ApplicationConstants.FORECAST_FIRSTDAY_OF_MONTH));
 		final LocalDate endDate = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), forecastReportDays);
 		Stream.iterate(startDate, date -> date.plusMonths(1))
 		.limit(ChronoUnit.MONTHS.between(startDate, endDate) + 1)
-		.forEach(d -> {
-			list.add(d.getMonthValue()+"_"+d.getYear());
-		});
+		.forEach(d -> 
+			list.add(d.getMonthValue()+"_"+d.getYear())
+		);
 		return list;
 	}
 
@@ -223,11 +224,11 @@ public class ForecastReportService {
 		allocations.forEach(a -> Hibernate.initialize(a.getAllocationDetails()));
 		allocations.forEach(a -> a.getEmployee().getEmployeeAllocations().forEach(ad -> Hibernate.initialize(ad.getAllocationDetails())));
 		final Map<String, List<Allocation>> allocationMap = allocations.stream().collect(Collectors.groupingBy(a -> a.getEmployee().getTitle().getName()));
-		final Map<String,Map<String,List<ForecastDataDto>>> map = new HashMap<String,Map<String,List<ForecastDataDto>>>();
+		final Map<String,Map<String,List<ForecastDataDto>>> map = new HashMap<>();
 		populateMapForCumulativeReport(request, allocationMap, map);
 
-		final Map<String,Map<String,List<ForecastDataDto>>> finalMap = new TreeMap<String,Map<String,List<ForecastDataDto>>>(map);
-		final List<ForecastDataDto> finalList= new ArrayList<ForecastDataDto>();
+		final Map<String,Map<String,List<ForecastDataDto>>> finalMap = new TreeMap<>(map);
+		final List<ForecastDataDto> finalList= new ArrayList<>();
 
 		for (final Map.Entry<String,Map<String,List<ForecastDataDto>>> mapData : finalMap.entrySet()) {
 			final Map<String, List<ForecastDataDto>> value = mapData.getValue();
@@ -238,8 +239,8 @@ public class ForecastReportService {
 
 		LocalDate date;
 		if(Strings.isNullOrEmpty(request.getMonthYear())) {
-			final LocalDate current_date = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().getValue(), forecastReportDays);
-			date = current_date.plusMonths(Integer.parseInt(ApplicationConstants.FORECAST_ADD_MONTH));
+			final LocalDate currentDate = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth().getValue(), forecastReportDays);
+			date = currentDate.plusMonths(Integer.parseInt(ApplicationConstants.FORECAST_ADD_MONTH));
 		}else {
 			final String[] str = request.getMonthYear().split("_");
 			date = LocalDate.of(Integer.parseInt(str[1]), Integer.parseInt(str[0]), forecastReportDays);
@@ -254,7 +255,7 @@ public class ForecastReportService {
 			final Map<String, Map<String, List<ForecastDataDto>>> map) {
 		final String key = String.join("_",String.valueOf(LocalDate.now().getMonthValue()),String.valueOf(LocalDate.now().getYear()));
 		for (final Map.Entry<String, List<Allocation>> entry : allocationMap.entrySet()) {
-			logger.debug(entry.getKey() + ":" + entry.getValue());
+			logger.debug("{}:{}",entry.getKey(),entry.getValue());
 			final Map<String,List<ForecastDataDto>> insideMap =  generateMapKeys(request.getMonthYear());
 			final List<ForecastDataDto> benchDto = new ArrayList<>();
 			populateForecastDataDto(entry, insideMap, benchDto);

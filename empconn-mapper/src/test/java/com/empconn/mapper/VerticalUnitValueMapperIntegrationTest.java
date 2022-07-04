@@ -13,7 +13,7 @@ class VerticalUnitValueMapperIntegrationTest {
 	private VerticalUnitValueMapper mapper = Mappers.getMapper(VerticalUnitValueMapper.class);
 
 	@Test
-	public void givenSourceToDestination_whenMaps_thenCorrect() {
+	void givenSourceToDestination_whenMaps_thenCorrect() {
 		Vertical source = new Vertical();
 		source.setVerticalId(1);
 		source.setName("sourceName");
@@ -24,7 +24,7 @@ class VerticalUnitValueMapperIntegrationTest {
 	}
 
 	@Test
-	public void givenDestinationToSource_whenMaps_thenCorrect() {
+	void givenDestinationToSource_whenMaps_thenCorrect() {
 		UnitValue destination = new UnitValue();
 		destination.setValue("value 1");
 		destination.setId("1000");

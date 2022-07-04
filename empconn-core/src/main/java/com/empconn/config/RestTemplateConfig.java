@@ -28,7 +28,6 @@ public class RestTemplateConfig {
 		final CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
 		final HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		requestFactory.setHttpClient(httpClient);
-		final RestTemplate restTemplate = new RestTemplate(requestFactory);
-		return restTemplate;
+		return new RestTemplate(requestFactory);
 	}
 }

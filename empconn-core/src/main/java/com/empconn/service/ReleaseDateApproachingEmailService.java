@@ -49,14 +49,13 @@ public class ReleaseDateApproachingEmailService {
 	private void mailForSendingReleaseDateApproaching(List<Allocation> releaseDateforAll, Integer noOfDays) {
 
 		for (final Allocation a1 : releaseDateforAll) {
-			final Map<String, Object> templateModel = new HashMap<String, Object>();
+			final Map<String, Object> templateModel = new HashMap<>();
 			final MailForReleaseDateDto mailForReleaseDateDto = new MailForReleaseDateDto(a1.getEmployee().getEmpCode(),
 					a1.getEmployee().getFullName(), a1.getProject().getAccount().getName(), a1.getProject().getName(),
 					new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(a1.getReleaseDate()));
 			final StringBuilder managerEmails = new StringBuilder();
 			final Employee repotingManager = a1.getEmployee().getPrimaryAllocation().getReportingManagerId();
-			if (repotingManager != null) {
-				if(!managerEmails.toString().contains(repotingManager.getEmail()))
+			if (repotingManager != null && !managerEmails.toString().contains(repotingManager.getEmail())) {
 					managerEmails.append(repotingManager.getEmail() + ",");
 			}
 			if(!managerEmails.toString().contains(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail()))
@@ -70,25 +69,23 @@ public class ReleaseDateApproachingEmailService {
 						new String[] { gdmEmail + "" });
 			} catch (final Exception exception) {
 				exception.printStackTrace();
-				logger.error("Exception raised while sending Allocation email Reminder for Notication :"
-						+ exception.getMessage());
+				logger.error("Exception raised while sending Allocation email Reminder for Notication : {}",exception.getMessage());
 			}
 		}
 	}
 
 	// CRAN-138 for Release Date Past
-	public void sendReminderEmailForPast(Integer noOfDays) {
+	public void sendReminderEmailForPast() {
 		final Date todayDate = new Date();
 		final List<Allocation> releaseDatePastAllocation = allocationRepository.findReleaseDatePast(todayDate);
 		for (final Allocation a1 : releaseDatePastAllocation) {
-			final Map<String, Object> templateModel = new HashMap<String, Object>();
+			final Map<String, Object> templateModel = new HashMap<>();
 			final MailForReleaseDateDto mailForReleaseDateDto = new MailForReleaseDateDto(a1.getEmployee().getEmpCode(),
 					a1.getEmployee().getFullName(), a1.getProject().getAccount().getName(), a1.getProject().getName(),
 					new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(a1.getReleaseDate()));
 			final StringBuilder managerEmails = new StringBuilder();
 			final Employee repotingManager = a1.getEmployee().getPrimaryAllocation().getReportingManagerId();
-			if (repotingManager != null) {
-				if(!managerEmails.toString().contains(repotingManager.getEmail()))
+			if (repotingManager != null && (!managerEmails.toString().contains(repotingManager.getEmail()))) {
 					managerEmails.append(repotingManager.getEmail() + ",");
 			}
 			if(!managerEmails.toString().contains(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail()))
@@ -102,8 +99,7 @@ public class ReleaseDateApproachingEmailService {
 						new String[] { gdmEmail + "" });
 			} catch (final Exception exception) {
 				exception.printStackTrace();
-				logger.error("Exception raised while sending Allocation release date past email Reminder for Notication :"
-						+ exception.getMessage());
+				logger.error("Exception raised while sending Allocation release date past email Reminder for Notication : {}", exception.getMessage());
 			}
 		}
 	}

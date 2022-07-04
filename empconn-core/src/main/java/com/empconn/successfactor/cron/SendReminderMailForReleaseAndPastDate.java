@@ -30,7 +30,7 @@ public class SendReminderMailForReleaseAndPastDate {
 				if(Integer.valueOf(day) > 0 )
 					releaseDateApproachingEmailService.sendReminderEmail(Integer.valueOf(day));
 				else
-					releaseDateApproachingEmailService.sendReminderEmailForPast(Integer.valueOf(day));
+					releaseDateApproachingEmailService.sendReminderEmailForPast();
 		}catch(final Exception exception) {
 			logger.error("{} exception raised as : {}", METHOD_NAME, exception);
 		}

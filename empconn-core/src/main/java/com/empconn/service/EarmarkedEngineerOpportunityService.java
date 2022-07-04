@@ -437,11 +437,10 @@ public class EarmarkedEngineerOpportunityService {
 		}
 		if (!CollectionUtils.isEmpty(dto.getGdmIdList())) {
 			earmarks = earmarks.stream()
-					.filter(e -> (e.getOpportunity().getEmployee1() != null
-							? dto.getGdmIdList().contains(e.getOpportunity().getEmployee1().getEmployeeId().toString())
-							: false)
-							|| (e.getOpportunity().getEmployee2() != null ? dto.getGdmIdList()
-									.contains(e.getOpportunity().getEmployee2().getEmployeeId().toString()) : false))
+					.filter(e -> (e.getOpportunity().getEmployee1() != null && 
+					dto.getGdmIdList().contains(e.getOpportunity().getEmployee1().getEmployeeId().toString()))							
+							|| (e.getOpportunity().getEmployee2() != null &&  dto.getGdmIdList()
+									.contains(e.getOpportunity().getEmployee2().getEmployeeId().toString())))
 					.collect(Collectors.toList());
 		}
 		if (dto.getBillable() != null) {

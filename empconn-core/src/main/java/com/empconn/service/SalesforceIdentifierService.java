@@ -45,10 +45,7 @@ public class SalesforceIdentifierService {
 
 		final Long ndRequestProjectSfCount = ndRequestSalesforceIdentifierRepository
 				.countByValueAndNdRequestProjectProjectIdNotAndIsActiveIsTrue(sfId, projectId);
-		if (ndRequestProjectSfCount > 0)
-			return false;
-
-		return true;
+		return (ndRequestProjectSfCount <= 0);
 	}
 
 	public boolean isValidSalesforceId(String sfId) {
@@ -64,10 +61,7 @@ public class SalesforceIdentifierService {
 
 		final Long ndRequestProjectSfCount = ndRequestSalesforceIdentifierRepository
 				.countByValueAndIsActiveIsTrue(sfId);
-		if (ndRequestProjectSfCount > 0)
-			return false;
-
-		return true;
+		return (ndRequestProjectSfCount <= 0);
 	}
 
 	public boolean isValidSalesforceIdForOppurtunity(String sfId, Long opportunityId) {
@@ -88,10 +82,7 @@ public class SalesforceIdentifierService {
 
 		final Long ndRequestProjectSfCount = ndRequestSalesforceIdentifierRepository
 				.countByValueAndIsActiveIsTrue(sfId);
-		if (ndRequestProjectSfCount > 0)
-			return false;
-
-		return true;
+		return (ndRequestProjectSfCount <=0);
 	}
 
 }
