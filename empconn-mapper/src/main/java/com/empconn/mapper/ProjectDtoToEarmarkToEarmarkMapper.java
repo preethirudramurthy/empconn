@@ -147,11 +147,8 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(String employeeId) {
-		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(employeeId)); 
-		if (emOpt.isPresent()) {
-			return emOpt.get();
-		}
-		return null;
+		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(employeeId));
+		return emOpt.orElse(null);
 	}
 
 	@Named("VerticalIdToVertical")

@@ -413,7 +413,7 @@ public class ProjectService {
 			getProjectWithUpdatedProjectDetails(project, updateProjectDto);
 
 		if (!CollectionUtils.isEmpty(updateProjectDto.getLocationList()))
-			project = getProjectWithAddedManagers(project, updateProjectDto);
+			getProjectWithAddedManagers(project, updateProjectDto);
 
 		final Project savedProject = projectRepository.save(project);
 

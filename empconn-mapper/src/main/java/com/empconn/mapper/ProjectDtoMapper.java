@@ -221,20 +221,14 @@ public abstract class ProjectDtoMapper {
 
 	@Named("subCategoryIdToProjectSubCategory")
 	ProjectSubCategory subCategoryIdToProjectSubCategory(String subCategoryId) {
-		Optional<ProjectSubCategory> psOpt = projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId)); 
-		if (psOpt.isPresent()) {
-			return psOpt.get();
-		}
-		return null;
+		Optional<ProjectSubCategory> psOpt = projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId));
+		return psOpt.orElse(null);
 	}
 
 	@Named("horizontalIdToHorizontal")
 	Horizontal horizontalIdToHorizontal(String horizontalId) {
-		Optional<Horizontal> horiOpt = horizontalRepository.findById(Integer.valueOf(horizontalId)); 
-		if (horiOpt.isPresent()) {
-			return horiOpt.get();
-		}
-		return null;
+		Optional<Horizontal> horiOpt = horizontalRepository.findById(Integer.valueOf(horizontalId));
+		return horiOpt.orElse(null);
 
 	}
 
@@ -249,11 +243,8 @@ public abstract class ProjectDtoMapper {
 
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(String employeeId) {
-		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(employeeId)); 
-		if (emOpt.isPresent()) {
-			return emOpt.get();
-		}
-		return null;
+		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(employeeId));
+		return emOpt.orElse(null);
 	}
 
 	@Named("employeeIdToEmployeeFullName")
@@ -268,10 +259,7 @@ public abstract class ProjectDtoMapper {
 	@Named("accountIdToAccount")
 	Account accountIdToAccount(String accountId) {
 		Optional<Account> acOpt = accountRepository.findById(Integer.valueOf(accountId));
-		if (acOpt.isPresent()) {
-			return acOpt.get();
-		}
-		return null;
+		return acOpt.orElse(null);
 	}
 
 }

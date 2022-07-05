@@ -319,7 +319,7 @@ public class AllocateEarmarkedService {
 		employeeAllocationMap.forEach((e, a) -> {
 			Optional<Earmark> earmarkOpt = earMarkRepository.findById(Long.valueOf(a.get(0).getEarmarkId()));
 			if (earmarkOpt.isPresent()) {
-				final Earmark earmark = earMarkRepository.findById(Long.valueOf(a.get(0).getEarmarkId())).get();
+				final Earmark earmark = earmarkOpt.get();
 				final Allocation currentAllocation = earmark.getAllocation();
 
 				if (!earmark.getIsActive())

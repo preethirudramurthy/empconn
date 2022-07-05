@@ -241,9 +241,7 @@ public class MasterService {
 		if (leadUserRole.equals(UserRoles.GDM.name())) {
 			final List<Project> projects = projectService
 					.getProjectsForUserAsGdmOrManager(loginEmployee.getEmployeeId());
-			final Set<Horizontal> horizontals = projects.stream().map(Project::getHorizontal)
-					.collect(Collectors.toSet());
-			final List<Horizontal> h = new ArrayList<>(horizontals);
+			final List<Horizontal> h = projects.stream().map(Project::getHorizontal).distinct().collect(Collectors.toList());
 			final List<UnitValue> values = horizontalUnitValueMapper.horizontalsToUnitValues(h);
 			values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 			return values;
@@ -265,9 +263,7 @@ public class MasterService {
 			if (leadUserRole.equals(UserRoles.GDM.name())) {
 				final List<Project> projects = projectService
 						.getProjectsForUserAsGdmOrManager(loginEmployee.getEmployeeId());
-				final Set<Vertical> varticals = projects.stream().map(p -> p.getAccount().getVertical())
-						.collect(Collectors.toSet());
-				final List<Vertical> v = new ArrayList<>(varticals);
+				final List<Vertical> v = projects.stream().map(p -> p.getAccount().getVertical()).distinct().collect(Collectors.toList());
 				final List<UnitValue> values = verticalUnitValueMapper.verticalsToUnitValues(v);
 				values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 				return values;
@@ -284,9 +280,7 @@ public class MasterService {
 		if (leadUserRole.equals(UserRoles.GDM.name())) {
 			final List<Project> projects = projectService
 					.getProjectsForUserAsGdmOrManager(loginEmployee.getEmployeeId());
-			final Set<ProjectSubCategory> subCategories = projects.stream().map(Project::getProjectSubCategory)
-					.collect(Collectors.toSet());
-			final List<ProjectSubCategory> sc = new ArrayList<>(subCategories);
+			final List<ProjectSubCategory> sc = projects.stream().map(Project::getProjectSubCategory).distinct().collect(Collectors.toList());
 			final List<UnitValue> values = projectSubCategoryUnitValueMapper.projectSubCategoriesToUnitValues(sc);
 			values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 			return values;

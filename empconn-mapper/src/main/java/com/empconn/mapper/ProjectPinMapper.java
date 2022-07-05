@@ -136,7 +136,7 @@ public abstract class ProjectPinMapper {
 					.sorted(Comparator.comparing(Auditable::getCreatedOn)).forEach(c -> {
 						Optional<Employee> commentorOpt = employeeRepository.findById(c.getCreatedBy());
 						if (commentorOpt.isPresent()) {
-						final Employee commentor = employeeRepository.findById(c.getCreatedBy()).get();
+						final Employee commentor = commentorOpt.get();
 						gdmCommentDtos.add(new GdmCommentDto(commentor.getEmployeeId().toString(),
 								CommonQualifiedMapper.employeeToFullName(commentor), c.getValue(),
 								CommonQualifiedMapper.timestampToLocalDateTime(c.getCreatedOn())));
