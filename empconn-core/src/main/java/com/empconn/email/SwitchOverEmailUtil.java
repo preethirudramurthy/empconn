@@ -44,8 +44,6 @@ public class SwitchOverEmailUtil {
 	public Map<String, Object> computeSwitchOverFromTemplate(Allocation a, LocalDate dateOfMovement) {
 		final Map<String, Object> templateModel = commonParameters(a, dateOfMovement);
 		templateModel.put(OLD_PROJECT_NAME, a.getProject().getName());
-
-		templateModel.put(OLD_PROJECT_NAME, a.getProject().getName());
 		templateModel.put("oldManagerName",
 				a.getReportingManagerId().getFirstName() + " " + a.getReportingManagerId().getLastName());
 		templateModel.put("oldManagerId", a.getReportingManagerId().getEmpCode());

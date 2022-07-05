@@ -66,7 +66,7 @@ public abstract class AllocationToBenchReportRowDtoMapper {
 		final List<String> benchProjects = Arrays.asList("Central Bench", "NDBench");
 		final Predicate<? super AllocationDetail> isInactive = a -> !a.getIsActive();
 		final Predicate<? super Allocation> isNonBench = a -> !benchProjects.contains(a.getProject().getName());
-		AllocationDetail allocationDetail = null;
+		AllocationDetail allocationDetail;
 
 		allocationDetail = filterMapSortAndGetAllocationDetail(employeeAllocations,
 				allocationDetailDeallocatedOnComparator, isInactive, isNonBench);

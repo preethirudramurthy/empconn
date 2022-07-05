@@ -199,7 +199,7 @@ public class ResourceService {
 				.findByEmployeeEmployeeIdAndIsActive(Long.valueOf(requestDto.getResourceId()), true);
 		final AllocationStatus pbLeave = allocationStatusRepository
 				.findByStatus(ApplicationConstants.ALLOCATION_STATUS_PUREBENCH);
-		allocations.stream().forEach(a -> a.setAllocationStatus(pbLeave));
+		allocations.forEach(a -> a.setAllocationStatus(pbLeave));
 		allocationRepository.saveAll(allocations);
 	}
 
@@ -221,7 +221,7 @@ public class ResourceService {
 				.map(e -> e.getRole().getName()).collect(Collectors.toList());
 
 		final List<String> updateRoles = dto.getRoleList().stream()
-				.filter(r -> !currentRoles.stream().anyMatch(c -> c.equals(r)))
+				.filter(r -> currentRoles.stream().noneMatch(c -> c.equals(r)))
 				.collect(Collectors.toList());
 
 		for (final EmployeeRole empRole : employee.getEmployeeRoles()) {

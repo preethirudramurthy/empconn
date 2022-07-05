@@ -63,7 +63,7 @@ public class AllocationHoursService {
 
 	public void updateAllocHours(final Allocation currentAllocation, final Map<String, AllocationHour> currentAllocHrs,
 			final Map<String, AllocationHour> copyOfCurrAllocHrs) {
-		copyOfCurrAllocHrs.entrySet().stream().forEach(e -> {
+		copyOfCurrAllocHrs.entrySet().forEach(e -> {
 			final Integer year = Integer.valueOf(e.getKey().split("-")[0]);
 			final String monthName = e.getKey().split("-")[1];
 			final BigDecimal maxHours = e.getValue().getBillingHours().multiply(new BigDecimal(3));
@@ -83,14 +83,14 @@ public class AllocationHoursService {
 		for (final AllocationDetail ad : allocationDetails) {
 			// For inactive ones, duration is between start date to deallocated on
 			// For active ones, duration is start date to release date from allocation table
-			List<AllocationHourDto> allocationHours = null;
+			List<AllocationHourDto> allocationHours;
 			if (ad.getIsActive()) {
 				allocationHours = getBillingHours(ad.getStartDate(), allocation.getReleaseDate(), true, ad.getAllocatedPercentage());
 
 			} else {
 				allocationHours = getBillingHours(ad.getStartDate(), ad.getDeallocatedOn(), false, ad.getAllocatedPercentage());
 			}
-			allocationHours.stream().forEach(a -> {
+			allocationHours.forEach(a -> {
 				final LocalDate startDate = Instant.ofEpochMilli(a.getStartDate().getTime())
 						.atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -111,7 +111,7 @@ public class AllocationHoursService {
 
 	private List<AllocationHourDto> getBillingHours(Date startDate, Date endDate, boolean inclusiveOfEndDate, Integer percentage) {
 
-		Map<String, List<LocalDate>> byMonth = null;
+		Map<String, List<LocalDate>> byMonth;
 		if (inclusiveOfEndDate) {
 			byMonth = DateUtils
 					.businessDaysBetweenIncludingEndDate(startDate, endDate).stream()
@@ -129,17 +129,17 @@ public class AllocationHoursService {
 
 	public List<AllocationHourDto> getMonthlyHours(final Integer percentage,
 			final Map<String, List<LocalDate>> byMonth) {
-		return byMonth.entrySet().stream().map(e -> {
+		return byMonth.values().stream().map(localDates -> {
 			final BigDecimal billingHours = BigDecimal
-					.valueOf((e.getValue().size() * 8) * (((double) percentage) / 100));
+					.valueOf((localDates.size() * 8) * (((double) percentage) / 100));
 			final BigDecimal maxHours = billingHours.setScale(2, RoundingMode.HALF_UP).multiply(new BigDecimal(3));
 			return new AllocationHourDto(billingHours.setScale(2, RoundingMode.HALF_UP),
 					billingHours.setScale(0, RoundingMode.UP).intValue(),
-					Date.from(Collections.max(e.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant()),
-					e.getValue().size(),
-					Date.from(Collections.min(e.getValue()).atStartOfDay(ZoneId.systemDefault()).toInstant()),
-					Collections.min(e.getValue()).getMonth().getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-					Collections.min(e.getValue()).getYear(), maxHours.setScale(0, RoundingMode.UP).intValue());
+					Date.from(Collections.max(localDates).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+					localDates.size(),
+					Date.from(Collections.min(localDates).atStartOfDay(ZoneId.systemDefault()).toInstant()),
+					Collections.min(localDates).getMonth().getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+					Collections.min(localDates).getYear(), maxHours.setScale(0, RoundingMode.UP).intValue());
 		}).collect(Collectors.toList());
 	}
 
@@ -165,7 +165,7 @@ public class AllocationHoursService {
 				}
 			}
 		}
-		map.entrySet().stream().forEach(e -> {
+		map.entrySet().forEach(e -> {
 			final EditReleaseDateAllocationHour editReleaseDateAllocationHour = new EditReleaseDateAllocationHour();
 			editReleaseDateAllocationHour.setYear(e.getKey());
 			final List<EditReleaseMonthDto> list = e.getValue();

@@ -65,8 +65,8 @@ public abstract class BaseMapper {
 		final List<SecondarySkill> secondarySkills = employee.getEmployeeSkills().stream()
 				.map(EmployeeSkill::getSecondarySkill).collect(Collectors.toList());
 		return secondarySkills.stream()
-				.filter(ss -> !StringUtils.equalsIgnoreCase(ss.getName(), ApplicationConstants.DEFAULT_SECONDARY_SKILL))
-				.map(SecondarySkill::getName).collect(Collectors.toList());
+				.map(SecondarySkill::getName)
+				.filter(name -> !StringUtils.equalsIgnoreCase(name, ApplicationConstants.DEFAULT_SECONDARY_SKILL)).collect(Collectors.toList());
 
 	}
 

@@ -89,9 +89,9 @@ public class AllocationUtilityService {
 			Comparator<Allocation> sortByPercentageAndStartDate = ((Allocation a,
 					Allocation b) -> getMergedAllocatedPercentage(a).compareTo(getMergedAllocatedPercentage(b)));
 			sortByPercentageAndStartDate = sortByPercentageAndStartDate.reversed()
-					.thenComparing(Comparator.comparing(a -> Collections
+					.thenComparing(a -> Collections
 							.min(a.getAllocationDetails().stream().map(AllocationDetail::getStartDate)
-									.collect(Collectors.toList()))));
+									.collect(Collectors.toList())));
 
 			final List<Allocation> sortedAllocations = existingActiveAllocations.stream()
 					.sorted(sortByPercentageAndStartDate).collect(Collectors.toList());
@@ -153,7 +153,7 @@ public class AllocationUtilityService {
 	Function<ProjectLocation, List<Map<String, String>>> getProjectManagers = projectLocation -> {
 		final List<Map<String, String>> locationManagerList = new ArrayList<>();
 		final Map<String, Employee> allManagers = projectLocation.getAllManagers();
-		allManagers.entrySet().stream().forEach(y -> {
+		allManagers.entrySet().forEach(y -> {
 			if (y.getValue() != null) {
 				final Map<String, String> locationManagerMap = new HashMap<>();
 				locationManagerMap.put("projectLocationName", projectLocation.getLocation().getName());

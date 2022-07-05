@@ -215,14 +215,14 @@ public abstract class ProjectDtoMapper {
 	@AfterMapping
 	protected void asignMappingRelations(SavePinDto savePinDto, @MappingTarget Project project) {
 		if (project.getProjectLocations() != null) {
-			project.getProjectLocations().stream().forEach(pl -> pl.setProject(project));
+			project.getProjectLocations().forEach(pl -> pl.setProject(project));
 		}
 	}
 
 	@Named("subCategoryIdToProjectSubCategory")
 	ProjectSubCategory subCategoryIdToProjectSubCategory(String subCategoryId) {
 		Optional<ProjectSubCategory> psOpt = projectSubCategoryRepository.findById(Integer.valueOf(subCategoryId)); 
-		if (subCategoryId != null && psOpt.isPresent()) {
+		if (psOpt.isPresent()) {
 			return psOpt.get();
 		}
 		return null;
@@ -231,7 +231,7 @@ public abstract class ProjectDtoMapper {
 	@Named("horizontalIdToHorizontal")
 	Horizontal horizontalIdToHorizontal(String horizontalId) {
 		Optional<Horizontal> horiOpt = horizontalRepository.findById(Integer.valueOf(horizontalId)); 
-		if (horizontalId != null && horiOpt.isPresent()) {
+		if (horiOpt.isPresent()) {
 			return horiOpt.get();
 		}
 		return null;
@@ -250,7 +250,7 @@ public abstract class ProjectDtoMapper {
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(String employeeId) {
 		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(employeeId)); 
-		if (employeeId != null && emOpt.isPresent()) {
+		if (emOpt.isPresent()) {
 			return emOpt.get();
 		}
 		return null;
@@ -268,7 +268,7 @@ public abstract class ProjectDtoMapper {
 	@Named("accountIdToAccount")
 	Account accountIdToAccount(String accountId) {
 		Optional<Account> acOpt = accountRepository.findById(Integer.valueOf(accountId));
-		if (accountId != null && acOpt.isPresent()) {
+		if (acOpt.isPresent()) {
 			return acOpt.get();
 		}
 		return null;

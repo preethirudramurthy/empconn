@@ -151,7 +151,7 @@ public class EarmarkedEngineerProjectService {
 	}
 
 	public List<UnitValue> getEarmarkedProjectDropdown(EarmarkedDropdownReqDto dto) {
-		List<Project> projects = null;
+		List<Project> projects;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			projects = getAllEarmarkedProjects();
 		else
@@ -171,7 +171,7 @@ public class EarmarkedEngineerProjectService {
 	}
 
 	public List<UnitValue> getEarmarkedAccountDropdown(EarmarkedDropdownReqDto dto) {
-		List<Project> projects = null;
+		List<Project> projects;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			projects = getAllEarmarkedProjects();
 		else
@@ -187,7 +187,7 @@ public class EarmarkedEngineerProjectService {
 	}
 
 	public List<UnitValue> getEarmarkedVerticalDropdown(EarmarkedDropdownReqDto dto) {
-		List<Project> projects = null;
+		List<Project> projects;
 		if (RolesUtil.isRMG(jwtEmployeeUtil.getLoggedInEmployee()))
 			projects = getAllEarmarkedProjects();
 		else
@@ -222,14 +222,14 @@ public class EarmarkedEngineerProjectService {
 		}
 
 		for (final Earmark e : earmarks) {
-			e.getProject().getSalesforceIdentifiers().stream().forEach(sf -> {
+			e.getProject().getSalesforceIdentifiers().forEach(sf -> {
 				if (sf.getValue().contains(dto.getPartial())) {
 
 					salesforces.add(sf.getValue());
 				}
 
 			});
-			e.getEarmarkSalesforceIdentifiers().stream().forEach(esf -> {
+			e.getEarmarkSalesforceIdentifiers().forEach(esf -> {
 				if (esf.getValue().contains(dto.getPartial()))
 					salesforces.add(esf.getValue());
 			});

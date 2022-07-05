@@ -63,7 +63,7 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 			earmarkProjectDto.getSalesforceIdList().removeAll(projectSfIds);
 		}
 
-		Employee manager = null;
+		Employee manager;
 		Optional<Employee> managerOpt = employeeRepository.findById(Long.parseLong(earmarkProjectDto.getManagerId()));
 		if (earmarkProjectDto.getManagerId() != null && managerOpt.isPresent())
 			manager = managerOpt.get();
@@ -117,7 +117,7 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 
 		final List<Earmark> earmarks = new ArrayList<>();
 
-		Employee manager = null;
+		Employee manager;
 		Optional<Employee> managerOpt =  employeeRepository.findById(Long.parseLong(earmarkOppurtunityDto.getManagerId()));
 		if (earmarkOppurtunityDto.getManagerId() != null && managerOpt.isPresent())
 			manager = managerOpt.get();
@@ -148,7 +148,7 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 	@Named("employeeIdToEmployee")
 	Employee employeeIdToEmployee(String employeeId) {
 		Optional<Employee> emOpt = employeeRepository.findById(Long.valueOf(employeeId)); 
-		if (employeeId != null && emOpt.isPresent()) {
+		if (emOpt.isPresent()) {
 			return emOpt.get();
 		}
 		return null;

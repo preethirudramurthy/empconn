@@ -147,7 +147,7 @@ public class AllocateEarmarkedService {
 			});
 
 			ExistingAllocationDto existingAllocationDto = null;
-			Allocation existAllocation = null;
+			Allocation existAllocation;
 			final List<Allocation> existingAllocationList = allocationRepository
 					.findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveTrue(employeeId, projectId);
 			if (!existingAllocationList.isEmpty()) {
@@ -254,8 +254,8 @@ public class AllocateEarmarkedService {
 
 	private void validateEarmarkAllocate(List<EarmarkAllocationRequestDto> allocationList) {
 		class Tuple {
-			String employeeId;
-			String projectId;
+			final String employeeId;
+			final String projectId;
 
 			public Tuple(String employeeId, String projectId) {
 				super();
@@ -317,44 +317,47 @@ public class AllocateEarmarkedService {
 				.collect(Collectors.groupingBy(a -> new Tuple(a.getResourceId(), a.getProjectId())));
 
 		employeeAllocationMap.forEach((e, a) -> {
-			final Earmark earmark = earMarkRepository.findById(Long.valueOf(a.get(0).getEarmarkId())).get();
-			final Allocation currentAllocation = earmark.getAllocation();
+			Optional<Earmark> earmarkOpt = earMarkRepository.findById(Long.valueOf(a.get(0).getEarmarkId()));
+			if (earmarkOpt.isPresent()) {
+				final Earmark earmark = earMarkRepository.findById(Long.valueOf(a.get(0).getEarmarkId())).get();
+				final Allocation currentAllocation = earmark.getAllocation();
 
-			if (!earmark.getIsActive())
-				throw new EmpConnException("NotAvailableAllocatePercentage");
+				if (!earmark.getIsActive())
+					throw new EmpConnException("NotAvailableAllocatePercentage");
 
-			final List<Allocation> existingAllocations = allocationRepository
-					.findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveIsTrue(Long.valueOf(e.employeeId),
-							Long.valueOf(e.projectId));
-			final Integer sumOfAllocationPercent = a.stream().map(EarmarkAllocationRequestDto::getPercentage).reduce(0,
-					Integer::sum);
+				final List<Allocation> existingAllocations = allocationRepository
+						.findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveIsTrue(Long.valueOf(e.employeeId),
+								Long.valueOf(e.projectId));
+				final Integer sumOfAllocationPercent = a.stream().map(EarmarkAllocationRequestDto::getPercentage)
+						.reduce(0, Integer::sum);
 
-			if (currentAllocation == null)
-				throw new EmpConnException(NOT_AVAILABLE_PRIOR_ALLOC);
-
-			if (sumOfAllocationPercent > currentAllocation.getAllocationDetails().stream()
-					.filter(AllocationDetail::getIsActive).map(AllocationDetail::getAllocatedPercentage)
-					.reduce(0, Integer::sum)) {
+				if (currentAllocation == null)
 					throw new EmpConnException(NOT_AVAILABLE_PRIOR_ALLOC);
-			}
-			if (!existingAllocations.isEmpty()) {
-				for (final Allocation allocation : existingAllocations)
-					for (final EarmarkAllocationRequestDto dto : a) {
-						if (!allocation.getProjectLocation().getProjectLocationId()
-								.equals((Long.valueOf(dto.getProjectLocationId())))
-								|| !allocation.getWorkGroup().getName().equals(dto.getWorkgroup())
-								|| !allocation.getReportingManagerId().getEmployeeId()
-										.equals(Long.valueOf(dto.getReportingManagerId()))) {
-							throw new EmpConnException("LocationWorkGroupNotSameForSameProject");
+
+				if (sumOfAllocationPercent > currentAllocation.getAllocationDetails().stream()
+						.filter(AllocationDetail::getIsActive).map(AllocationDetail::getAllocatedPercentage)
+						.reduce(0, Integer::sum)) {
+					throw new EmpConnException(NOT_AVAILABLE_PRIOR_ALLOC);
+				}
+				if (!existingAllocations.isEmpty()) {
+					for (final Allocation allocation : existingAllocations)
+						for (final EarmarkAllocationRequestDto dto : a) {
+							if (!allocation.getProjectLocation().getProjectLocationId()
+									.equals((Long.valueOf(dto.getProjectLocationId())))
+									|| !allocation.getWorkGroup().getName().equals(dto.getWorkgroup())
+									|| !allocation.getReportingManagerId().getEmployeeId()
+											.equals(Long.valueOf(dto.getReportingManagerId()))) {
+								throw new EmpConnException("LocationWorkGroupNotSameForSameProject");
+							}
 						}
-					}
-			}
-			if (a.size() > 1) {
-				final Map<TupleGroup, List<EarmarkAllocationRequestDto>> allocationResourceMap = a.stream()
-						.collect(Collectors.groupingBy(al -> new TupleGroup(al.getProjectLocationId(),
-								al.getWorkgroup(), al.getReportingManagerId())));
-				if (allocationResourceMap.size() > 1)
-					throw new EmpConnException("LocationWorkGroupNotSameForSameProject");
+				}
+				if (a.size() > 1) {
+					final Map<TupleGroup, List<EarmarkAllocationRequestDto>> allocationResourceMap = a.stream()
+							.collect(Collectors.groupingBy(al -> new TupleGroup(al.getProjectLocationId(),
+									al.getWorkgroup(), al.getReportingManagerId())));
+					if (allocationResourceMap.size() > 1)
+						throw new EmpConnException("LocationWorkGroupNotSameForSameProject");
+				}
 			}
 		});
 

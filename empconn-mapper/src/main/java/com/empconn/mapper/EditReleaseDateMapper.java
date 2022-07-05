@@ -43,7 +43,7 @@ public abstract class EditReleaseDateMapper {
 		final List<EditReleaseDateAllocationHour> allocationHrsDto = new ArrayList<>();
 		final int year = Calendar.getInstance().get(Calendar.YEAR);
 		final Map<Integer,List<EditReleaseMonthDto>> map = new HashMap<>();
-		allocationHrs.stream().forEach(ah->{
+		allocationHrs.forEach(ah->{
 			final EditReleaseMonthDto editReleaseMonthDto = new EditReleaseMonthDto();
 			editReleaseMonthDto.setName(ah.getMonth());
 			editReleaseMonthDto.setValue(ah.getBillingHoursRounded());
@@ -60,7 +60,7 @@ public abstract class EditReleaseDateMapper {
 				}
 			}
 		});
-		map.entrySet().stream().forEach(e -> {
+		map.entrySet().forEach(e -> {
 			final EditReleaseDateAllocationHour editReleaseDateAllocationHour = new EditReleaseDateAllocationHour();
 			editReleaseDateAllocationHour.setYear(e.getKey());
 			final List<EditReleaseMonthDto> list = e.getValue();

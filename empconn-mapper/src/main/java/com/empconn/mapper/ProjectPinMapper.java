@@ -134,10 +134,13 @@ public abstract class ProjectPinMapper {
 		if (projectComments != null) {
 			projectComments.stream().filter(c -> c.getStatus().equals(ProjectStatus.SENT_BACK.name()))
 					.sorted(Comparator.comparing(Auditable::getCreatedOn)).forEach(c -> {
+						Optional<Employee> commentorOpt = employeeRepository.findById(c.getCreatedBy());
+						if (commentorOpt.isPresent()) {
 						final Employee commentor = employeeRepository.findById(c.getCreatedBy()).get();
 						gdmCommentDtos.add(new GdmCommentDto(commentor.getEmployeeId().toString(),
 								CommonQualifiedMapper.employeeToFullName(commentor), c.getValue(),
 								CommonQualifiedMapper.timestampToLocalDateTime(c.getCreatedOn())));
+						}
 					});
 		}
 		return gdmCommentDtos;

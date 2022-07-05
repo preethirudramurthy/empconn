@@ -54,10 +54,10 @@ public abstract class AccountToSaveAccountDtoMapper {
 	@AfterMapping
 	protected void asignMappingRelations(SaveAccountDto destination, @MappingTarget Account account) {
 		if(account.getClientLocations()!=null) {
-			account.getClientLocations().stream().forEach(cl -> {
+			account.getClientLocations().forEach(cl -> {
 				cl.setAccount(account);
 				if(cl.getContacts()!=null) {
-					cl.getContacts().stream().forEach(c -> 
+					cl.getContacts().forEach(c ->
 						c.setClientLocation(cl)
 					);
 				}

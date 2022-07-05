@@ -204,7 +204,7 @@ public class DeallocationService {
 				.filter(AllocationDetail::getIsActive).collect(Collectors.toList());
 		Comparator<AllocationDetail> sortByStartDateAndCreatedOn = (Comparator.comparing(AllocationDetail::getStartDate));
 		sortByStartDateAndCreatedOn = sortByStartDateAndCreatedOn
-				.thenComparing(Comparator.comparing(Auditable::getCreatedOn));
+				.thenComparing(Auditable::getCreatedOn);
 
 		allocationDetails.sort(sortByStartDateAndCreatedOn);
 
@@ -254,7 +254,7 @@ public class DeallocationService {
 				request.getTechFeedback(), request.getTechRating(), toAllocation,
 				loggedInEmployee.getEmployeeId(), true));
 
-		currentAllocation.getAllocationDetails().stream().forEach(ad -> {
+		currentAllocation.getAllocationDetails().forEach(ad -> {
 			ad.setDeallocatedOn(TimeUtils.getToday());
 			ad.setDeallocatedBy(loggedInEmployee);
 			ad.setIsActive(false);
@@ -265,7 +265,7 @@ public class DeallocationService {
 
 		moveEarmarks(loggedInEmployee, toAllocation, earmarks);
 
-		Employee primaryManager = null;
+		Employee primaryManager;
 		// Update primary manager only if the current allocation's RM was the Primary
 		// Manager
 		if (employee.getPrimaryAllocation() != null
@@ -369,7 +369,7 @@ public class DeallocationService {
 
 	private void updateAllocHours(final Allocation currentAllocation, final Map<String, AllocationHour> currentAllocHrs,
 			final Map<String, AllocationHour> copyOfCurrAllocHrs) {
-		copyOfCurrAllocHrs.entrySet().stream().forEach(e -> {
+		copyOfCurrAllocHrs.entrySet().forEach(e -> {
 			final Integer year = Integer.valueOf(e.getKey().split("-")[0]);
 			final String monthName = e.getKey().split("-")[1];
 			final BigDecimal maxHours = e.getValue().getBillingHours().divide(new BigDecimal(8))

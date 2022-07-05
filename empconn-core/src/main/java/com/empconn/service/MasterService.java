@@ -243,7 +243,7 @@ public class MasterService {
 					.getProjectsForUserAsGdmOrManager(loginEmployee.getEmployeeId());
 			final Set<Horizontal> horizontals = projects.stream().map(Project::getHorizontal)
 					.collect(Collectors.toSet());
-			final List<Horizontal> h = horizontals.stream().collect(Collectors.toList());
+			final List<Horizontal> h = new ArrayList<>(horizontals);
 			final List<UnitValue> values = horizontalUnitValueMapper.horizontalsToUnitValues(h);
 			values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 			return values;
@@ -267,7 +267,7 @@ public class MasterService {
 						.getProjectsForUserAsGdmOrManager(loginEmployee.getEmployeeId());
 				final Set<Vertical> varticals = projects.stream().map(p -> p.getAccount().getVertical())
 						.collect(Collectors.toSet());
-				final List<Vertical> v = varticals.stream().collect(Collectors.toList());
+				final List<Vertical> v = new ArrayList<>(varticals);
 				final List<UnitValue> values = verticalUnitValueMapper.verticalsToUnitValues(v);
 				values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 				return values;
@@ -286,7 +286,7 @@ public class MasterService {
 					.getProjectsForUserAsGdmOrManager(loginEmployee.getEmployeeId());
 			final Set<ProjectSubCategory> subCategories = projects.stream().map(Project::getProjectSubCategory)
 					.collect(Collectors.toSet());
-			final List<ProjectSubCategory> sc = subCategories.stream().collect(Collectors.toList());
+			final List<ProjectSubCategory> sc = new ArrayList<>(subCategories);
 			final List<UnitValue> values = projectSubCategoryUnitValueMapper.projectSubCategoriesToUnitValues(sc);
 			values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 			return values;
@@ -366,7 +366,7 @@ public class MasterService {
 				unitValueSetOfProjects = projectUnitValueMapper.projectsToUnitValues(nonNDBenchProjects);
 			}
 
-			projectDropdownData = unitValueSetOfProjects.stream().collect(Collectors.toList());
+			projectDropdownData = new ArrayList<>(unitValueSetOfProjects);
 			projectDropdownData.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 		} catch (final Exception exception) {
 			logger.error("{} Exception raised as : {}", METHOD_NAME, exception);
@@ -380,7 +380,7 @@ public class MasterService {
 		logger.info("{} starts execution requestparams : {}", METHOD_NAME, requestparams);
 		Set<UnitValue> unitValueSet = new HashSet<>();
 		List<UnitValue> values = new ArrayList<>();
-		Set<Account> accounts = new HashSet<>();
+		Set<Account> accounts;
 		try {
 			final List<Integer> verticalIdList = (requestparams.getVerticalIdList() != null)
 					? requestparams.getVerticalIdList().stream().map(Integer::parseInt).collect(Collectors.toList())
@@ -465,7 +465,7 @@ public class MasterService {
 					}
 
 					unitValueSet = accountUnitValueMapper.accountsToUnitValues(accounts);
-					values = unitValueSet.stream().collect(Collectors.toList());
+					values = new ArrayList<>(unitValueSet);
 					values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 		} catch (final Exception exception) {
 			logger.error("{} Exception raised as : {}", METHOD_NAME, exception.getMessage());

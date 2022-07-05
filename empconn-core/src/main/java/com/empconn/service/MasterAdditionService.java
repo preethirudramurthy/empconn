@@ -52,11 +52,11 @@ public class MasterAdditionService {
 
 		try {
 
-			BusinessUnit businessUnit = null;
-			Division division = null;
-			Department department = null;
-			Location location = null;
-			Title title = null;
+			BusinessUnit businessUnit;
+			Division division;
+			Department department;
+			Location location;
+			Title title;
 
 			if(businessUnitShouldBeCreated(sfEmployee))
 				businessUnit = businessUnitRepository.save(initialize(BusinessUnit.class, sfEmployee.getBusinessUnit()));

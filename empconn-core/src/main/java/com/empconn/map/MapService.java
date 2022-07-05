@@ -144,8 +144,8 @@ public class MapService {
 	}
 
 	private ImmutablePair<HttpMethod, FilterProvider> getMapRequestMethodFilter(String mapId, String filterName) {
-		SimpleBeanPropertyFilter filter = null;
-		HttpMethod requestMethod = null;
+		SimpleBeanPropertyFilter filter;
+		HttpMethod requestMethod;
 
 		if (mapId == null) {
 			requestMethod = HttpMethod.POST;

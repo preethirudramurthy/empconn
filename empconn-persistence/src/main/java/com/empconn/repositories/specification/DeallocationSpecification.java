@@ -94,7 +94,7 @@ public class DeallocationSpecification implements Specification<Allocation> {
 		}
 
 		if (filter.getWorkgroup() != null && !filter.getWorkgroup().isEmpty()) {
-			finalPredicate.add(root.get(WORK_GROUP).get("name").in(filter.getWorkgroup().stream().collect(Collectors.toList())));
+			finalPredicate.add(root.get(WORK_GROUP).get("name").in(new ArrayList<>(filter.getWorkgroup())));
 		}
 
 		if (filter.getBillable() != null) {

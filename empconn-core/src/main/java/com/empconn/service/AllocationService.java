@@ -120,7 +120,7 @@ public class AllocationService {
 			allocationRepository.deleteAll(a);
 			final long createdBy = 1L;
 			final boolean allocationIsPrimary = true;
-			Employee manager = null;
+			Employee manager;
 			final boolean isDelivery = employeeService.isDelivery(employee);
 			final Project bench = benchProjectMap.get(isDelivery);
 			final ProjectLocation globalBenchProjectLocation = benchProjectLocationMap.get(isDelivery);
@@ -148,7 +148,7 @@ public class AllocationService {
 		final ProjectLocation globalBenchProjectLocation = benchService.getGlobalBenchProjectLocation(bench);
 		final WorkGroup workGroup = workGroupRepository.findByName(
 				isDelivery ? ApplicationConstants.WORK_GROUP_DEV : ApplicationConstants.WORK_GROUP_SUPPORT_1);
-		Employee manager = null;
+		Employee manager;
 
 		if (isDelivery)
 			manager = globalBenchProjectLocation.getEmployee1();
@@ -211,7 +211,7 @@ public class AllocationService {
 		Optional<Employee> rep = employeeRepository.findById(Long.valueOf(request.getReportingManagerId()));
 		final Employee reportingManagerId = rep.orElse(null);
 
-		Allocation existingAllocation = null;
+		Allocation existingAllocation;
 		Allocation toAllocation = null;
 		if (employee != null) {
 			Optional<Allocation> existingAlloc = allocationRepository
@@ -244,7 +244,7 @@ public class AllocationService {
 				final Allocation primaryAllocation = allocationUtilityService.getPrimaryManager(currentAllocation, employee.getEmployeeId(),
 						request.getIsPrimaryManager(), isPartial, toAllocation, isNew);
 
-				if (!isPartial && (int) remainingPercentage == 0) {
+				if (!isPartial && remainingPercentage == 0) {
 						currentAllocation.setIsActive(false);
 						currentAllocation.setReleaseDate(TimeUtils.getToday());
 				}
@@ -257,20 +257,15 @@ public class AllocationService {
 					allocationHoursService.updateToAllocationBillableHrs(toAllocation);
 
 					allocationRepository.save(toAllocation);
+					//Integration call with SF starts here
+					if(AllocationUtil.allocationIsActiveAndPrimary(toAllocation)) {
+						sfCall(request, employee, toAllocation);
+					}
 				}
 				allocationRepository.save(currentAllocation);
 
-				//Integration call with SF starts here
-				if(AllocationUtil.allocationIsActiveAndPrimary(toAllocation)) {
-					sfCall(request, employee, toAllocation);
-				}
-
 				syncToTimesheetService.syncAllocationWithHoursForAllocation(currentAllocation, toAllocation);
-
 			}
-
-			
-			
 		}
 
 		return toAllocation;
@@ -331,7 +326,7 @@ public class AllocationService {
 
 	private void completeAllocation(AllocationRequestDto request, final Allocation currentAllocation,
 			final Allocation toAllocation) {
-		currentAllocation.getAllocationDetails().stream().forEach(ad -> {
+		currentAllocation.getAllocationDetails().forEach(ad -> {
 			ad.setDeallocatedOn(DateUtils.convertToDateViaInstant(request.getStartDate()));
 			ad.setDeallocatedBy(securityUtil.getLoggedInEmployee());
 			ad.setIsActive(false);

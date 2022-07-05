@@ -170,7 +170,7 @@ public class EditReleaseDateService {
 						final Map<String, AllocationHour> monthlyBillableHoursOfToAllocCopy = allocationHoursService
 								.getBillingHours(allocation, allocation.getAllocationDetails());
 
-						monthlyBillableHoursOfToAllocCopy.entrySet().stream().forEach(e -> {
+						monthlyBillableHoursOfToAllocCopy.entrySet().forEach(e -> {
 							final Integer year = Integer.valueOf(e.getKey().split("-")[0]);
 							final String monthName = e.getKey().split("-")[1];
 							final BigDecimal maxHours = e.getValue().getBillingHours().divide(new BigDecimal(8))
@@ -199,7 +199,7 @@ public class EditReleaseDateService {
 							}
 						});
 
-						monthlyBillableHoursOfToAllocation.entrySet().stream().forEach(e -> {
+						monthlyBillableHoursOfToAllocation.entrySet().forEach(e -> {
 							if (!monthlyBillableHoursOfToAllocCopy.containsKey(e.getKey())) {
 								allocation.getAllocationHours().remove(e.getValue());
 							}
@@ -244,7 +244,7 @@ public class EditReleaseDateService {
 			}
 			map.put(editReleaseDateAllocationHour.getYear(), months);
 		}
-		map.entrySet().stream().forEach(e -> {
+		map.entrySet().forEach(e -> {
 			for (final AllocationHour allocationHour : allocationHours2) {
 				if (allocationHour.getYear().compareTo(e.getKey()) == 0) {
 					final List<EditReleaseMonthDto> months = e.getValue();

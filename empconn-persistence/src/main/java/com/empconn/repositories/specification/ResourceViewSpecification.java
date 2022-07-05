@@ -98,7 +98,7 @@ public class ResourceViewSpecification implements Specification<Allocation>{
 		}
 
 		if (filter.getWorkgroup() != null && !filter.getWorkgroup().isEmpty()) {
-			finalPredicate.add(root.get("workGroup").get("name").in(filter.getWorkgroup().stream().collect(Collectors.toList())));
+			finalPredicate.add(root.get("workGroup").get("name").in(new ArrayList<>(filter.getWorkgroup())));
 		}
 
 

@@ -159,9 +159,9 @@ public class ChangeManagerService {
 				// is the old GDM defined as a manager for any location/workgroup combination
 				final Map<Long, Map<String, Employee>> oldGdmAsManager = new HashMap<>();
 
-				existingAllManagers.entrySet().stream().forEach(e -> {
+				existingAllManagers.entrySet().forEach(e -> {
 					final Map<String, Employee> m = e.getValue();
-					m.entrySet().stream().forEach(k -> {
+					m.entrySet().forEach(k -> {
 						if (k.getValue().getEmployeeId().equals(oldQAGDM.getEmployeeId())) {
 							oldGdmAsManager.computeIfAbsent(e.getKey(), x -> new HashMap<>());
 							oldGdmAsManager.get(e.getKey()).put(k.getKey(), k.getValue());
@@ -203,9 +203,9 @@ public class ChangeManagerService {
 		// is the old GDM defined as a manager for any location/workgroup combination
 		final Map<Long, Map<String, Employee>> oldGdmAsManager = new HashMap<>();
 
-		existingAllManagers.entrySet().stream().forEach(e -> {
+		existingAllManagers.entrySet().forEach(e -> {
 			final Map<String, Employee> m = e.getValue();
-			m.entrySet().stream().forEach(k -> {
+			m.entrySet().forEach(k -> {
 				if (k.getValue().getEmployeeId().equals(oldDevGDM.getEmployeeId())) {
 					oldGdmAsManager.computeIfAbsent(e.getKey(), x -> new HashMap<>());
 					oldGdmAsManager.get(e.getKey()).put(k.getKey(), k.getValue());
@@ -572,7 +572,7 @@ public class ChangeManagerService {
 			Optional<Allocation> alloc = allocationRepository.findById(changeManagerDto.getAllocationId());
 			final Allocation allocation = alloc.orElse(null);
 			final Employee oldReportingManager = allocation != null ? allocation.getReportingManagerId() : null;
-			Employee newManager = null;
+			Employee newManager;
 			if (allocation != null) {
 				if (changeManagerDto.getNewReportingMangerId() != null) {
 					newManager = employeeRepository.findByEmployeeId(changeManagerDto.getNewReportingMangerId());
@@ -682,7 +682,7 @@ public class ChangeManagerService {
 	public void mailForChangeReportingManagerForResource(Employee reportingManger, Employee oldManager, Allocation a,
 			boolean isPrimary) {
 		logger.debug("Test Mail for mailForProjectManagerChange");
-		String templateName = null;
+		String templateName;
 		if (isPrimary) {
 			templateName = "change-primary-manager-of-resource";
 		} else {

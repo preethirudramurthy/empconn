@@ -153,7 +153,7 @@ public class BootstrapService {
 								skills.getPrimarySkill().toLowerCase().trim());
 				final List<String> alreadyPresentSkills = new ArrayList<>();
 				if (!CollectionUtils.isEmpty(employeeSkillsList)) {
-					employeeSkillsList.stream().forEach(es -> 
+					employeeSkillsList.forEach(es ->
 						alreadyPresentSkills.add(es.getSecondarySkill().getName().toLowerCase())
 					);
 				}
@@ -247,14 +247,14 @@ public class BootstrapService {
 	public Set<String> getVertical() {
 		final Set<Vertical> verticals = verticalRepository.findByIsActiveTrue();
 		final Set<String> verticalSet = new HashSet<>();
-		verticals.stream().forEach(v -> verticalSet.add(v.getName()));
+		verticals.forEach(v -> verticalSet.add(v.getName()));
 		return verticalSet;
 	}
 
 	public Set<String> getHorizontal() {
 		final Set<Horizontal> horizontals = horizontalRepository.findByIsActiveTrue();
 		final Set<String> horizontalSet = new HashSet<>();
-		horizontals.stream().forEach(h -> horizontalSet.add(h.getName()));
+		horizontals.forEach(h -> horizontalSet.add(h.getName()));
 		return horizontalSet;
 	}
 

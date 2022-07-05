@@ -65,7 +65,7 @@ public class ReleaseDateApproachingEmailService {
 			templateModel.put("noOfDays", noOfDays);
 			templateModel.put("allocation", mailForReleaseDateDto);
 			try {
-				emailService.send("allocation-release-date-email-notification", templateModel, new String[] { managerEmails == null ? "" : managerEmails + ""},
+				emailService.send("allocation-release-date-email-notification", templateModel, new String[] { managerEmails.toString()},
 						new String[] { gdmEmail + "" });
 			} catch (final Exception exception) {
 				exception.printStackTrace();
@@ -95,7 +95,7 @@ public class ReleaseDateApproachingEmailService {
 
 			templateModel.put("allocation", mailForReleaseDateDto);
 			try {
-				emailService.send("allocation-release-date-past-email-notification", templateModel, new String[] { managerEmails == null ? "" : managerEmails + ""},
+				emailService.send("allocation-release-date-past-email-notification", templateModel, new String[] { managerEmails.toString()},
 						new String[] { gdmEmail + "" });
 			} catch (final Exception exception) {
 				exception.printStackTrace();

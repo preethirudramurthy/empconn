@@ -23,7 +23,7 @@ public class ProjectUtil {
 
 	public List<String> getEmployeeLoginMailIdsOfPrimaryAllocationProjects(Long projectId, String projectName) {
 		Optional<Project> prOpt = projectRepository.findById(projectId);
-		if(null != projectId && prOpt.isPresent() && prOpt.get().getIsActive()) {
+		if(prOpt.isPresent() && prOpt.get().getIsActive()) {
 			return employeeRepository.getEmployeeLoginIdsOfPrimaryAllocationProjects(projectId, StringUtils.trim(projectName));
 		}
 

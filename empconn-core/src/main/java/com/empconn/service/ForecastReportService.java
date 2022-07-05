@@ -130,7 +130,7 @@ public class ForecastReportService {
 
 		final List<ForecastDataDto> finalDto = new ArrayList<>();
 		final List<String> keysList = generateKeysList(key);
-		keysList.stream().forEach(k -> 
+		keysList.forEach(k ->
 			finalDto.addAll(mapValue.get(k))
 		);
 		finalDto.sort((p1, p2) -> p1.getEmpFullName().compareToIgnoreCase(p2.getEmpFullName()));
@@ -178,7 +178,7 @@ public class ForecastReportService {
 
 	private void populateForecastDataDto(final Map.Entry<String, List<Allocation>> entry,
 			final Map<String, List<ForecastDataDto>> insideMap, final List<ForecastDataDto> benchDto) {
-		entry.getValue().stream().forEach(a -> {
+		entry.getValue().forEach(a -> {
 			final ForecastDataDto forecastDataDto=new ForecastDataDto();
 			forecastDataDto.setEmpCode(a.getEmployee().getEmpCode());
 			forecastDataDto.setEmpFullName(a.getEmployee().getFullName());

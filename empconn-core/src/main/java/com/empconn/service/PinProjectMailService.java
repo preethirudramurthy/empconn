@@ -70,7 +70,7 @@ public class PinProjectMailService {
 	public void sendEmailForPinStatusChange(Project project, String changeStatus) {
 		final List<String> emailToList = new ArrayList<>();
 		final List<String> emailCCList = new ArrayList<>();
-		Employee pinInitiator = null;
+		Employee pinInitiator;
 		final Map<String, Object> templateModel = new HashMap<>();
 		switch (changeStatus) {
 		case "INITIATED":
@@ -145,7 +145,7 @@ public class PinProjectMailService {
 	}
 
 	public void sendEmailForPinApprove(Project project) {
-		String templateName = "";
+		String templateName;
 		boolean sendAttachment = false;
 		if (!project.getAccount().getCategory().equalsIgnoreCase("Internal")) {
 			if (project.getProjectKickoffIsRequired()) {
@@ -194,8 +194,7 @@ public class PinProjectMailService {
 		final Employee employee = createdOpt.orElse(null);
 		if (employee != null)informationDto.setInitiatedBy(employee.getFullName());
 		Optional<Employee> approverOpt = employeeRepository.findById(project.getApprovedBy());
-		final Employee employeeApproved = approverOpt.orElse(null);
-		if (employeeApproved != null) informationDto.setApprovedBy(employeeApproved.getFullName());
+		approverOpt.ifPresent(employeeApproved -> informationDto.setApprovedBy(employeeApproved.getFullName()));
 		informationDto.setProjectManagerName(managerName.get(0));
 		informationDto
 				.setBusinessManagerName(project.getEmployee3() == null ? "" : project.getEmployee3().getFullName());

@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -208,7 +209,7 @@ public class EarmarkService {
 			final List<String> projectSfList = project.getSalesforceIdentifiers().stream()
 					.map(SalesforceIdentifier::getValue).collect(Collectors.toList());
 
-			dto.getEarmarkList().stream().forEach(e -> {
+			dto.getEarmarkList().forEach(e -> {
 				final Optional<List<Earmark>> earmark = earmarkRepository
 						.findByAllocationAllocationIdAndProjectProjectIdAndIsActiveIsTrue(
 								Long.valueOf(e.getAllocationId()), Long.valueOf(dto.getProjectId()));

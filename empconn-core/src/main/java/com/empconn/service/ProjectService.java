@@ -300,7 +300,7 @@ public class ProjectService {
 	public PinStatusChangedDto deactivateProject(PinStatusChangeDto dto) {
 		final PinStatusChangedDto changedDto = new PinStatusChangedDto();
 		final Project project = projectRepository.findByProjectId(dto.getProjectId());
-		String oldStatus = "";
+		String oldStatus;
 		if (project.getCurrentStatus().equalsIgnoreCase(ProjectStatus.PMO_APPROVED.toString()))
 			oldStatus = ApplicationConstants.ACTIVE;
 		else
@@ -410,7 +410,7 @@ public class ProjectService {
 		final boolean isProjectDetailsChanged = isProjectDetailsChanged(updateProjectDto, project);
 
 		if (isProjectDetailsChanged)
-			project = getProjectWithUpdatedProjectDetails(project, updateProjectDto);
+			getProjectWithUpdatedProjectDetails(project, updateProjectDto);
 
 		if (!CollectionUtils.isEmpty(updateProjectDto.getLocationList()))
 			project = getProjectWithAddedManagers(project, updateProjectDto);
@@ -460,7 +460,7 @@ public class ProjectService {
 		return false;
 	}
 
-	private Project getProjectWithUpdatedProjectDetails(Project project, UpdateProjectDetailsDto updateProjectDto) {
+	private void getProjectWithUpdatedProjectDetails(Project project, UpdateProjectDetailsDto updateProjectDto) {
 		if (!isNullOrEmpty(updateProjectDto.getProjectName()))
 			project.setName(updateProjectDto.getProjectName());
 		if (!isNullOrEmpty(updateProjectDto.getDescription()))
@@ -472,7 +472,6 @@ public class ProjectService {
 		if (!updateProjectDto.getDbList().isEmpty())
 			project.setDatabase(String.join(",", updateProjectDto.getDbList()));
 
-		return project;
 	}
 
 	private Project getProjectWithAddedManagers(Project project, UpdateProjectDetailsDto updateProjectDto) {

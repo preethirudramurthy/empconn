@@ -73,7 +73,7 @@ public class PulseService {
 	private void getEmployeesList(final Set<Allocation> employeeAllocationSet,
 			final Set<EmployeeDataResponseDto> dataResponseDtos) {
 		final Set<Long> projectSet = new HashSet<>();
-		employeeAllocationSet.stream().forEach(a-> projectSet.add(a.getProject().getProjectId()));
+		employeeAllocationSet.forEach(a-> projectSet.add(a.getProject().getProjectId()));
 		final Set<Allocation> allocationSet = allocationRepository.findByProjectProjectIdInAndIsActiveTrue(projectSet);
 		allocationSet.removeAll(employeeAllocationSet);
 		dataResponseDtos.addAll(allocationToEmployeeDataResponseDto.allocationsToEmployeeDataResponseDto(allocationSet));
@@ -81,9 +81,9 @@ public class PulseService {
 		final List<Project> projectList = projectRepository.findAllById(projectSet);
 		for(final Project p : projectList) {
 			final Set<Employee> employeeSet = new HashSet<>(p.getGdms().values());
-			p.getProjectLocations().stream().forEach(pl -> employeeSet.addAll(pl.getAllManagers().values()));
+			p.getProjectLocations().forEach(pl -> employeeSet.addAll(pl.getAllManagers().values()));
 			final Set<EmployeeDataResponseDto> dto = allocationToEmployeeDataResponseDto.employeesToEmployeeDataResponseDto(employeeSet);
-			dto.stream().forEach(data -> {
+			dto.forEach(data -> {
 				data.setProject(p.getName());
 				data.setProjectName(p.getName());
 			});

@@ -25,8 +25,8 @@ public class AllocationsToBenchReportResponseDtoMapper {
 	}
 
 	private Float getTotalAvailable(List<BenchReportRowDto> benchReportRows) {
-		final Integer totalAvailability = benchReportRows.stream().filter(r -> null != r.getPercentage())
-				.map(BenchReportRowDto::getPercentage).reduce(0, Integer::sum);
+		final Integer totalAvailability = benchReportRows.stream().map(BenchReportRowDto::getPercentage)
+				.filter(percentage -> null != percentage).reduce(0, Integer::sum);
 		return (float) totalAvailability / 100;
 	}
 

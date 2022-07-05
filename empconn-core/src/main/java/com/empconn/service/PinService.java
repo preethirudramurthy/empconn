@@ -259,7 +259,7 @@ public class PinService {
 	public boolean isPinSubmitByProjectGdm(Project project) {
 		final Employee loginUser = jwtEmployeeUtil.getLoggedInEmployee();
 
-		boolean ret = false;
+		boolean ret;
 		if (project.getEmployee1() != null && project.getEmployee1().getEmployeeId().equals(loginUser.getEmployeeId()))
 			ret = true;
 		else ret = project.getEmployee1() == null && project.getEmployee2() != null

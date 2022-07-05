@@ -51,7 +51,7 @@ public abstract class NDRequestToGetMyRequestListResponseDtoMapper {
 
 	@Named("allocationdata")
 	List<AllocationDto> allocationdata(NdRequest source) {
-		List<AllocationDto> allocationDtos = null;
+		List<AllocationDto> allocationDtos;
 		final List<Allocation> alloList = allocationRepository
 				.findByEmployeeEmployeeIdAndIsActive(source.getEmployee1().getEmployeeId(), true).stream()
 				.filter(n -> !n.getProject().getName()

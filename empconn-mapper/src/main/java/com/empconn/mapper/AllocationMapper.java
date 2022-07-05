@@ -180,7 +180,7 @@ public abstract class AllocationMapper {
 	Function<ProjectLocation, List<Map<String, String>>> getProjectManagers = projectLocation -> {
 		final List<Map<String, String>> locationManagerList = new ArrayList<>();
 		final Map<String, Employee> allManagers = projectLocation.getAllManagers();
-		allManagers.entrySet().stream().forEach(y -> {
+		allManagers.entrySet().forEach(y -> {
 			if (y.getValue() != null) {
 				final Map<String, String> locationManagerMap = new HashMap<>();
 				locationManagerMap.put("projectLocationName", projectLocation.getLocation().getName());

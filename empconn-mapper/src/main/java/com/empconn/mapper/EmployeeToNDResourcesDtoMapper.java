@@ -43,7 +43,7 @@ public abstract class EmployeeToNDResourcesDtoMapper {
 
 	@Named("allocationdata")
 	List<AllocationDto> allocationdata(Employee employee) {
-		List<AllocationDto> allocationDtos = null;
+		List<AllocationDto> allocationDtos;
 		final List<Allocation> alloList = allocationRepository.findByEmployeeEmployeeIdAndIsActive(employee.getEmployeeId(), true).stream()
 				.filter(n -> !n.getProject().getName().equalsIgnoreCase(ApplicationConstants.NON_DELIVERY_BENCH_PROJECT_NAME))
 				.collect(Collectors.toList());

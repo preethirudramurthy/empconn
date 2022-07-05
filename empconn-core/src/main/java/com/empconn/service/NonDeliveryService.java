@@ -99,7 +99,7 @@ public class NonDeliveryService {
 		empList = empList.stream().filter(emp -> !employeeService.isDelivery(emp)).collect(Collectors.toList());
 
 		final List<NDResourcesDto> ndResourcesDtos = empToNDResourcesDtoMapper.employeeToNDResourcesDto(empList);
-		int sumAllocation = 0;
+		int sumAllocation;
 		final int totalAllocation = 100;
 		final List<NDResourcesDto> ndResourcesDtos2 = new ArrayList<>();
 		for (final NDResourcesDto allocationDto : ndResourcesDtos) {
@@ -149,7 +149,7 @@ public class NonDeliveryService {
 
 		}
 		final List<NdRequest> ndRequest = ndRequestRepository.saveAll(ndRequestsList);
-		ndRequest.stream().forEach(nd -> 
+		ndRequest.forEach(nd ->
 			allocateNDService.mailNdResourceAllocation(nd)
 		);
 		logger.info("{} exits successfully.",METHOD_NAME );
@@ -210,7 +210,7 @@ public class NonDeliveryService {
 		final String METHOD_NAME = "getMyRequestList";
 		logger.info("{} starts execution successfully.", METHOD_NAME);
 		List<GetMyRequestListResponseDto> responseList = new ArrayList<>();
-		List<NdRequest> ndRequests = null;
+		List<NdRequest> ndRequests;
 		final Employee loginUser = jwtEmployeeUtil.getLoggedInEmployee();
 		logger.debug("{} loginUser : {}", METHOD_NAME, loginUser);
 
@@ -262,7 +262,7 @@ public class NonDeliveryService {
 	Function<ProjectLocation, List<Map<String, String>>> getProjectManagers = projectLocation -> {
 		final List<Map<String, String>> locationManagerList = new ArrayList<>();
 		final Map<String, Employee> allManagers = projectLocation.getAllManagers();
-		allManagers.entrySet().stream().forEach(y -> {
+		allManagers.entrySet().forEach(y -> {
 			if (y.getValue() != null) {
 				final Map<String, String> locationManagerMap = new HashMap<>();
 				locationManagerMap.put("projectLocationName", projectLocation.getLocation().getName());
