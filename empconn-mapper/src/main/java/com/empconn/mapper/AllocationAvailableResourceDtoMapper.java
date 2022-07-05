@@ -109,7 +109,7 @@ public abstract class AllocationAvailableResourceDtoMapper {
 		final List<Earmark> earmarkList = allocation.getEarmarks().stream().filter(Earmark::getIsActive).collect(Collectors.toList());
 
 
-		if (earmarkList != null && !earmarkList.isEmpty()) {
+		if (!earmarkList.isEmpty()) {
 			return earmarkList.stream().filter(e -> e.getProject() != null || e.getOpportunity() != null)
 					.map(e -> e.getProject() != null ? e.getProject().getName() : e.getOpportunity().getName())
 					.collect(Collectors.toList());

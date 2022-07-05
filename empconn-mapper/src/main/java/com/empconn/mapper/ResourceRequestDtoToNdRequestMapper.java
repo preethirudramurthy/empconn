@@ -67,12 +67,12 @@ public abstract class ResourceRequestDtoToNdRequestMapper {
 	@Named("getProject")
 	public Project getProject(Long projectId) {
 		Optional<Project> projectOpt = projectRepository.findById(projectId);
-		return (projectOpt.isPresent())? projectOpt.get():null;
+		return projectOpt.orElse(null);
 	}
 
 	@Named("getEmployee")
 	public Employee getEmployee(Long resourceId) {
 		Optional<Employee> empOpt = employeeRepository.findById(resourceId);
-		return (empOpt.isPresent())? empOpt.get():null;
+		return empOpt.orElse(null);
 	}
 }

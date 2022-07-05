@@ -13,10 +13,10 @@ public interface MapApiService {
 
 	@Async
 	@Retryable(value = Exception.class, maxAttemptsExpression = "${map.retry.maxAttempts}", backoff = @Backoff(delayExpression = "${map.retry.maxDelay}"))
-	public <T> Future<ResponseEntity<String>> doMapRequest(String url, HttpMethod requestMethod, T requestObject);
+	<T> Future<ResponseEntity<String>> doMapRequest(String url, HttpMethod requestMethod, T requestObject);
 
 	@Recover
-	public <T> Future<ResponseEntity<String>> onError(Exception e, String url, HttpMethod requestMethod,
-			T requestObject);
+	<T> Future<ResponseEntity<String>> onError(Exception e, String url, HttpMethod requestMethod,
+											   T requestObject);
 
 }

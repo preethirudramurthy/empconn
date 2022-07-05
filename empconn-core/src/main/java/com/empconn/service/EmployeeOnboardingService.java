@@ -1,10 +1,6 @@
 package com.empconn.service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -365,7 +361,7 @@ public class EmployeeOnboardingService {
 		allocationDetail.setStartDate(TimeUtils.getToday());
 		allocationDetail.setCreatedOn(TimeUtils.getCreatedOn());
 		allocationDetail.setAllocation(allocation);
-		allocation.setAllocationDetails(Arrays.asList(allocationDetail));
+		allocation.setAllocationDetails(Collections.singletonList(allocationDetail));
 		employee.setPrimaryAllocation(allocation);
 		allocationRepository.save(allocation);
 		if (isDelivery) {

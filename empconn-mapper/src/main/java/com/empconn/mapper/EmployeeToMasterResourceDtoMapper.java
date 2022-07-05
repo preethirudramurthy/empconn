@@ -21,7 +21,7 @@ public interface EmployeeToMasterResourceDtoMapper {
 	Set<MasterResourceDto> employeesToMasterResourcesDto(Set<Employee> source);
 
 	@Named("GetTitleName")
-	public static String titleToTitleName(Title title) {
+	static String titleToTitleName(Title title) {
 		return title.getName();
 	}
 }

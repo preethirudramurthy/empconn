@@ -1,26 +1,19 @@
 package com.empconn.utilities;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import com.empconn.dto.BenchReportResponseDto;
 import com.empconn.dto.BenchReportRowDto;
 
 class ExcelReportGeneratorTest {
 
-	private BenchReportResponseDto benchReportResponseDto;
-
 	@BeforeEach
 	void setUp() throws Exception {
 
-		benchReportResponseDto = new BenchReportResponseDto();
+		BenchReportResponseDto benchReportResponseDto = new BenchReportResponseDto();
 		final List<BenchReportRowDto> benchReportRowList = new ArrayList<>();
 		final BenchReportRowDto benchReportRow1 = new BenchReportRowDto();
 		benchReportRow1.setBenchAllocationId("1");

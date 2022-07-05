@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +26,7 @@ import com.empconn.persistence.entities.AllocationDetail;
 import com.empconn.persistence.entities.AllocationFeedback;
 import com.empconn.persistence.entities.AllocationHour;
 import com.empconn.persistence.entities.AllocationStatus;
+import com.empconn.persistence.entities.Auditable;
 import com.empconn.persistence.entities.Earmark;
 import com.empconn.persistence.entities.Employee;
 import com.empconn.persistence.entities.Location;
@@ -116,7 +116,7 @@ public class DeallocationService {
 		for (final DeallocateDto request : deallocateDtos) {
 			final Employee loggedInEmployee = jwtEmployeeUtil.getLoggedInEmployee();
 			Optional<Allocation> allocOpt = allocationRepository.findById(request.getAllocationId());
-			final Allocation currentAllocation = allocOpt.isPresent()?allocOpt.get():null;
+			final Allocation currentAllocation = allocOpt.orElse(null);
 			if (currentAllocation != null) {
 			final Employee employee = currentAllocation.getEmployee();
 			final boolean isDelivery = employeeService.isDelivery(currentAllocation.getEmployee());
@@ -143,7 +143,7 @@ public class DeallocationService {
 							benchWorkGroup, reportingManager, reportingManager, false, null, pureBenchStatus)
 							: existingBenchAllocation.get();
 
-					if (!request.getPartial()) {
+					if (request.getPartial()) {
 						completeDeallocate(request, loggedInEmployee, currentAllocation, employee, isNew, toAllocation);
 					} else {
 						partialDeallocate(request, loggedInEmployee, currentAllocation, toAllocation);
@@ -183,7 +183,7 @@ public class DeallocationService {
 
 					syncToTimesheetService.syncAllocationWithHoursForDeallocation(currentAllocation, toAllocation);
 
-					if (!request.getPartial())
+					if (request.getPartial())
 						mailForCompleteDeallocation(currentAllocation);
 					else
 						mailForPartialDeallocation(currentAllocation, request, toAllocation);
@@ -202,12 +202,11 @@ public class DeallocationService {
 
 		final List<AllocationDetail> allocationDetails = currentAllocation.getAllocationDetails().stream()
 				.filter(AllocationDetail::getIsActive).collect(Collectors.toList());
-		Comparator<AllocationDetail> sortByStartDateAndCreatedOn = ((AllocationDetail a, AllocationDetail b) -> a
-				.getStartDate().compareTo(b.getStartDate()));
+		Comparator<AllocationDetail> sortByStartDateAndCreatedOn = (Comparator.comparing(AllocationDetail::getStartDate));
 		sortByStartDateAndCreatedOn = sortByStartDateAndCreatedOn
-				.thenComparing((a, b) -> a.getCreatedOn().compareTo(b.getCreatedOn()));
+				.thenComparing(Comparator.comparing(Auditable::getCreatedOn));
 
-		Collections.sort(allocationDetails, sortByStartDateAndCreatedOn);
+		allocationDetails.sort(sortByStartDateAndCreatedOn);
 
 		Integer percentageToBeDeallocated = request.getPercentage();
 		for (final AllocationDetail a : allocationDetails) {
@@ -355,7 +354,7 @@ public class DeallocationService {
 		for (final ProjectLocation prjLoc : pl) {
 			final Map<String, Employee> allManagers = prjLoc.getAllManagers();
 			for (final Map.Entry<String, Employee> entry : allManagers.entrySet()) {
-				sb.append(entry.getValue().getEmail() + ",");
+				sb.append(entry.getValue().getEmail()).append(",");
 			}
 		}
 		final String[] emailToList = new String[] { a.getEmployee() == null ? "" : a.getEmployee().getEmail(),sb.toString() };

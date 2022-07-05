@@ -159,6 +159,7 @@ public class MapService {
 		return ImmutablePair.of(requestMethod, filters);
 	}
 
+	@SuppressWarnings("BusyWait")
 	private String doMapAsyncRequest(String url, HttpMethod requestMethod, String requestBody)
 			throws HttpException {
 

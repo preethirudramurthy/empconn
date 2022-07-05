@@ -80,7 +80,7 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 
 	@Mapping(source = "clientInterviewNeeded", target = "isClientInterviewNeeded")
 	@Mapping(source = "allocationId", target = "allocation", qualifiedByName = "allocationIdToAllocation")
-	public abstract Earmark earmarkInfoDtoToEarmark(EarmarkInfoDto source, @MappingTarget Earmark earmark);
+	public abstract void earmarkInfoDtoToEarmark(EarmarkInfoDto source, @MappingTarget Earmark earmark);
 
 	@Mapping(target = "earmarkSalesforceIdentifiers", expression = "java(salesforceIdListToEarmarkSfs(source.getSalesforceIdList(), earmark))")
 	@Mapping(source = "manager", target = "employee2")
@@ -157,25 +157,19 @@ public abstract class ProjectDtoToEarmarkToEarmarkMapper {
 	@Named("VerticalIdToVertical")
 	public Vertical verticalIdToVertical(String verticalId) {
 		final Optional<Vertical> vertical = verticalRepository.findById(Integer.parseInt(verticalId));
-		if (vertical.isPresent())
-			return vertical.get();
-		return null;
+		return vertical.orElse(null);
 	}
 
 	@Named("getAccountId")
 	public Account getAccountId(String accountName) {
 		final Optional<Account> account = accountRepository.findByName(accountName);
-		if (account.isPresent())
-			return account.get();
-		return null;
+		return account.orElse(null);
 	}
 
 	@Named("allocationIdToAllocation")
 	public Allocation allocationIdToAllocation(String allocationId) {
 		final Optional<Allocation> allocation = allocationRepository.findById(Long.valueOf(allocationId));
-		if (allocation.isPresent())
-			return allocation.get();
-		return null;
+		return allocation.orElse(null);
 	}
 
 	@Named("salesforceIdListToEarmarkSfs")

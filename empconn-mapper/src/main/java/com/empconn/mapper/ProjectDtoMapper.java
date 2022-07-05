@@ -262,10 +262,7 @@ public abstract class ProjectDtoMapper {
 			return null;
 		}
 		final Optional<Employee> employee = employeeRepository.findById(employeeId);
-		if (employee.isPresent()) {
-			return CommonQualifiedMapper.employeeToFullName(employee.get());
-		} else
-			return null;
+		return employee.map(CommonQualifiedMapper::employeeToFullName).orElse(null);
 	}
 
 	@Named("accountIdToAccount")

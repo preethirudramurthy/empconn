@@ -106,7 +106,7 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 						root.get(ALLOCATION_MANAGER_ID).get(EMPLOYEE_ID).in(this.loggedInEmployee.getEmployeeId()));
 			} else if (filter.getReporteeType().equalsIgnoreCase("indirect")) {
 				final List<Predicate> gdmPredicate = gdmSpecification(root, cb);
-				finalPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[gdmPredicate.size()])));
+				finalPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[0])));
 			} else if (filter.getReporteeType().equalsIgnoreCase("all")) {
 				finalPredicate.addAll(gdmPredicate(root, cb));
 
@@ -124,7 +124,7 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 
 		query.distinct(true);
 		query.orderBy(cb.asc(root.get(EMPLOYEE).get("firstName")), cb.asc(root.get(EMPLOYEE).get("lastName")));
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 
 	}
 
@@ -137,9 +137,9 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 			.add(root.get(ALLOCATION_MANAGER_ID).get(EMPLOYEE_ID).in(this.loggedInEmployee.getEmployeeId()));
 
 			final List<Predicate> gdmPredicate = gdmSpecification(root, cb);
-			gdmAndManagerPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[gdmPredicate.size()])));
+			gdmAndManagerPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[0])));
 
-			finalPredicate.add(cb.or(gdmAndManagerPredicate.toArray(new Predicate[gdmAndManagerPredicate.size()])));
+			finalPredicate.add(cb.or(gdmAndManagerPredicate.toArray(new Predicate[0])));
 
 		} else if (RolesUtil.isAManager(this.loggedInEmployee)) {
 			finalPredicate
@@ -147,7 +147,7 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 		} else if (RolesUtil.isOnlyGDM(this.loggedInEmployee)) {
 
 			final List<Predicate> gdmPredicate = gdmSpecification(root, cb);
-			finalPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[gdmPredicate.size()])));
+			finalPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[0])));
 		}
 		return finalPredicate;
 	}
@@ -159,11 +159,11 @@ public class EditReleaseDateSpecification implements Specification<Allocation> {
 
 		final List<Predicate> nonQAWorkgroupPredicate = nonQAWorkgroupSpec(root);
 
-		gdmPredicate.add(cb.and(nonQAWorkgroupPredicate.toArray(new Predicate[nonQAWorkgroupPredicate.size()])));
+		gdmPredicate.add(cb.and(nonQAWorkgroupPredicate.toArray(new Predicate[0])));
 
 		final List<Predicate> qAWorkgroupPredicate = qaWorkgroupSpec(root);
 
-		gdmPredicate.add(cb.and(qAWorkgroupPredicate.toArray(new Predicate[qAWorkgroupPredicate.size()])));
+		gdmPredicate.add(cb.and(qAWorkgroupPredicate.toArray(new Predicate[0])));
 
 		return gdmPredicate;
 	}

@@ -14,16 +14,16 @@ public interface ClientLocationRepository extends CrudRepository<ClientLocation,
 	@Transactional
 	@Modifying
 	@Query("UPDATE ClientLocation cl SET cl.isActive = 'FALSE' WHERE cl.clientLocationId NOT IN(:savedIds) AND cl.account.accountId = :accountId")
-	public Integer softDeleteClientLocationsForAccount(Set<Long> savedIds, Integer accountId);
+	void softDeleteClientLocationsForAccount(Set<Long> savedIds, Integer accountId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE ClientLocation cl SET cl.isActive = 'FALSE' WHERE cl.account.accountId = :accountId")
-	public Integer softDeleteAllClientLocationsForAccount(Integer accountId);
+	void softDeleteAllClientLocationsForAccount(Integer accountId);
 
 	@Transactional
 	@Modifying
 	@Query("SELECT cl.clientLocationId FROM ClientLocation cl WHERE cl.account.accountId = :accountId AND cl.isActive = 'FALSE'")
-	public Set<Long> findSoftDeletedIdsForAccount(Integer accountId);
+	Set<Long> findSoftDeletedIdsForAccount(Integer accountId);
 
 }

@@ -46,7 +46,7 @@ public class DeallocateDto {
 		this.softSkillFeedback = softSkillFeedback;
 	}
 	public boolean getPartial() {
-		return partial;
+		return !partial;
 	}
 	public void setPartial(boolean partial) {
 		this.partial = partial;

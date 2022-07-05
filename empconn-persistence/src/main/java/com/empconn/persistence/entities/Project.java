@@ -377,11 +377,10 @@ public class Project extends Auditable<Long> implements Serializable {
 		this.projectComments = projectComments;
 	}
 
-	public ProjectComment addProjectComment(ProjectComment projectComment) {
+	public void addProjectComment(ProjectComment projectComment) {
 		getProjectComments().add(projectComment);
 		projectComment.setProject(this);
 
-		return projectComment;
 	}
 
 	public ProjectComment removeProjectComment(ProjectComment projectComment) {

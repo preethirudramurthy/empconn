@@ -25,9 +25,7 @@ public enum AccountStatus {
 	private static AccountStatus findBy(final Predicate<? super AccountStatus> predicate) {
 		final Optional<AccountStatus> matchingAccountStatus = Stream.of(AccountStatus.values()).filter(predicate)
 				.findFirst();
-		if (matchingAccountStatus.isPresent())
-			return matchingAccountStatus.get();
-		return null;
+		return matchingAccountStatus.orElse(null);
 	}
 
 }

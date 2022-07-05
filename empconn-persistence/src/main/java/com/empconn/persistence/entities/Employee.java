@@ -416,11 +416,10 @@ public class Employee extends Auditable<Long> implements Serializable {
 		this.employeeRoles = employeeRoles;
 	}
 
-	public EmployeeRole addEmployeeRole(EmployeeRole employeeRole) {
+	public void addEmployeeRole(EmployeeRole employeeRole) {
 		getEmployeeRoles().add(employeeRole);
 		employeeRole.setEmployee(this);
 
-		return employeeRole;
 	}
 
 	public EmployeeRole removeEmployeeRole(EmployeeRole employeeRole) {

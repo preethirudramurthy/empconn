@@ -41,43 +41,43 @@ public interface AccountAccountDetailsMapper {
 	Account accountDetailsToAccount(AccountDetailsDto destination);
 
 	@Named("AccountCategoryToUnitValue")
-	public static UnitValue accountCategoryToUnitValue(AccountCategory category) {
+	static UnitValue accountCategoryToUnitValue(AccountCategory category) {
 		return new UnitValue(category.getId(), category.getValue());
 	}
 
 	@Named("AccountCategoryNameToUnitValue")
-	public static UnitValue accountCategoryToUnitValue(String categoryName) {
+	static UnitValue accountCategoryToUnitValue(String categoryName) {
 		return accountCategoryToUnitValue(AccountCategory.getByValue(categoryName));
 	}
 
 	@Named("UnitValueToAccountCategory")
-	public static AccountCategory unitValueToAccountCategory(UnitValue unitValue) {
+	static AccountCategory unitValueToAccountCategory(UnitValue unitValue) {
 		return AccountCategory.getById(unitValue.getId());
 	}
 
 	@Named("DateToLocalDate")
-	public static LocalDate dateToLocalDate(Date date) {
+	static LocalDate dateToLocalDate(Date date) {
 		if (null == date)
 			return null;
 		return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 	}
 
 	@Named("LocalDateToDate")
-	public static Date localDateToDate(LocalDate localDate) {
+	static Date localDateToDate(LocalDate localDate) {
 		if (null == localDate)
 			return null;
 		return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 
 	@Named("TimestampToLocalDateTime")
-	public static LocalDateTime timestampToLocalDateTime(Timestamp timestamp) {
+	static LocalDateTime timestampToLocalDateTime(Timestamp timestamp) {
 		if (null == timestamp)
 			return null;
 		return LocalDateTime.ofInstant(timestamp.toInstant(), ZoneId.of("UTC"));
 	}
 
 	@Named("LocalDateTimeToTimestamp")
-	public static Timestamp localDateTimeToTimestamp(LocalDateTime localDateTime) {
+	static Timestamp localDateTimeToTimestamp(LocalDateTime localDateTime) {
 		if (null == localDateTime)
 			return null;
 		return Timestamp.valueOf(localDateTime);

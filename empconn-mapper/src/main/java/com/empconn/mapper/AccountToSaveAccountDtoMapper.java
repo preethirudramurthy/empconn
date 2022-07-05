@@ -73,9 +73,7 @@ public abstract class AccountToSaveAccountDtoMapper {
 	@Named("VerticalIdToVertical")
 	public Vertical verticalIdToVertical(String verticalId) {
 		final Optional<Vertical> vertical = verticalRepository.findById(Integer.parseInt(verticalId));
-		if (vertical.isPresent())
-			return vertical.get();
-		return null;
+		return vertical.orElse(null);
 	}
 
 	@Named("LocalDateTimeToDate")

@@ -23,7 +23,6 @@ import com.empconn.dto.manager.GetResourcesResponseDto;
 import com.empconn.service.AccountService;
 import com.empconn.service.CommonBenchService;
 import com.empconn.service.MasterService;
-import com.empconn.service.PinService;
 import com.empconn.service.ProjectService;
 import com.empconn.vo.UnitValue;
 
@@ -39,9 +38,6 @@ public class MasterController {
 	private AccountService accountService;
 
 	private ProjectService projectService;
-
-	@SuppressWarnings("unused")
-	private PinService pinService;
 
 	private CommonBenchService commonBenchService;
 
@@ -63,11 +59,6 @@ public class MasterController {
 	@Autowired
 	public void setProjectService(ProjectService projectService) {
 		this.projectService = projectService;
-	}
-
-	@Autowired
-	public void setPinService(PinService pinService) {
-		this.pinService = pinService;
 	}
 
 	@GetMapping("get-workgroup-dropdown")

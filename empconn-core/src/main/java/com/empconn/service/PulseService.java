@@ -50,7 +50,7 @@ public class PulseService {
 	public EmployeeInfoResponseDto getEmployeeDetail(String loginId) {
 		logger.debug("Inside Service for getEmployeeDetail");
 		Optional<Employee> emOpt = employeeRepository.findByLoginIdIgnoreCaseAndIsActiveTrue(loginId);
-		final Employee employee = emOpt.isPresent()? emOpt.get():null;
+		final Employee employee = emOpt.orElse(null);
 		return (employee != null)?allocationToEmployeeInfoResponseDto.allocationToEmployeeInfoResponseDto(employee.getPrimaryAllocation()):null;
 	}
 
@@ -80,8 +80,7 @@ public class PulseService {
 		logger.debug("Size of EmployeeDataResponseDto Set : {}", dataResponseDtos.size());
 		final List<Project> projectList = projectRepository.findAllById(projectSet);
 		for(final Project p : projectList) {
-			final Set<Employee> employeeSet = new HashSet<>();
-			employeeSet.addAll(p.getGdms().values());
+			final Set<Employee> employeeSet = new HashSet<>(p.getGdms().values());
 			p.getProjectLocations().stream().forEach(pl -> employeeSet.addAll(pl.getAllManagers().values()));
 			final Set<EmployeeDataResponseDto> dto = allocationToEmployeeDataResponseDto.employeesToEmployeeDataResponseDto(employeeSet);
 			dto.stream().forEach(data -> {

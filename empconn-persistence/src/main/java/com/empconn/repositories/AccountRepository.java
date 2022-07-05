@@ -27,23 +27,23 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	Set<Account> findByNameIgnoreCaseAndIsActiveIsTrue(String name);
 
-	public Optional<Account> findByName(String accountName);
+	Optional<Account> findByName(String accountName);
 
 	// Added for CRAN-12
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	List<Account> findAllByOrderByStartDateDesc();
 
-	public List<Account> findByStartDateGreaterThanEqualAndStartDateLessThanEqualOrderByStartDateDesc(
+	List<Account> findByStartDateGreaterThanEqualAndStartDateLessThanEqualOrderByStartDateDesc(
 			Date fromStartDate, Date toStartDate);
 
-	public List<Account> findByStartDateLessThanEqualOrderByStartDateDesc(Date toStartDate);
+	List<Account> findByStartDateLessThanEqualOrderByStartDateDesc(Date toStartDate);
 
-	public List<Account> findByStartDateGreaterThanEqualOrderByStartDateDesc(Date fromStartDate);
+	List<Account> findByStartDateGreaterThanEqualOrderByStartDateDesc(Date fromStartDate);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE Account a SET a.status = :status WHERE a.accountId = :accountId")
-	public Integer changeStatus(Integer accountId, String status);
+	Integer changeStatus(Integer accountId, String status);
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	Set<Account> findAllByIsActiveAndStatusIgnoreCaseNot(Boolean isActive, String status);
@@ -52,24 +52,24 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	Set<Account> findAllByIsActiveAndStatusIn(Boolean isActive, List<String> status);
 
 	@Query("SELECT a FROM Account a WHERE (a.createdBy = :empId) AND a.isActive = true")
-	public Set<Account> getMyAccountDropdown(Long empId);
+	Set<Account> getMyAccountDropdown(Long empId);
 
 	@Query("SELECT a FROM Account a WHERE  a.isActive = true")
-	public Set<Account> getAllAccountDropdown();
+	Set<Account> getAllAccountDropdown();
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE Account a SET a.mapAccountId = :mapAccountId WHERE a.accountId = :accountId")
-	public Integer updateMapAccountId(String mapAccountId, Integer accountId);
+	void updateMapAccountId(String mapAccountId, Integer accountId);
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	Set<Account> findByVerticalVerticalIdIn(List<Integer> verticalId);
 
 	Set<Account> findByStatus(String status);
 
-	public Set<Account> findByAccountIdNotAndNameIgnoreCaseAndIsActiveIsTrue(Integer accountId, String name);
+	Set<Account> findByAccountIdNotAndNameIgnoreCaseAndIsActiveIsTrue(Integer accountId, String name);
 
-	public Set<Account> findByCategoryIgnoreCaseNotAndStatusInAndIsActiveIsTrue(String category,
+	Set<Account> findByCategoryIgnoreCaseNotAndStatusInAndIsActiveIsTrue(String category,
 			String[] allowedStatus);
 
 }

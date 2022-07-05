@@ -43,7 +43,7 @@ public class GDMSpecification {
 					gdmForProjectPredicate.add(qaGDMJoin.get(PROJECT_ID).in(
 							request.getAllProjects().stream().map(Project::getProjectId).collect(Collectors.toList())));
 
-					finalPredicate.add(cb.or(gdmForProjectPredicate.toArray(new Predicate[gdmForProjectPredicate.size()])));
+					finalPredicate.add(cb.or(gdmForProjectPredicate.toArray(new Predicate[0])));
 
 			}
 
@@ -55,7 +55,7 @@ public class GDMSpecification {
 				gdmForProjectPredicate.add(qaGDMJoin.get(PROJECT_ID).in(
 						request.getProjectNameList().stream().map(Long::parseLong).collect(Collectors.toList())));
 
-				finalPredicate.add(cb.or(gdmForProjectPredicate.toArray(new Predicate[gdmForProjectPredicate.size()])));
+				finalPredicate.add(cb.or(gdmForProjectPredicate.toArray(new Predicate[0])));
 
 			}
 
@@ -67,7 +67,7 @@ public class GDMSpecification {
 				gdmForAccountPredicate.add(qaGDMJoin.get(ACCOUNT).get("accountId").in(
 						request.getAccountNameList().stream().map(Long::parseLong).collect(Collectors.toList())));
 
-				finalPredicate.add(cb.or(gdmForAccountPredicate.toArray(new Predicate[gdmForAccountPredicate.size()])));
+				finalPredicate.add(cb.or(gdmForAccountPredicate.toArray(new Predicate[0])));
 
 			}
 
@@ -80,12 +80,12 @@ public class GDMSpecification {
 				gdmForVerticalPredicate.add(qaGDMJoin.get(ACCOUNT).get("vertical").get("verticalId").in(
 						request.getVerticalIdList().stream().map(Long::parseLong).collect(Collectors.toList())));
 
-				finalPredicate.add(cb.or(gdmForVerticalPredicate.toArray(new Predicate[gdmForVerticalPredicate.size()])));
+				finalPredicate.add(cb.or(gdmForVerticalPredicate.toArray(new Predicate[0])));
 
 			}
 
 			query.distinct(true);
-			return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+			return cb.and(finalPredicate.toArray(new Predicate[0]));
 		};
 	}
 

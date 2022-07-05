@@ -6,6 +6,6 @@ import com.empconn.persistence.entities.EmailConfiguration;
 
 public interface EmailConfigurationRepository extends CrudRepository<EmailConfiguration, Integer> {
 
-	public EmailConfiguration findFirstByNameIgnoreCase(String name);
+	EmailConfiguration findFirstByNameIgnoreCase(String name);
 
 }

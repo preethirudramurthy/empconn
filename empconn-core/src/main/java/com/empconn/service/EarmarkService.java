@@ -2,7 +2,6 @@ package com.empconn.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -188,8 +187,8 @@ public class EarmarkService {
 
 		earmarkDtos.add(mailForEarMark);
 		templateModel.put("earMark", earmarkDtos);
-		emailService.send("resource-un-earmark", templateModel, emailToList.toArray(new String[emailToList.size()]),
-				emailCCList.toArray(new String[emailCCList.size()]));
+		emailService.send("resource-un-earmark", templateModel, emailToList.toArray(new String[0]),
+				emailCCList.toArray(new String[0]));
 
 	}
 
@@ -204,7 +203,7 @@ public class EarmarkService {
 
 	public void validateSaveEarmarkProject(EarmarkProjectDto dto) {
 		Optional<Project> pOpt = projectRepository.findById(Long.valueOf(dto.getProjectId()));
-		final Project project = pOpt.isPresent()? pOpt.get() : null;
+		final Project project = pOpt.orElse(null);
 		if (project != null) {
 			final List<String> projectSfList = project.getSalesforceIdentifiers().stream()
 					.map(SalesforceIdentifier::getValue).collect(Collectors.toList());
@@ -360,8 +359,8 @@ public class EarmarkService {
 
 		templateModel.put("earMark", earmarkDtos);
 		emailService.send("resource-earmark-project", templateModel,
-				emailToList.toArray(new String[emailToList.size()]),
-				emailCCList.toArray(new String[emailCCList.size()]));
+				emailToList.toArray(new String[0]),
+				emailCCList.toArray(new String[0]));
 
 	}
 
@@ -381,7 +380,7 @@ public class EarmarkService {
 	public EarmarkAvailabilityDto getEarmarkAvailability(String allocationId) {
 		EarmarkAvailabilityDto availabilityDto = null;
 		Optional<Allocation> allocOpt = allocationRepository.findById(Long.valueOf(allocationId));
-		final Allocation allocation = allocOpt.isPresent()?allocOpt.get():null;
+		final Allocation allocation = allocOpt.orElse(null);
 		final Optional<List<Earmark>> earmarksForAllocation = earmarkRepository
 				.findByAllocationAllocationIdAndIsActiveIsTrue(Long.valueOf(allocationId));
 		if (allocation != null) {
@@ -431,7 +430,7 @@ public class EarmarkService {
 				new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getEndDate()), earmark.getBillable() ? "Yes" : "No");
 		earmarkDtos.add(mailForEarMark);
 		templateModel.put("earMark", earmarkDtos);
-		emailService.send("resource-un-earmark", templateModel, emailToList.toArray(new String[emailToList.size()]),
+		emailService.send("resource-un-earmark", templateModel, emailToList.toArray(new String[0]),
 				null);
 
 	}
@@ -502,7 +501,7 @@ public class EarmarkService {
 	public Set<ManagerInfoDto> getSelectedManagerDropdown(String projectId) {
 
 		Optional<Project> pOpt = projectRepository.findById(Long.valueOf(projectId));
-		final Project project = pOpt.isPresent() ? pOpt.get() : null;
+		final Project project = pOpt.orElse(null);
 		if (project != null) {
 			final List<Employee> managerList = getProjectManagersList(project);
 
@@ -531,7 +530,7 @@ public class EarmarkService {
 			final Employee gdmManager = checkUserIsManagerOfProject.get();
 			final ManagerInfoDto gdmManagerDto = new ManagerInfoDto(gdmManager.getEmployeeId().toString(),
 					gdmManager.getFullName(), gdmManager.getEmpCode(), gdmManager.getTitle().getName());
-			return Arrays.asList(gdmManagerDto).stream().collect(Collectors.toSet());
+			return Collections.singletonList(gdmManagerDto).stream().collect(Collectors.toSet());
 		}
 		return Collections.emptySet();
 	}

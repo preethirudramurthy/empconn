@@ -22,5 +22,5 @@ public interface HorizontalRepository extends JpaRepository<Horizontal, Integer>
 	@Transactional
 	@Modifying
 	@Query("UPDATE Horizontal h SET h.isActive = 'false' WHERE h.name = :name")
-	public void softDelete(String name);
+	void softDelete(String name);
 }

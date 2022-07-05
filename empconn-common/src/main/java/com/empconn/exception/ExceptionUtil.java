@@ -1,6 +1,6 @@
 package com.empconn.exception;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,10 +26,10 @@ public class ExceptionUtil {
 
 		final String message = environment.getProperty(exception.getCode());
 		if (null != message) {
-			return new HashSet<>(Arrays.asList(new ExceptionResponse(exception.getCode(), message)));
+			return new HashSet<>(Collections.singletonList(new ExceptionResponse(exception.getCode(), message)));
 		}
 
-		return new HashSet<>(Arrays.asList(getDefaultExceptionResponse()));
+		return new HashSet<>(Collections.singletonList(getDefaultExceptionResponse()));
 	}
 
 	private ExceptionResponse getDefaultExceptionResponse() {
@@ -38,6 +38,6 @@ public class ExceptionUtil {
 
 	public Set<ExceptionResponse> getExceptions(Throwable throwable) {
 		logger.error("Exception in processing : ", throwable);
-		return new HashSet<>(Arrays.asList(getDefaultExceptionResponse()));
+		return new HashSet<>(Collections.singletonList(getDefaultExceptionResponse()));
 	}
 }

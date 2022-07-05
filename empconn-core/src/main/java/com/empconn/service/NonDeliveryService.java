@@ -111,8 +111,6 @@ public class NonDeliveryService {
 						sumAllocation = sumAllocation + allocationDto2.getAllocationPercentage();
 				}
 
-			} else {
-				sumAllocation = 0;
 			}
 			allocationDto.setAvailablePercentage(totalAllocation - sumAllocation);
 			ndResourcesDtos2.add(allocationDto);

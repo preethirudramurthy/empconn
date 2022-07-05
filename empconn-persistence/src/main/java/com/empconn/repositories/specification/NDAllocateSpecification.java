@@ -55,7 +55,7 @@ public class NDAllocateSpecification implements Specification<NdRequest> {
 					.in(filter.getLocationIdList().stream().map(Integer::parseInt).collect(Collectors.toList())));
 		}
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 
 	}
 

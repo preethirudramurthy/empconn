@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 class SimpleSourceDestinationMapperIntegrationTest {
 
-	private SimpleSourceDestinationMapper mapper = Mappers.getMapper(SimpleSourceDestinationMapper.class);
+	private final SimpleSourceDestinationMapper mapper = Mappers.getMapper(SimpleSourceDestinationMapper.class);
 
 	@Test
 	void givenSourceToDestination_whenMaps_thenCorrect() {

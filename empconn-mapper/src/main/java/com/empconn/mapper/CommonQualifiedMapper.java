@@ -215,8 +215,7 @@ public abstract class CommonQualifiedMapper {
 	public static String timestampToFormattedDate(Timestamp timestamp) {
 		if (null == timestamp)
 			return null;
-		final Date date = timestamp;
-		return new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(date);
+		return new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(timestamp);
 	}
 
 	@Named("latestCommentForProjectStatus")
@@ -225,9 +224,7 @@ public abstract class CommonQualifiedMapper {
 			return null;
 		final Optional<ProjectComment> comment = comments.stream().filter(c -> c.getStatus().equals(status))
 				.max(Comparator.comparing(ProjectComment::getCreatedOn));
-		if (comment.isPresent())
-			return comment.get();
-		return null;
+		return comment.orElse(null);
 	}
 
 	@Named("DateToLocalDateTime")

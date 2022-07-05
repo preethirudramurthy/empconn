@@ -27,9 +27,7 @@ public enum ProjectStatus {
 	private static ProjectStatus findBy(final Predicate<? super ProjectStatus> predicate) {
 		final Optional<ProjectStatus> matchingProjectStatus = Stream.of(ProjectStatus.values()).filter(predicate)
 				.findFirst();
-		if (matchingProjectStatus.isPresent())
-			return matchingProjectStatus.get();
-		return null;
+		return matchingProjectStatus.orElse(null);
 	}
 
 	public static String getValueByName(String name) {

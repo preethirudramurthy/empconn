@@ -1,12 +1,6 @@
 package com.empconn.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -151,22 +145,18 @@ public class ProjectService {
 				withBench, partial);
 		final Set<UnitValue> values = projectUnitValueMapper.projectsToUnitValues(projectRepository
 				.findAll(ProjectSpecification.getProjectsSpec(request, jwtEmployeeUtil.getLoggedInEmployee())));
-		final List<UnitValue> value = values.stream().collect(Collectors.toList());
-		Collections.sort(value, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
-		return value;
+		return values.stream().sorted((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue())).collect(Collectors.toList());
 	}
 
 	public List<UnitValue> getProjects(ProjectDropdownDto request) {
 		final Set<UnitValue> values = projectUnitValueMapper
 				.projectsToUnitValues(projectRepository.findAll(ProjectSpecification.getProjectsSpec(request)));
-		final List<UnitValue> value = values.stream().collect(Collectors.toList());
-		Collections.sort(value, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
-		return value;
+		return values.stream().sorted((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue())).collect(Collectors.toList());
 	}
 
 	public ProjectDetailsDto getProjectDetails(String projectId) {
 		final Optional<Project> project = projectRepository.findById(Long.parseLong(projectId));
-		return project.isPresent()? projectDetailsMapper.projectToProjectDetailsDto(project.get()):null;
+		return project.map(value -> projectDetailsMapper.projectToProjectDetailsDto(value)).orElse(null);
 	}
 
 	public List<ProjectSummaryDto> getProjectSummaryList(ProjectSummarySearchDto searchDto) {
@@ -465,7 +455,7 @@ public class ProjectService {
 	private boolean isStringListAndCommaStringsAreEqual(List<String> list1, String s) {
 		final List<String> list2 = CommonQualifiedMapper.commaStringsTostringList(s);
 		if (list1 != null && list2 != null) {
-			return (list1.size() == list2.size()) && list1.containsAll(list2);
+			return (list1.size() == list2.size()) && new HashSet<>(list1).containsAll(list2);
 		}
 		return false;
 	}
@@ -533,7 +523,7 @@ public class ProjectService {
 		return project;
 	}
 
-	private Project notifyAddedManagersWithMail(Project project, UpdateProjectDetailsDto updateProjectDto) {
+	private void notifyAddedManagersWithMail(Project project, UpdateProjectDetailsDto updateProjectDto) {
 		for (final UpdateLocationManagersDto dto : updateProjectDto.getLocationList()) {
 			final Optional<ProjectLocation> pl = project.getProjectLocations().stream()
 					.filter(p -> p.getProjectLocationId().equals(Long.valueOf(dto.getProjectLocationId()))).findFirst();
@@ -568,7 +558,6 @@ public class ProjectService {
 			}
 		}
 
-		return project;
 	}
 
 	private void doPostProjectNameUpdateIntegrations(UpdateProjectDetailsDto updateProjectDto, Project project) {

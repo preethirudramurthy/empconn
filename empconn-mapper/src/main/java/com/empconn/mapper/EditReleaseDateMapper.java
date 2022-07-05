@@ -2,7 +2,6 @@ package com.empconn.mapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,7 @@ public abstract class EditReleaseDateMapper {
 			final EditReleaseDateAllocationHour editReleaseDateAllocationHour = new EditReleaseDateAllocationHour();
 			editReleaseDateAllocationHour.setYear(e.getKey());
 			final List<EditReleaseMonthDto> list = e.getValue();
-			Collections.sort(list, (o1, o2) -> {
+			list.sort((o1, o2) -> {
 				final Integer x1 = DateUtils.getMonth(o1.getName());
 				final Integer x2 = DateUtils.getMonth(o2.getName());
 				return x1.compareTo(x2);

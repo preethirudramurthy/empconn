@@ -84,15 +84,15 @@ public class PinProjectMailService {
 			templateModel.put(PROJECT_NAME,
 					project.getName());
 			templateModel.put("link", applicationUrl);
-			emailService.send("pin-initiated", templateModel, emailToList.toArray(new String[emailToList.size()]),
-					emailCCList.toArray(new String[emailCCList.size()]));
+			emailService.send("pin-initiated", templateModel, emailToList.toArray(new String[0]),
+					emailCCList.toArray(new String[0]));
 			break;
 		case "GDM_REVIEWED":
 			pinInitiator = employeeRepository.findByEmployeeId(project.getCreatedBy());
 			emailCCList.add(pinInitiator.getEmail());
 			templateModel.put(PROJECT_NAME, project.getName());
-			emailService.send("pin-reviewed", templateModel, emailToList.toArray(new String[emailToList.size()]),
-					emailCCList.toArray(new String[emailCCList.size()]));
+			emailService.send("pin-reviewed", templateModel, emailToList.toArray(new String[0]),
+					emailCCList.toArray(new String[0]));
 			break;
 		case "GDM_REJECTED":
 			pinInitiator = employeeRepository.findByEmployeeId(project.getCreatedBy());
@@ -101,17 +101,17 @@ public class PinProjectMailService {
 			final Optional<ProjectComment> projectComment = IterableUtils.toList(project.getProjectComments()).stream()
 					.filter(c -> c.getStatus().equals(ProjectStatus.GDM_REJECTED.name()))
 					.max(Comparator.comparing(ProjectComment::getCreatedOn));
-			if (projectComment.isPresent()) templateModel.put("comment", projectComment.get().getValue());
-			emailService.send("pin-rejected-gdm", templateModel, emailToList.toArray(new String[emailToList.size()]),
-					emailCCList.toArray(new String[emailCCList.size()]));
+			projectComment.ifPresent(comment -> templateModel.put("comment", comment.getValue()));
+			emailService.send("pin-rejected-gdm", templateModel, emailToList.toArray(new String[0]),
+					emailCCList.toArray(new String[0]));
 			break;
 		case "SENT_BACK":
 			pinInitiator = employeeRepository.findByEmployeeId(project.getCreatedBy());
 			emailToList.add(pinInitiator.getEmail());
 			templateModel.put(PROJECT_NAME, project.getName());
 			templateModel.put("link", applicationUrl);
-			emailService.send("pin-sentback", templateModel, emailToList.toArray(new String[emailToList.size()]),
-					emailCCList.toArray(new String[emailCCList.size()]));
+			emailService.send("pin-sentback", templateModel, emailToList.toArray(new String[0]),
+					emailCCList.toArray(new String[0]));
 			break;
 		case "RESUBMITTED":
 			if (project.getEmployee1() != null) {
@@ -123,8 +123,8 @@ public class PinProjectMailService {
 				emailToList.add(project.getEmployee2().getEmail());
 			templateModel.put(PROJECT_NAME, project.getName());
 			templateModel.put("link", applicationUrl);
-			emailService.send("pin-resubmit", templateModel, emailToList.toArray(new String[emailToList.size()]),
-					emailCCList.toArray(new String[emailCCList.size()]));
+			emailService.send("pin-resubmit", templateModel, emailToList.toArray(new String[0]),
+					emailCCList.toArray(new String[0]));
 			break;
 		default:
 			break;
@@ -141,7 +141,7 @@ public class PinProjectMailService {
 		templateModel.put(PROJECT_NAME, project.getName());
 		templateModel.put("comments", rejectDto.getComment());
 		emailService.send("pin-reject-email", templateModel, emailToList,
-				emailCCList.toArray(new String[emailCCList.size()]));
+				emailCCList.toArray(new String[0]));
 	}
 
 	public void sendEmailForPinApprove(Project project) {
@@ -183,18 +183,18 @@ public class PinProjectMailService {
 		templateModel.put(END_DATE, new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getEndDate()));
 		templateModel.put("date", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(project.getEndDate()));
 		templateModel.put("link", applicationUrl);
-		emailService.send(templateName, templateModel, toEmailId.toArray(new String[toEmailId.size()]),
-				ccEmailId.toArray(new String[ccEmailId.size()]));
+		emailService.send(templateName, templateModel, toEmailId.toArray(new String[0]),
+				ccEmailId.toArray(new String[0]));
 	}
 
 	private void mailForPinApprovedAttachment(Project project, ProjectInformationDto informationDto) {
 		final Map<String, Object> templateModel = new HashMap<>();
 		final List<String> managerName = getManagerNameByProjectLocation(project.getProjectLocations());
 		Optional<Employee> createdOpt = employeeRepository.findById(project.getCreatedBy());
-		final Employee employee = createdOpt.isPresent()?createdOpt.get():null;
+		final Employee employee = createdOpt.orElse(null);
 		if (employee != null)informationDto.setInitiatedBy(employee.getFullName());
 		Optional<Employee> approverOpt = employeeRepository.findById(project.getApprovedBy());
-		final Employee employeeApproved = approverOpt.isPresent()?approverOpt.get():null;
+		final Employee employeeApproved = approverOpt.orElse(null);
 		if (employeeApproved != null) informationDto.setApprovedBy(employeeApproved.getFullName());
 		informationDto.setProjectManagerName(managerName.get(0));
 		informationDto
@@ -221,7 +221,7 @@ public class PinProjectMailService {
 		for (final ProjectLocation prjLoc : pl) {
 			final Map<String, Employee> allManagers = prjLoc.getAllManagers();
 			for (final Map.Entry<String, Employee> entry : allManagers.entrySet()) {
-				sb.append(entry.getValue().getEmail() + ",");
+				sb.append(entry.getValue().getEmail()).append(",");
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
@@ -244,7 +244,7 @@ public class PinProjectMailService {
 		for (final ProjectLocation prjLoc : pl) {
 			final Map<String, Employee> allManagers = prjLoc.getAllManagers();
 			for (final Map.Entry<String, Employee> entry : allManagers.entrySet()) {
-				sb.append(entry.getValue().getEmail() + ",");
+				sb.append(entry.getValue().getEmail()).append(",");
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
@@ -266,7 +266,7 @@ public class PinProjectMailService {
 		for (final ProjectLocation prjLoc : pl) {
 			final Map<String, Employee> allManagers = prjLoc.getAllManagers();
 			for (final Map.Entry<String, Employee> entry : allManagers.entrySet()) {
-				sb.append(entry.getValue().getEmail() + ",");
+				sb.append(entry.getValue().getEmail()).append(",");
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
@@ -289,7 +289,7 @@ public class PinProjectMailService {
 		for (final ProjectLocation prjLoc : pl) {
 			final Map<String, Employee> allManagers = prjLoc.getAllManagers();
 			for (final Map.Entry<String, Employee> entry : allManagers.entrySet()) {
-				sb.append(entry.getValue().getEmail() + ",");
+				sb.append(entry.getValue().getEmail()).append(",");
 			}
 		}
 		final Map<String, Object> templateModel = new HashMap<>();
@@ -312,7 +312,7 @@ public class PinProjectMailService {
 		for (final ProjectLocation prjLoc : pl) {
 			final Map<String, Employee> allManagers = prjLoc.getAllManagers();
 			for (final Map.Entry<String, Employee> entry : allManagers.entrySet()) {
-				sb.append(entry.getValue().getEmail() + ",");
+				sb.append(entry.getValue().getEmail()).append(",");
 			}
 		}
 		final Set<ChangeEndDateDto> dtoSet = new HashSet<>();

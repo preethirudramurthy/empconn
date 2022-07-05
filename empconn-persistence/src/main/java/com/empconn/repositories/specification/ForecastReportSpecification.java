@@ -2,10 +2,7 @@ package com.empconn.repositories.specification;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -72,7 +69,7 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 
 		// Define and add the predicates
 		finalPredicate.add(cb.equal(employeeJoin.get("isActive"), true));
-		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Arrays.asList(ApplicationConstants.NON_DELIVERY_BENCH_PROJECT_NAME))));
+		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Collections.singletonList(ApplicationConstants.NON_DELIVERY_BENCH_PROJECT_NAME))));
 
 		final List<Predicate> predicate = new ArrayList<>();
 
@@ -91,7 +88,7 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 					cb.greaterThanOrEqualTo(root.get(RELEASE_DATE), startDate));
 			insidePredicate
 			.add(cb.lessThanOrEqualTo(root.get(RELEASE_DATE), endDate));
-			predicate.add(cb.and(insidePredicate.toArray(new Predicate[insidePredicate.size()])));
+			predicate.add(cb.and(insidePredicate.toArray(new Predicate[0])));
 
 		}else {
 			final String[] str = monthYear.split("_");
@@ -105,10 +102,10 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 					cb.greaterThanOrEqualTo(root.get(RELEASE_DATE), startDate));
 			insidePredicate
 			.add(cb.lessThanOrEqualTo(root.get(RELEASE_DATE), endDate));
-			predicate.add(cb.and(insidePredicate.toArray(new Predicate[insidePredicate.size()])));
+			predicate.add(cb.and(insidePredicate.toArray(new Predicate[0])));
 		}
 
-		finalPredicate.add(cb.or(predicate.toArray(new Predicate[predicate.size()])));
+		finalPredicate.add(cb.or(predicate.toArray(new Predicate[0])));
 
 		if (!CollectionUtils.isEmpty(titleIds))
 			finalPredicate.add(getInPredicate(cb, titleIds, titleId));
@@ -127,7 +124,7 @@ public class ForecastReportSpecification implements Specification<Allocation>{
 					root.get(PROJECT).get("account").get("vertical").get("verticalId")));
 
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 	}
 
 	private List<Integer> convertToIntegers(final List<String> input) {

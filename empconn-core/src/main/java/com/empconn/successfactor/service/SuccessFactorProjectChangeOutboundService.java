@@ -27,8 +27,7 @@ public class SuccessFactorProjectChangeOutboundService extends SuccessFactorOutb
 
 	@SuppressWarnings("unchecked")
 	public Boolean syncProjectChanges(Set<ProjectChangeDto> projectsDto) {
-		final Object object = projectsDto;
-		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) object;
+		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) (Object) projectsDto;
 		return syncChanges(object2,ApplicationConstants.SF_FTP.PROJECT.name());
 	}
 

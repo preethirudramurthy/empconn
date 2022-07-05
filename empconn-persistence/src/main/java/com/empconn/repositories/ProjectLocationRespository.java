@@ -14,31 +14,31 @@ import com.empconn.vo.UnitValue;
 public interface ProjectLocationRespository extends JpaRepository<ProjectLocation, Long> {
 
 	@Query("SELECT new com.empconn.vo.UnitValue(pl.projectLocationId, pl.location.name) FROM ProjectLocation pl WHERE pl.project.projectId = ?1 AND pl.isActive = 'TRUE'")
-	public Set<UnitValue> findLocationsForProjectId(Long projectId);
+	Set<UnitValue> findLocationsForProjectId(Long projectId);
 
 	@Query("SELECT pl.projectLocationId FROM ProjectLocation pl WHERE pl.project.projectId = ?1 AND pl.isActive = 'TRUE'")
-	public Set<Long> findLocationIdsForProjectId(Long projectId);
+	Set<Long> findLocationIdsForProjectId(Long projectId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectLocation pl SET pl.isActive = 'FALSE' WHERE pl.project.projectId = :projectId")
-	public void softDeleteByProjectId(long projectId);
+	void softDeleteByProjectId(long projectId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectLocation pl SET pl.isActive = 'FALSE' WHERE pl.projectLocationId NOT IN(?1) AND pl.project.projectId = ?2")
-	public Integer softDeleteProjectLocationsForProject(Set<Long> savedIds, Long projectId);
+	void softDeleteProjectLocationsForProject(Set<Long> savedIds, Long projectId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectLocation pl SET pl.isActive = 'FALSE' WHERE  pl.project.projectId = :projectId")
-	public Integer softDeleteAllProjectLocationsForProject(Long projectId);
+	void softDeleteAllProjectLocationsForProject(Long projectId);
 
 	@Query("SELECT DISTINCT p.project.projectId FROM ProjectLocation p WHERE p.isActive = 'TRUE' AND (p.employee1.employeeId = :employeeId OR p.employee2.employeeId = :employeeId OR p.employee3.employeeId = :employeeId OR p.employee4.employeeId = :employeeId OR p.employee5.employeeId = :employeeId)")
-	public Set<Long> findProjectsWhereOneOfManagerIs(Long employeeId);
+	Set<Long> findProjectsWhereOneOfManagerIs(Long employeeId);
 
 	@Query("SELECT pl.projectLocationId FROM ProjectLocation pl WHERE pl.project.projectId = :projectId AND pl.isActive = 'FALSE'")
-	public Set<Long> findSoftDeletedLocationIdsForProject(Long projectId);
+	Set<Long> findSoftDeletedLocationIdsForProject(Long projectId);
 
 	List<ProjectLocation> findByProjectProjectIdAndLocationLocationId(Long projectId, Integer locationId);
 

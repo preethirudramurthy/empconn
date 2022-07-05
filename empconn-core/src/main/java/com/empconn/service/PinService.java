@@ -262,11 +262,8 @@ public class PinService {
 		boolean ret = false;
 		if (project.getEmployee1() != null && project.getEmployee1().getEmployeeId().equals(loginUser.getEmployeeId()))
 			ret = true;
-		else if (project.getEmployee1() == null && project.getEmployee2() != null
-				&& project.getEmployee2().getEmployeeId().equals(loginUser.getEmployeeId()))
-			ret = true;
-		else
-			ret = false;
+		else ret = project.getEmployee1() == null && project.getEmployee2() != null
+				&& project.getEmployee2().getEmployeeId().equals(loginUser.getEmployeeId());
 		return ret;
 	}
 
@@ -277,7 +274,7 @@ public class PinService {
 
 	public PinDetailsDto getPinDetails(String projectId) {
 		Optional<Project> projectOpt = projectRepository.findById(Long.valueOf(projectId));
-		final Project project = projectOpt.isPresent()? projectOpt.get():null;
+		final Project project = projectOpt.orElse(null);
 		return pinUtilValueMapper.projectToPinDetailsDto(project);
 	}
 
@@ -346,7 +343,7 @@ public class PinService {
 
 	private void validateExistSavePin(SavePinDto dto) {
 		Optional<Account> acOpt = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
-		final Account account = acOpt.isPresent() ? acOpt.get() : null;
+		final Account account = acOpt.orElse(null);
 		if (account != null) {
 
 			if (!projectService.isValidProjectInAccountForProject(dto.getName(), Long.valueOf(dto.getProjectId()),
@@ -356,7 +353,7 @@ public class PinService {
 			if (account.getCategory().equalsIgnoreCase(AccountCategory.CLIENT.name())) {
 				final IsValidSalesforceDto isValidSalesforceDto = new IsValidSalesforceDto(dto.getProjectId(),
 						dto.getSalesforceIdList());
-				if (!isValidSalesForceIdsForTheProject(isValidSalesforceDto).getIsValid())
+				if (isValidSalesForceIdsForTheProject(isValidSalesforceDto).getIsValid())
 					throw new EmpConnException("SalesforceIdNotExistsInOtherProject");
 			}
 		}
@@ -364,9 +361,9 @@ public class PinService {
 
 	private void validateNewSavePin(SavePinDto dto) {
 		Optional<Account> acOpt = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
-		final Account account = acOpt.isPresent() ? acOpt.get() : null;
+		final Account account = acOpt.orElse(null);
 
-		if (!projectService.isValidNewProjectInAccount(dto.getName(), dto.getAccountId()).getIsValid())
+		if (projectService.isValidNewProjectInAccount(dto.getName(), dto.getAccountId()).getIsValid())
 			throw new EmpConnException("ProjectNameNotUniqueForAccount");
 
 		if (account!= null && account.getCategory().equalsIgnoreCase(AccountCategory.CLIENT.name()) && 

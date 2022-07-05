@@ -24,15 +24,15 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long>, J
 	@Transactional
 	@Modifying
 	@Query("UPDATE Allocation a SET a.releaseDate = :newEndDate WHERE (a.releaseDate = :prevEndDate or a.releaseDate > :newEndDate) AND a.project.projectId = :projectId AND a.isActive = 'true'")
-	public Integer changeReleaseDateForResources(Long projectId, Date newEndDate, Date prevEndDate);
+	Integer changeReleaseDateForResources(Long projectId, Date newEndDate, Date prevEndDate);
 
 	@Query("select a from Allocation a where a.project.projectId = :projectId AND a.isActive='true' and (a.releaseDate = :prevEndDate or a.releaseDate > :newEndDate)")
-	public Set<Allocation> findByProjectId(Long projectId, Date newEndDate, Date prevEndDate);
+	Set<Allocation> findByProjectId(Long projectId, Date newEndDate, Date prevEndDate);
 
 	@Query("select a from Allocation a where a.project.projectId = ?1 AND a.isActive='true'")
-	public Set<Allocation> findByProjectId(Long projectId);
+	Set<Allocation> findByProjectId(Long projectId);
 
-	public Set<Allocation> findByProjectProjectIdInAndIsActiveTrue(Set<Long> projectId);
+	Set<Allocation> findByProjectProjectIdInAndIsActiveTrue(Set<Long> projectId);
 
 	Optional<Allocation> findByAllocationIdAndIsActive(Long allocationId, Boolean status);
 
@@ -91,7 +91,7 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long>, J
 	Integer findNumberOfResourcesForProject(Long projectId);
 
 	@Query("select a.project.projectId from Allocation a where a.allocationId = ?1")
-	public Long getProjectIde(Long allocationId);
+	Long getProjectIde(Long allocationId);
 
 	@Query("select case when count(a) < 1 then true else false end from Allocation a where a.isActive = true and a.employee.employeeId = :employeeId and a.projectLocation.project.name not in ('Central Bench', 'NDBench')")
 	boolean onlyActiveAllocationIsNdOrCentralBench(Long employeeId);
@@ -100,17 +100,17 @@ public interface AllocationRepository extends JpaRepository<Allocation, Long>, J
 	boolean onlyActiveAllocationIsNdOrDeliveryBench(Long employeeId);
 
 	@Query("select a from Allocation a where a.isActive = true and a.employee.employeeId = :employeeId and a.projectLocation.project.name = :projectName")
-	public Allocation getAllocation(Long employeeId, String projectName);
+	Allocation getAllocation(Long employeeId, String projectName);
 
 	List<Allocation> findByEmployeeEmployeeIdAndProjectProjectIdAndIsActiveIsTrue(Long employeeId, Long projectId);
 
 	@Query("select a from Allocation a where a.employee.employeeId = ?1 and isActive = true")
-	public List<Allocation> getAllActiveAllocationsOfEmployee(Long employeeId);
+	List<Allocation> getAllActiveAllocationsOfEmployee(Long employeeId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE Allocation a SET a.allocationStatus = :allocationStatus WHERE a.allocationId = :allocationId")
-	public Integer updateAllocatedStatus(AllocationStatus allocationStatus, Long allocationId);
+	Integer updateAllocatedStatus(AllocationStatus allocationStatus, Long allocationId);
 
 	@Query("select a from Allocation a where a.isActive = true and a.reportingManagerId.employeeId = :employeeId and lower(a.projectLocation.project.name) != 'ndbench'")
 	Set<Allocation> getReporteesExcludingNdBench(Long employeeId);

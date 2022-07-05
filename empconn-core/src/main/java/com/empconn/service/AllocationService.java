@@ -4,15 +4,7 @@ package com.empconn.service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,7 +166,7 @@ public class AllocationService {
 
 		final AllocationDetail allocationDetail = new AllocationDetail(allocationPercentage, TimeUtils.getToday(), allocation, createdBy, true);
 
-		allocation.setAllocationDetails(Arrays.asList(allocationDetail));
+		allocation.setAllocationDetails(Collections.singletonList(allocationDetail));
 		if (allocationIsPrimary)
 			e.setPrimaryAllocation(allocation);
 
@@ -194,13 +186,13 @@ public class AllocationService {
 
 	public Allocation allocate(AllocationRequestDto request) {
 		Optional<Allocation> a = allocationRepository.findById(request.getAllocationId());
-		final Allocation currentAllocation = a.isPresent()? a.get():null;
+		final Allocation currentAllocation = a.orElse(null);
 		Optional<Employee> e = employeeRepository.findById(request.getResourceId());
-		final Employee employee = e.isPresent()? e.get():null;
+		final Employee employee = e.orElse(null);
 		final AllocationStatus allocatedStatus = allocationStatusRepository.findByStatus("Allocated");
-		final Integer availablePercentage = allocationUtilityService.getMergedAllocatedPercentage(currentAllocation);
+		final Integer availablePercentage = allocationUtilityService.getMergedAllocatedPercentage(Objects.requireNonNull(currentAllocation));
 		final boolean isPartial = (request.getPercentage().intValue() < availablePercentage.intValue());
-		final Integer remainingPercentage = (availablePercentage.intValue() - request.getPercentage().intValue());
+		final int remainingPercentage = (availablePercentage.intValue() - request.getPercentage().intValue());
 		final Optional<Project> project = projectRepository.findById(Long.valueOf(request.getProjectId()));
 		Iterables.removeIf(request.getExtraSalesforceIdList(), Predicates.isNull());
 		if (!request.getExtraSalesforceIdList().isEmpty() && project.isPresent()) {
@@ -217,7 +209,7 @@ public class AllocationService {
 		final Optional<ProjectLocation> projectLocation = projectLocationRespository.findById(Long.valueOf(request.getProjectLocationId()));
 		final WorkGroup workgroup = workGroupRepository.findByName(request.getWorkgroup());
 		Optional<Employee> rep = employeeRepository.findById(Long.valueOf(request.getReportingManagerId()));
-		final Employee reportingManagerId = rep.isPresent()? rep.get():null;
+		final Employee reportingManagerId = rep.orElse(null);
 
 		Allocation existingAllocation = null;
 		Allocation toAllocation = null;
@@ -227,7 +219,7 @@ public class AllocationService {
 							employee.getEmployeeId(), Long.valueOf(request.getProjectId()),
 							Long.valueOf(request.getProjectLocationId()), workgroup.getWorkGroupId(), request.getBillable(),
 							Timestamp.valueOf(request.getReleaseDate()), true);
-			existingAllocation = existingAlloc.isPresent()?existingAlloc.get():null;
+			existingAllocation = existingAlloc.orElse(null);
 			final boolean isNew = !existingAlloc.isPresent();
 
 			if (project.isPresent() && projectLocation.isPresent()) {
@@ -239,7 +231,7 @@ public class AllocationService {
 								allocatedStatus)
 						: existingAllocation;
 
-				if (currentAllocation != null && toAllocation != null) {
+				if (toAllocation != null) {
 				// Logic for partial / complete is different
 				if (!isPartial) {
 					completeAllocation(request, currentAllocation, toAllocation);
@@ -252,7 +244,7 @@ public class AllocationService {
 				final Allocation primaryAllocation = allocationUtilityService.getPrimaryManager(currentAllocation, employee.getEmployeeId(),
 						request.getIsPrimaryManager(), isPartial, toAllocation, isNew);
 
-				if (currentAllocation != null && !isPartial && remainingPercentage.intValue() == 0) {
+				if (!isPartial && (int) remainingPercentage == 0) {
 						currentAllocation.setIsActive(false);
 						currentAllocation.setReleaseDate(TimeUtils.getToday());
 				}
@@ -261,10 +253,12 @@ public class AllocationService {
 
 				//separate for current and to allocation as current allocation requires clearing of allocation details
 				allocationHoursService.updateCurrLocationBillableHrs(currentAllocation);
-				allocationHoursService.updateToAllocationBillableHrs(toAllocation);
+				if (toAllocation != null) {
+					allocationHoursService.updateToAllocationBillableHrs(toAllocation);
 
-				if (toAllocation != null) allocationRepository.save(toAllocation);
-				if (currentAllocation != null) allocationRepository.save(currentAllocation);
+					allocationRepository.save(toAllocation);
+				}
+				allocationRepository.save(currentAllocation);
 
 				//Integration call with SF starts here
 				if(AllocationUtil.allocationIsActiveAndPrimary(toAllocation)) {
@@ -310,8 +304,7 @@ public class AllocationService {
 		toAllocation.addAllocationDetails(allocationDetail);
 
 		final List<AllocationDetail> allocationDetails = currentAllocation.getAllocationDetails().stream()
-				.filter(AllocationDetail::getIsActive).collect(Collectors.toList());
-		Collections.sort(allocationDetails, (o1, o2) -> o1.getStartDate().compareTo(o2.getStartDate()));
+				.filter(AllocationDetail::getIsActive).sorted(Comparator.comparing(AllocationDetail::getStartDate)).collect(Collectors.toList());
 
 		Integer percentageToBeDeallocated = request.getPercentage();
 		for (final AllocationDetail a : allocationDetails) {

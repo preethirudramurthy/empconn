@@ -1,10 +1,7 @@
 package com.empconn.repositories.specification;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -49,7 +46,7 @@ public class ResourceViewSpecification implements Specification<Allocation>{
 		final List<Predicate> finalPredicate = new ArrayList<>();
 		finalPredicate.add(cb.equal(root.get("isActive"), true));
 		finalPredicate.add(cb.equal(root.get(EMPLOYEE).get("isActive"), true));
-		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Arrays.asList("NDBench"))));
+		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Collections.singletonList("NDBench"))));
 
 		final List<Integer> primarySkillIds = convertToIntegers(filter.getPrimarySkillList());
 		final List<Integer> secondarySkillIds = convertToIntegers(filter.getSecondarySkillIdList());
@@ -120,7 +117,7 @@ public class ResourceViewSpecification implements Specification<Allocation>{
 		}
 
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 
 	}
 

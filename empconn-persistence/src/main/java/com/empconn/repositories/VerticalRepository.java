@@ -29,6 +29,6 @@ public interface VerticalRepository extends JpaRepository<Vertical, Integer> {
 	@Transactional
 	@Modifying
 	@Query("UPDATE Vertical v SET v.isActive = 'false' WHERE v.name = :name")
-	public void softDelete(String name);
+	void softDelete(String name);
 
 }

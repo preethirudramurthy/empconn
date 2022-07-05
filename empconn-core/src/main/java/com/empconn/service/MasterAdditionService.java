@@ -47,7 +47,7 @@ public class MasterAdditionService {
 	@Autowired
 	private SecurityUtil securityUtil;
 
-	public Employee addMissingMasterRecords(SFEmployeeDto sfEmployee, Employee employee) {
+	public void addMissingMasterRecords(SFEmployeeDto sfEmployee, Employee employee) {
 
 
 		try {
@@ -100,8 +100,6 @@ public class MasterAdditionService {
 		}
 
 
-
-		return employee;
 	}
 
 	private boolean divisionShouldBeCreated(SFEmployeeDto sfEmployee) {

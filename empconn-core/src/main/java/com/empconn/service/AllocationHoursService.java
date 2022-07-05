@@ -169,7 +169,7 @@ public class AllocationHoursService {
 			final EditReleaseDateAllocationHour editReleaseDateAllocationHour = new EditReleaseDateAllocationHour();
 			editReleaseDateAllocationHour.setYear(e.getKey());
 			final List<EditReleaseMonthDto> list = e.getValue();
-			Collections.sort(list, (o1, o2) -> {
+			list.sort((o1, o2) -> {
 				final Integer x1 = DateUtils.getMonth(o1.getName());
 				final Integer x2 = DateUtils.getMonth(o2.getName());
 				return x1.compareTo(x2);

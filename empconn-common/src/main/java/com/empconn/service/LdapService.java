@@ -18,6 +18,6 @@ public interface LdapService {
 	void updateProject(String employeeEmailId, String projectName);
 
 	@Recover
-	public void onError(Exception e, String employeeEmailId, String managerEmailId);
+	void onError(Exception e, String employeeEmailId, String managerEmailId);
 
 }

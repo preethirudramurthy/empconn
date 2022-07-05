@@ -194,7 +194,7 @@ public class EarmarkEngineersManagerSpecification implements Specification<Earma
 		}
 
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 	}
 
 }

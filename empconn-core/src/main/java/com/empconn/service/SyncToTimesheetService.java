@@ -199,12 +199,12 @@ public class SyncToTimesheetService {
 			syncAccountRepository.save(new SyncAccount(securityUtil.getLoggedInEmployee().getEmployeeId(), ApplicationConstants.STATUS_PENDING, account));
 			syncProjectRepository.save(new SyncProject(securityUtil.getLoggedInEmployee().getEmployeeId(), ApplicationConstants.STATUS_PENDING, project));
 
-			project.getProjectLocations().forEach(pl -> 
-				pl.getAllManagers().entrySet().forEach(e -> {
-					final SyncProjectManager s = new SyncProjectManager(securityUtil.getLoggedInEmployee().getEmployeeId(),
-							e.getValue(),project,pl,workGroupRepository.findByName(e.getKey()),ApplicationConstants.STATUS_PENDING);
-					syncProjectManagerRepository.save(s);
-				})
+			project.getProjectLocations().forEach(pl ->
+					pl.getAllManagers().forEach((key, value) -> {
+						final SyncProjectManager s = new SyncProjectManager(securityUtil.getLoggedInEmployee().getEmployeeId(),
+								value, project, pl, workGroupRepository.findByName(key), ApplicationConstants.STATUS_PENDING);
+						syncProjectManagerRepository.save(s);
+					})
 			);
 
 		}

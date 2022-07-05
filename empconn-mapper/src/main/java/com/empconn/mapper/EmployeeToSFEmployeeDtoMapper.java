@@ -80,7 +80,7 @@ public abstract class EmployeeToSFEmployeeDtoMapper extends BaseMapper {
 
 	@Named("getTempEmployee")
 	public Long getTempEmployee(String temp) {
-		return 100l;
+		return 100L;
 	}
 
 	@Named("getTitle")

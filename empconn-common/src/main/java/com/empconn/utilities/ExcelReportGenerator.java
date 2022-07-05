@@ -22,16 +22,16 @@ import com.empconn.dto.Reporter;
 
 public interface ExcelReportGenerator {
 
-	public abstract List<String> headers();
+	List<String> headers();
 
-	public abstract String sheetName();
+	String sheetName();
 
-	public abstract String reportType();
+	String reportType();
 
-	public abstract boolean isPeriodOrTitleNeededAsPartOfForecastReport();
+	boolean isPeriodOrTitleNeededAsPartOfForecastReport();
 
-	public default ByteArrayInputStream generate(List<? extends Reporter> reporters, String userName, String forecastHeader) throws IOException {
-		try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+	default ByteArrayInputStream generate(List<? extends Reporter> reporters, String userName, String forecastHeader) throws IOException {
+		try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 			final CreationHelper createHelper = workbook.getCreationHelper();
 
 			final Sheet sheet = workbook.createSheet(sheetName());
@@ -92,7 +92,7 @@ public interface ExcelReportGenerator {
 		}
 	}
 
-	public default ByteArrayInputStream generate(List<? extends Reporter> reporters, String userName) throws IOException {
+	default ByteArrayInputStream generate(List<? extends Reporter> reporters, String userName) throws IOException {
 		return generate(reporters, userName, null);
 
 	}

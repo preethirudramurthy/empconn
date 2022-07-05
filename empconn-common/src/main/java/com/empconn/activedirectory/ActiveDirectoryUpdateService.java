@@ -25,7 +25,7 @@ abstract class ActiveDirectoryUpdateService extends ActiveDirectoryService {
 
 	public abstract Attribute attribute(String value);
 
-	public boolean update(String userEmailId, String value) {
+	public void update(String userEmailId, String value) {
 
 		final SearchResult resourceEmailId = getUserByEmailId(userEmailId);
 
@@ -47,7 +47,6 @@ abstract class ActiveDirectoryUpdateService extends ActiveDirectoryService {
 			throw new EmpConnException(ExceptionConstants.LDAP_NAMING_FAILURE);
 		}
 
-		return true;
 	}
 
 }

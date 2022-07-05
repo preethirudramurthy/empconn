@@ -55,7 +55,7 @@ public class NDResourceSpecification implements Specification<Employee> {
 
 		query.distinct(true);
 		query.orderBy(cb.asc(root.get("firstName")), cb.asc(root.get("lastName")));
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 
 	}
 

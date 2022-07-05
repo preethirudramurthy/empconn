@@ -245,7 +245,7 @@ public class MasterService {
 					.collect(Collectors.toSet());
 			final List<Horizontal> h = horizontals.stream().collect(Collectors.toList());
 			final List<UnitValue> values = horizontalUnitValueMapper.horizontalsToUnitValues(h);
-			Collections.sort(values, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
+			values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 			return values;
 		} else {
 			final Iterable<Horizontal> horizontals = horizontalRepository
@@ -269,7 +269,7 @@ public class MasterService {
 						.collect(Collectors.toSet());
 				final List<Vertical> v = varticals.stream().collect(Collectors.toList());
 				final List<UnitValue> values = verticalUnitValueMapper.verticalsToUnitValues(v);
-				Collections.sort(values, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
+				values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 				return values;
 			} else {
 				final List<Vertical> verticals = verticalRepository.findByIsActiveOrderByName(true);
@@ -288,7 +288,7 @@ public class MasterService {
 					.collect(Collectors.toSet());
 			final List<ProjectSubCategory> sc = subCategories.stream().collect(Collectors.toList());
 			final List<UnitValue> values = projectSubCategoryUnitValueMapper.projectSubCategoriesToUnitValues(sc);
-			Collections.sort(values, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
+			values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 			return values;
 		} else {
 			final Iterable<ProjectSubCategory> horizontals = projectSubCategoryRepository
@@ -352,7 +352,7 @@ public class MasterService {
 				}
 			}
 			if (projectIds == null || projectIds.isEmpty()) {
-				unitValueSetOfProjects = projectUnitValueMapper.projectsToUnitValues(new HashSet<Project>());
+				unitValueSetOfProjects = projectUnitValueMapper.projectsToUnitValues(new HashSet<>());
 			}
 
 			if (unitValueSetOfProjects == null || unitValueSetOfProjects.isEmpty()) {
@@ -367,7 +367,7 @@ public class MasterService {
 			}
 
 			projectDropdownData = unitValueSetOfProjects.stream().collect(Collectors.toList());
-			Collections.sort(projectDropdownData, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
+			projectDropdownData.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 		} catch (final Exception exception) {
 			logger.error("{} Exception raised as : {}", METHOD_NAME, exception);
 		}
@@ -466,7 +466,7 @@ public class MasterService {
 
 					unitValueSet = accountUnitValueMapper.accountsToUnitValues(accounts);
 					values = unitValueSet.stream().collect(Collectors.toList());
-					Collections.sort(values, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
+					values.sort((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
 		} catch (final Exception exception) {
 			logger.error("{} Exception raised as : {}", METHOD_NAME, exception.getMessage());
 		}
@@ -524,7 +524,7 @@ public class MasterService {
 
 	public List<UnitValue> getSecondarySkills(String primarySkillId) {
 		logger.debug("Get the list of secondary skills belonging to the given primary skill");
-		return getSecondarySkills(Arrays.asList(primarySkillId));
+		return getSecondarySkills(Collections.singletonList(primarySkillId));
 	}
 
 }

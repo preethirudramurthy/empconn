@@ -163,7 +163,7 @@ public class ChangeManagerService {
 					final Map<String, Employee> m = e.getValue();
 					m.entrySet().stream().forEach(k -> {
 						if (k.getValue().getEmployeeId().equals(oldQAGDM.getEmployeeId())) {
-							oldGdmAsManager.computeIfAbsent(e.getKey(), x -> new HashMap<String, Employee>());
+							oldGdmAsManager.computeIfAbsent(e.getKey(), x -> new HashMap<>());
 							oldGdmAsManager.get(e.getKey()).put(k.getKey(), k.getValue());
 						}
 					});
@@ -207,7 +207,7 @@ public class ChangeManagerService {
 			final Map<String, Employee> m = e.getValue();
 			m.entrySet().stream().forEach(k -> {
 				if (k.getValue().getEmployeeId().equals(oldDevGDM.getEmployeeId())) {
-					oldGdmAsManager.computeIfAbsent(e.getKey(), x -> new HashMap<String, Employee>());
+					oldGdmAsManager.computeIfAbsent(e.getKey(), x -> new HashMap<>());
 					oldGdmAsManager.get(e.getKey()).put(k.getKey(), k.getValue());
 				}
 			});
@@ -342,7 +342,7 @@ public class ChangeManagerService {
 	private void changeReportingManager(final ChangeReportingManagerDto changReportingManagerDto) {
 		Optional<Allocation> alloc = allocationRepository
 				.findByAllocationIdAndIsActive(changReportingManagerDto.getAllocationId(), true);
-		final Allocation allocation = alloc.isPresent()? alloc.get():null;
+		final Allocation allocation = alloc.orElse(null);
 		final Employee oldReportingManager = allocation != null? allocation.getReportingManagerId():null;
 		final Employee newReportingManager = employeeRepository
 				.findByEmployeeId(changReportingManagerDto.getNewReportingMangerId());
@@ -426,7 +426,7 @@ public class ChangeManagerService {
 				.getChangeProjectMangerList()) {
 			Optional<ProjectLocation> plOpt = projectLocationRespository
 					.findById(Long.valueOf(request.getProjectLocationId()));
-			final ProjectLocation projectLocation = plOpt.isPresent()? plOpt.get():null;  
+			final ProjectLocation projectLocation = plOpt.orElse(null);
 			
 			if (projectLocation != null) {
 			final Map<String, Employee> existingManagers = projectLocation.getAllManagers();
@@ -570,7 +570,7 @@ public class ChangeManagerService {
 		logger.info("ChangeManagerService - changeReportingAndPrimaryMangers - starts.");
 		for (final ChangeManagerDto changeManagerDto : request.getChangeManagerList()) {
 			Optional<Allocation> alloc = allocationRepository.findById(changeManagerDto.getAllocationId());
-			final Allocation allocation = alloc.isPresent() ? alloc.get() : null;
+			final Allocation allocation = alloc.orElse(null);
 			final Employee oldReportingManager = allocation != null ? allocation.getReportingManagerId() : null;
 			Employee newManager = null;
 			if (allocation != null) {

@@ -230,11 +230,7 @@ public abstract class AllocationMapper {
 
 	@Named("opportunity")
 	Boolean opportunity(Earmark earmark) {
-		Boolean flag = false;
-		if (earmark.getOpportunity() != null) {
-			flag = true;
-		}
-		return flag;
+		return earmark.getOpportunity() != null;
 	}
 
 	@Named("projectSfToSfValueList")

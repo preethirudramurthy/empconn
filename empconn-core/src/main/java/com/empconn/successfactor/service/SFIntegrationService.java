@@ -80,10 +80,10 @@ public class SFIntegrationService {
 
 	public Long getGdmIdForSFIntegration(Long projectId, String employeeDepartment) {
 		final Project project = projectRepository.findByProjectId(projectId);
-		final Long qeGdmId = project.getEmployee2() != null ? project.getEmployee2().getEmployeeId() : 0L;
-		final Long devGdmId = project.getEmployee1() != null ? project.getEmployee1().getEmployeeId() : 0L;
+		final long qeGdmId = project.getEmployee2() != null ? project.getEmployee2().getEmployeeId() : 0L;
+		final long devGdmId = project.getEmployee1() != null ? project.getEmployee1().getEmployeeId() : 0L;
 
-		Long gdmIdForSf = employeeDepartment.equalsIgnoreCase(ApplicationConstants.QA_WORK_GROUP) ? qeGdmId : devGdmId;
+		long gdmIdForSf = employeeDepartment.equalsIgnoreCase(ApplicationConstants.QA_WORK_GROUP) ? qeGdmId : devGdmId;
 
 		//If it is still not assigned then assign whichever GDM is present.
 		if(gdmIdForSf == 0) {

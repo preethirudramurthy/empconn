@@ -136,7 +136,7 @@ public class EarmarkSpecification implements Specification<Earmark> {
 		}
 
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 	}
 
 }

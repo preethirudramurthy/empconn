@@ -37,14 +37,13 @@ public class ActiveDirectoryService {
 		SearchResult result = null;
 		try {
 			final NamingEnumeration<SearchResult> users = activeDirectoryConnectionProvider.getADConnection().search(activeDirectorySearchOrg, searchFilter, controls);
-			while (users.hasMore()) {
+			if (users.hasMore()) {
 				result = users.next();
 				final Attributes attr = result.getAttributes();
 
 				final String displayName = attr.get("displayName").toString();
 
 				logger.debug("Display Name of the user is {}", displayName);
-				break;
 
 			}
 		} catch (final  NamingException e) {

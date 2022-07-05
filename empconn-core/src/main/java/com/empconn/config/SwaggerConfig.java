@@ -1,6 +1,6 @@
 package com.empconn.config;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,10 +19,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig {
 
 	public static final ApiInfo DEFAULT_API_INFO = new ApiInfo("EmpConn API", "EmpConn API Description", "1.0",
-			"termsOfServiceUrl", new Contact("", "", ""), "license", "licenseUrl", Arrays.asList());
+			"termsOfServiceUrl", new Contact("", "", ""), "license", "licenseUrl", Collections.emptyList());
 
 	private static final Set<String> DEFAULT_PRODUCES_AND_CONSUMES = new HashSet<>(
-			Arrays.asList("application/json"));
+			Collections.singletonList("application/json"));
 
 	@Bean
 	public Docket empConnApi() {

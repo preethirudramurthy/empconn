@@ -422,9 +422,7 @@ public class BootstrapService {
 	private PrimarySkill createPrimarySkillIfNotExists(String primarySkillName) {
 		final Optional<PrimarySkill> primarySkill = primarySkillRepository
 				.findByNameIgnoreCaseAndIsActiveTrue(primarySkillName);
-		if (primarySkill.isPresent())
-			return primarySkill.get();
-		return createPrimarySkillAndDefaultSecondarySkill(primarySkillName);
+		return primarySkill.orElseGet(() -> createPrimarySkillAndDefaultSecondarySkill(primarySkillName));
 	}
 
 	private PrimarySkill createPrimarySkillAndDefaultSecondarySkill(String primarySkillName) {
@@ -439,10 +437,8 @@ public class BootstrapService {
 		final Optional<SecondarySkill> secondarySkill = secondarySkillRepository
 				.findByPrimarySkillPrimarySkillIdAndNameIgnoreCaseAndIsActiveTrue(primarySkill.getPrimarySkillId(),
 						secondarySkillName);
-		if (secondarySkill.isPresent())
-			return secondarySkill.get();
-		return secondarySkillRepository
-				.save(skillsMapper.primarySkillAndNameToSecondarySkillMapper(primarySkill, secondarySkillName));
+		return secondarySkill.orElseGet(() -> secondarySkillRepository
+				.save(skillsMapper.primarySkillAndNameToSecondarySkillMapper(primarySkill, secondarySkillName)));
 	}
 
 	public List<MasterSkillsResponseDto> getSkills() {

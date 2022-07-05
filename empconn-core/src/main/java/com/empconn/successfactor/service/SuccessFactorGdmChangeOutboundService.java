@@ -27,8 +27,7 @@ public class SuccessFactorGdmChangeOutboundService extends SuccessFactorOutbound
 
 	@SuppressWarnings("unchecked")
 	public Boolean syncGdmChanges(Set<GdmChangeDto> gdmsDto) {
-		final Object object = gdmsDto;
-		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) object;
+		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) (Object) gdmsDto;
 		return syncChanges(object2,ApplicationConstants.SF_FTP.GDM.name());
 	}
 

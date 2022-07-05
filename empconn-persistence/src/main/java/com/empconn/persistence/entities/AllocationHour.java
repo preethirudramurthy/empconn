@@ -146,11 +146,8 @@ public class AllocationHour extends Auditable<Long> implements Serializable {
 		} else if (!month.equals(other.month))
 			return false;
 		if (year == null) {
-			if (other.year != null)
-				return false;
-		} else if (!year.equals(other.year))
-			return false;
-		return true;
+			return other.year == null;
+		} else return year.equals(other.year);
 	}
 
 	@Override

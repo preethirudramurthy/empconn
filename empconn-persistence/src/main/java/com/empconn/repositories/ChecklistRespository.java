@@ -14,9 +14,9 @@ import com.empconn.persistence.entities.Checklist;
 @Repository
 public interface ChecklistRespository extends CrudRepository<Checklist, Integer>, JpaSpecificationExecutor<Checklist> {
 
-	public List<Checklist> findByIsActiveTrue(Sort by);
+	List<Checklist> findByIsActiveTrue(Sort by);
 
-	public Optional<Checklist> findByNameIgnoreCaseEqualsAndIsActiveTrue(String oldChecklist);
+	Optional<Checklist> findByNameIgnoreCaseEqualsAndIsActiveTrue(String oldChecklist);
 
-	public Set<Checklist> findByIsActive(boolean b);
+	Set<Checklist> findByIsActive(boolean b);
 }

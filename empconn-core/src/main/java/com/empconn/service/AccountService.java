@@ -1,7 +1,6 @@
 package com.empconn.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -141,7 +140,7 @@ public class AccountService {
 
 	private SavedAccountDto updateAccountSaveProject(SaveAccountDto dto) {
 		Optional<Account> a = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
-		final Account existAccount = a.isPresent()? a.get():null;
+		final Account existAccount = a.orElse(null);
 
 		final Account account = accountToSaveAccountDtoMapper.saveAccountDtoToAccount(dto, existAccount);
 		if (existAccount != null && existAccount.getStatus().equals(AccountStatus.TEMP.name()))
@@ -157,7 +156,7 @@ public class AccountService {
 	private SavedAccountDto updateAccountUpdateProject(SaveAccountDto dto) {
 		
 		Optional<Account> a = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
-		final Account existAccount = a.isPresent()? a.get(): null;
+		final Account existAccount = a.orElse(null);
 		final Account account = accountToSaveAccountDtoMapper.saveAccountDtoToAccount(dto, existAccount);
 		if (existAccount != null)
 			account.setStatus(existAccount.getStatus());
@@ -192,14 +191,12 @@ public class AccountService {
 
 	public AccountDetailsDto getAccountDetails(String accountId) {
 		final Optional<Account> account = accountRepository.findById(Integer.parseInt(accountId));
-		if (!account.isPresent())
-			return null;
-		return accountAccountDetailsMapper.accountToAccountDetailsDto(account.get());
+		return account.map(value -> accountAccountDetailsMapper.accountToAccountDetailsDto(value)).orElse(null);
 	}
 
 	// Added for CRAN-12
 	public List<AccountSummaryDto> getAccountSummaryList(final Date fromStartDate, final Date toStartDate) {
-		List<Account> dataListFromDB = null;
+		List<Account> dataListFromDB;
 		if (fromStartDate != null && toStartDate == null) {
 			dataListFromDB = accountRepository.findByStartDateGreaterThanEqualOrderByStartDateDesc(fromStartDate);
 		} else if (fromStartDate == null && toStartDate != null) {
@@ -216,7 +213,7 @@ public class AccountService {
 	}
 
 	public List<UnitValue> getActiveAccounts(Boolean withBench) {
-		final List<String> status = Arrays.asList("ACTIVE");
+		final List<String> status = Collections.singletonList("ACTIVE");
 
 		Set<Account> accounts = IterableUtils.toSet(accountRepository.findAllByIsActiveAndStatusIn(true, status));
 
@@ -261,16 +258,14 @@ public class AccountService {
 		}
 
 		final Set<UnitValue> values = accountUnitValueMapper.accountsToUnitValues(accounts);
-		final List<UnitValue> value = values.stream().collect(Collectors.toList());
-		Collections.sort(value, (p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue()));
-		return value;
+		return values.stream().sorted((p1, p2) -> p1.getValue().compareToIgnoreCase(p2.getValue())).collect(Collectors.toList());
 	}
 
 	public void activateAccount(AccountStatusChangeDto dto) {
 		Account account = null;
 		if (dto.getAccountId() != null) {
 			Optional<Account> a = accountRepository.findById(Integer.valueOf(dto.getAccountId()));
-			account = a.isPresent()? a.get():null;
+			account = a.orElse(null);
 		}
 			
 		else if (dto.getAccountName() != null)

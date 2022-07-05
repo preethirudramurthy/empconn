@@ -58,7 +58,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 				return loadUserForJwtAuth(username);
 			return loadUserForUsernamePasswordAuth(username);
 		}
-		throw new UsernameNotFoundException("User not found with username: " + username);
+		throw new UsernameNotFoundException("User name is null and not found");
 	}
 	
 	private boolean isAuthSSOUser(String username) {

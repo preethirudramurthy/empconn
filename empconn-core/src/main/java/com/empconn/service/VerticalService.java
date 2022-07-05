@@ -18,7 +18,7 @@ public class VerticalService {
 	
 	public ResponseEntity<Object> createVertical() {
 		Vertical vertical = new Vertical();
-		vertical.setCreatedBy(1l);
+		vertical.setCreatedBy(1L);
 		vertical.setCreatedOn(new Timestamp(new Date().getTime()));
 		vertical.setIsActive(Boolean.TRUE);
 		vertical.setName("test");

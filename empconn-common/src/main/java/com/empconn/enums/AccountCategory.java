@@ -53,9 +53,7 @@ public enum AccountCategory {
 	private static AccountCategory findBy(final Predicate<? super AccountCategory> predicate) {
 		final Optional<AccountCategory> matchingAccountCategory = Stream.of(AccountCategory.values()).filter(predicate)
 				.findFirst();
-		if (matchingAccountCategory.isPresent())
-			return matchingAccountCategory.get();
-		return null;
+		return matchingAccountCategory.orElse(null);
 	}
 
 }

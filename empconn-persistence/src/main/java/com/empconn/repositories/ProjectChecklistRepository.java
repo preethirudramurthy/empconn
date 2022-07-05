@@ -14,11 +14,11 @@ public interface ProjectChecklistRepository extends CrudRepository<ProjectCheckl
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectChecklist pcl SET pcl.isActive = 'FALSE' WHERE pcl.projectChecklistId NOT IN (?1) AND pcl.project.projectId = ?2")
-	public Integer softDeleteProjectChecklistsForProject(Set<Long> savedIds, Long projectId);
+	void softDeleteProjectChecklistsForProject(Set<Long> savedIds, Long projectId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectChecklist pcl SET pcl.isActive = 'FALSE' WHERE pcl.project.projectId = :projectId")
-	public void softDeleteByProjectId(long projectId);
+	void softDeleteByProjectId(long projectId);
 
 }

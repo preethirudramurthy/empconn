@@ -27,7 +27,7 @@ public class SendReminderMailForReleaseAndPastDate {
 		final String[] days = reminderEmailDays.split(",");
 		try {
 			for(final String day :days)
-				if(Integer.valueOf(day) > 0 )
+				if(Integer.parseInt(day) > 0 )
 					releaseDateApproachingEmailService.sendReminderEmail(Integer.valueOf(day));
 				else
 					releaseDateApproachingEmailService.sendReminderEmailForPast();

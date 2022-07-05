@@ -12,7 +12,7 @@ import com.empconn.persistence.entities.EmployeeSkill;
 
 public interface EmployeeSkillRepository extends CrudRepository<EmployeeSkill, Long> {
 
-	public List<EmployeeSkill> findByEmployeeAndSecondarySkillPrimarySkillNameIgnoreCase(Employee employee, String name);
+	List<EmployeeSkill> findByEmployeeAndSecondarySkillPrimarySkillNameIgnoreCase(Employee employee, String name);
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value ="true") })
 	List<EmployeeSkill> findByEmployeeEmployeeId(Long employeeId);

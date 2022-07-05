@@ -25,10 +25,10 @@ public interface EmployeeToUserDtoMapper {
 	List<UserDto> employeesToUsersDto(List<Employee> employees);
 
 	@Named("GetRoles")
-	public static List<String> getRoles(Set<EmployeeRole> employeeRoles) {
+	static List<String> getRoles(Set<EmployeeRole> employeeRoles) {
 		if (!CollectionUtils.isEmpty(employeeRoles))
 			return employeeRoles.stream().filter(
-					er -> (er.getIsActive() && null != er && null != er.getRole() && null != er.getRole().getName()))
+					er -> (er.getIsActive() && null != er.getRole().getName()))
 					.map(er -> er.getRole().getName()).collect(Collectors.toList());
 
 		return new ArrayList<>();

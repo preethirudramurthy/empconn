@@ -1,10 +1,7 @@
 package com.empconn.repositories.specification;
 
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -49,7 +46,7 @@ public class AllocationSpecification implements Specification<Allocation> {
 		final List<Predicate> finalPredicate = new ArrayList<>();
 		finalPredicate.add(cb.equal(root.get(IS_ACTIVE), true));
 		finalPredicate.add(cb.equal(root.get(EMPLOYEE).get(IS_ACTIVE), true));
-		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Arrays.asList(ND_BENCH))));
+		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Collections.singletonList(ND_BENCH))));
 
 		// To exclude non delivery employees' allocations
 		final List<Predicate> ndPredicates = new ArrayList<>();
@@ -60,7 +57,7 @@ public class AllocationSpecification implements Specification<Allocation> {
 				cb.equal(root.get(EMPLOYEE).get("division").get("name"), ApplicationConstants.DIVISION_DELIVERY));
 		ndPredicates.add(cb.not(root.get(EMPLOYEE).get("department").get("name")
 				.in(Arrays.asList(ApplicationConstants.DEPT_PMO, ApplicationConstants.DEPT_SEPG))));
-		finalPredicate.add(cb.and(ndPredicates.toArray(new Predicate[ndPredicates.size()])));
+		finalPredicate.add(cb.and(ndPredicates.toArray(new Predicate[0])));
 
 		// To exclude Bench+Earmark records from switchover list
 		final Subquery<Earmark> subquery = query.subquery(Earmark.class);
@@ -71,7 +68,7 @@ public class AllocationSpecification implements Specification<Allocation> {
 		final List<Predicate> subPredicate = new ArrayList<>();
 		subPredicate.add(cb.equal(subqueryRoot.get("allocation").get(ALLOCATION_ID), root.get(ALLOCATION_ID)));
 		subPredicate.add(cb.equal(subqueryRoot.get(IS_ACTIVE), true));
-		subquery.where(cb.and(subPredicate.toArray(new Predicate[subPredicate.size()])));
+		subquery.where(cb.and(subPredicate.toArray(new Predicate[0])));
 
 		finalPredicate.add(cb.exists(subquery).not());
 
@@ -125,7 +122,7 @@ public class AllocationSpecification implements Specification<Allocation> {
 		}
 
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 	}
 
 }

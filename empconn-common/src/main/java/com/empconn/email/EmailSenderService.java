@@ -12,9 +12,9 @@ public interface EmailSenderService {
 	@Async
 	@Retryable(value = Exception.class, maxAttemptsExpression = "${mail.retry.maxAttempts}",
 	backoff = @Backoff(delayExpression = "${mail.retry.maxDelay}"))
-	public void send(MimeMessage message);
+	void send(MimeMessage message);
 
 	@Recover
-	public void onError(Exception e, MimeMessage message);
+	void onError(Exception e, MimeMessage message);
 
 }

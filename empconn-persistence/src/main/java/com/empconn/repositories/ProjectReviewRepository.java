@@ -14,5 +14,5 @@ public interface ProjectReviewRepository extends CrudRepository<ProjectReview, L
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectReview pr SET pr.isActive = 'FALSE' WHERE pr.project.projectId = :projectId")
-	public void softDeleteByProjectId(long projectId);
+	void softDeleteByProjectId(long projectId);
 }

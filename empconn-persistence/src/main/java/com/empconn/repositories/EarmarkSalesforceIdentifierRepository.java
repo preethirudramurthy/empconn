@@ -11,19 +11,19 @@ import com.empconn.persistence.entities.EarmarkSalesforceIdentifier;
 
 public interface EarmarkSalesforceIdentifierRepository extends JpaRepository<EarmarkSalesforceIdentifier, Long> {
 
-	public Long countByValueAndEarmarkProjectProjectIdNotAndIsActiveIsTrue(String value, Long projectId);
+	Long countByValueAndEarmarkProjectProjectIdNotAndIsActiveIsTrue(String value, Long projectId);
 
-	public Long countByValueAndEarmarkOpportunityNotNullAndEarmarkIsActiveTrueAndIsActiveIsTrue(String value);
+	Long countByValueAndEarmarkOpportunityNotNullAndEarmarkIsActiveTrueAndIsActiveIsTrue(String value);
 
-	public Long countByValueAndIsActiveIsTrue(String sfId);
+	Long countByValueAndIsActiveIsTrue(String sfId);
 
-	public Long countByValueAndEarmarkProjectNotNullAndIsActiveIsTrue(String sfId);
+	Long countByValueAndEarmarkProjectNotNullAndIsActiveIsTrue(String sfId);
 
-	public Long countByValueAndEarmarkOpportunityOpportunityIdNotAndIsActiveIsTrue(String sfId, Long opportunityId);
+	Long countByValueAndEarmarkOpportunityOpportunityIdNotAndIsActiveIsTrue(String sfId, Long opportunityId);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE EarmarkSalesforceIdentifier e SET e.isActive = 'FALSE' WHERE e.earmark.earmarkId IN(:earmarkIds)")
-	public void softDelete(List<Long> earmarkIds);
+	void softDelete(List<Long> earmarkIds);
 
 }

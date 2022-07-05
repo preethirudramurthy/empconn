@@ -116,8 +116,7 @@ public class AllocateEarmarkedService {
 	public List<AllocationForEarmarkDto> getEarmarkListForAllocation(EarmarkSearchDto earmarkSearchDto) {
 		final EarmarkSpecification earmarkSpecification = new EarmarkSpecification(earmarkSearchDto);
 		final List<Earmark> earmarks = earMarkRepository.findAll(earmarkSpecification);
-		earmarks.sort((e1, e2) -> e1.getAllocation().getEmployee().getFullName()
-				.compareTo(e2.getAllocation().getEmployee().getFullName()));
+		earmarks.sort(Comparator.comparing(e -> e.getAllocation().getEmployee().getFullName()));
 		return earmarkToAllocationForEarmarkDtoMapper.earmarkToAllocationForEarmarkDtoList(earmarks);
 	}
 
@@ -155,10 +154,7 @@ public class AllocateEarmarkedService {
 				existAllocation = existingAllocationList.get(0);
 				final String reportingManagerName = existAllocation.getReportingManagerId().getFirstName() + " "
 						+ existAllocation.getReportingManagerId().getLastName();
-				boolean isPrimary = false;
-				if (existAllocation.getReportingManagerId().getEmployeeId().equals(employeeId)) {
-					isPrimary = true;
-				}
+				boolean isPrimary =  (existAllocation.getReportingManagerId().getEmployeeId().equals(employeeId)) ;
 				existingAllocationDto = new ExistingAllocationDto(
 						Long.toString(existAllocation.getProjectLocation().getProjectLocationId()),
 						existAllocation.getProjectLocation().getLocation().getName(),
@@ -188,7 +184,7 @@ public class AllocateEarmarkedService {
 					earmark = e.get();
 		if (earmark != null && !earmark.getIsActive())
 			throw new EmpConnException("NotAvailableAllocatePercentage");
-		final Allocation currentAllocation = earmark.getAllocation();
+		final Allocation currentAllocation = Objects.requireNonNull(earmark).getAllocation();
 
 		if (!allocations.isEmpty()) {
 			for (final Allocation allocation : allocations)
@@ -427,7 +423,7 @@ public class AllocateEarmarkedService {
 
 		final Set<String> locationHr = masterService
 				.getLocationHr(allocation.getEmployee().getLocation().getLocationId());
-		locationHr.stream().forEach(emailCCList::add);
+		emailCCList.addAll(locationHr);
 		templateModel.put("employeeName", CommonQualifiedMapper.employeeToFullName(emp));
 		templateModel.put("employeeId", emp.getEmpCode());
 		templateModel.put("employeeTitle", emp.getTitle().getName());
@@ -436,15 +432,14 @@ public class AllocateEarmarkedService {
 						.map(AllocationDetail::getAllocatedPercentage).reduce(0, Integer::sum), "%"));
 		templateModel.put(PROJECT_NAME, allocation.getProject().getName());
 
-		if (allocationDetail.isPresent())
-			templateModel.put("dateOfMovement",
-					new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(allocationDetail.get().getStartDate()));
+		allocationDetail.ifPresent(detail -> templateModel.put("dateOfMovement",
+				new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(detail.getStartDate())));
 		templateModel.put("reportingManagerName",
 				CommonQualifiedMapper.employeeToFullName(allocation.getReportingManagerId()));
 		templateModel.put("reportingManagerId", allocation.getReportingManagerId().getEmpCode());
 		emailService.send("allocate-earmarked-resource", templateModel,
-				emailToList.toArray(new String[emailToList.size()]),
-				emailCCList.toArray(new String[emailCCList.size()]));
+				emailToList.toArray(new String[0]),
+				emailCCList.toArray(new String[0]));
 	}
 
 	public void sendMailOnAllocateEarmarkedResourceUnearmarked(Earmark earmark) {
@@ -490,8 +485,8 @@ public class AllocateEarmarkedService {
 		templateModel.put("endDate", new SimpleDateFormat(ApplicationConstants.DATE_FORMAT_DD_MMM_YYYY).format(earmark.getEndDate()));
 		templateModel.put("isBillable", earmark.getBillable()? "Yes" : "No");
 		emailService.send("allocate-earmarked-resource-unearmarked", templateModel,
-				emailToList.toArray(new String[emailToList.size()]),
-				emailCCList.toArray(new String[emailCCList.size()]));
+				emailToList.toArray(new String[0]),
+				emailCCList.toArray(new String[0]));
 	}
 
 	public Allocation populateToAllocation(Employee employee, Project project, ProjectLocation projectLocation,

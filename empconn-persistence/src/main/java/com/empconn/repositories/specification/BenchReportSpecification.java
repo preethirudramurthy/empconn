@@ -2,10 +2,7 @@ package com.empconn.repositories.specification;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -68,7 +65,7 @@ public class BenchReportSpecification implements Specification<Allocation> {
 
 		// Fetch only active allocation details
 		finalPredicate.add(cb.equal(employeeJoin.get(IS_ACTIVE), true));
-		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Arrays.asList("NDBench"))));
+		finalPredicate.add(cb.not(root.get(PROJECT).get("name").in(Collections.singletonList("NDBench"))));
 
 		if (!CollectionUtils.isEmpty(filter.getAvailablePercentage())) {
 			final Subquery<Integer> sq = query.subquery(Integer.class);
@@ -89,10 +86,10 @@ public class BenchReportSpecification implements Specification<Allocation> {
 							cb.greaterThanOrEqualTo(sq.where(predicateForActiveDetails).select(cb.sum(details.get(ALLOCATED_PERCENTAGE))), Integer.parseInt(a.getLow())));
 					insidePredicate
 					.add(cb.lessThanOrEqualTo(sq.where(predicateForActiveDetails).select(cb.sum(details.get(ALLOCATED_PERCENTAGE))), Integer.parseInt(a.getHigh())));
-					predicate.add(cb.and(insidePredicate.toArray(new Predicate[insidePredicate.size()])));
+					predicate.add(cb.and(insidePredicate.toArray(new Predicate[0])));
 				}
 			}
-			finalPredicate.add(cb.or(predicate.toArray(new Predicate[predicate.size()])));
+			finalPredicate.add(cb.or(predicate.toArray(new Predicate[0])));
 
 		}
 
@@ -119,7 +116,7 @@ public class BenchReportSpecification implements Specification<Allocation> {
 
 				predicate.add(cb.and(predicateForBenchAgeFrom, predicateForBenchAgeTo));
 			}
-			finalPredicate.add(cb.or(predicate.toArray(new Predicate[predicate.size()])));
+			finalPredicate.add(cb.or(predicate.toArray(new Predicate[0])));
 		}
 
 		if (!CollectionUtils.isEmpty(primarySkillIds)) {
@@ -149,7 +146,7 @@ public class BenchReportSpecification implements Specification<Allocation> {
 			finalPredicate.add(benchProjects);
 
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 
 	}
 
@@ -171,7 +168,7 @@ public class BenchReportSpecification implements Specification<Allocation> {
 	}
 
 	public Date getDateBeforeToday(String count) {
-		final LocalDate date = LocalDate.now().minusDays(Integer.valueOf(count));
+		final LocalDate date = LocalDate.now().minusDays(Integer.parseInt(count));
 		return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 }

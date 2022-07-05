@@ -114,7 +114,7 @@ public class EditReleaseDateService {
 		for (final ChangeReleaseDateListDto changeReleaseDateDto : dto.getChangeReleaseDateList()) {
 			Optional<Allocation> allocOpt = allocationRepository
 					.findById(Long.valueOf(changeReleaseDateDto.getAllocationId()));
-			final Allocation allocation = allocOpt.isPresent() ? allocOpt.get() : null;
+			final Allocation allocation = allocOpt.orElse(null);
 			if (allocation != null) {
 				final List<AllocationHour> allocationHours = allocation.getAllocationHours();
 				if (allocation.getReleaseDate().equals(Date.from(
@@ -211,7 +211,7 @@ public class EditReleaseDateService {
 
 					Optional<Allocation> modAlloc = allocationRepository
 							.findById(Long.valueOf(changeReleaseDateDto.getAllocationId()));
-					final Allocation modifiedAllocation = (modAlloc.isPresent())?modAlloc.get():null;
+					final Allocation modifiedAllocation = modAlloc.orElse(null);
 					if (modifiedAllocation != null) {
 						final List<AllocationHour> modifiedallocationHours2 = modifiedAllocation.getAllocationHours();
 						modfiedBillingHour(changeReleaseDateDto, modifiedallocationHours2);	

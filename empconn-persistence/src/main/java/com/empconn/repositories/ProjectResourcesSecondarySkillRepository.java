@@ -14,11 +14,11 @@ public interface ProjectResourcesSecondarySkillRepository extends CrudRepository
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectResourcesSecondarySkill prs SET prs.isActive = 'FALSE' WHERE  prs.projectResource.projectResourcesId IN (:resourceIds)")
-	public Integer softDeleteAllSecondariesForProjectResourceIds(Set<Long> resourceIds);
+	void softDeleteAllSecondariesForProjectResourceIds(Set<Long> resourceIds);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectResourcesSecondarySkill prs SET prs.isActive = 'FALSE' WHERE prs.projectResourcesSecondarySkillId NOT IN (:secondaryIds) AND prs.projectResource.projectResourcesId IN (:resourceIds)")
-	public Integer softDeleteSecondariesForProjectResourceIds(Set<Long> secondaryIds, Set<Long> resourceIds);
+	void softDeleteSecondariesForProjectResourceIds(Set<Long> secondaryIds, Set<Long> resourceIds);
 
 }

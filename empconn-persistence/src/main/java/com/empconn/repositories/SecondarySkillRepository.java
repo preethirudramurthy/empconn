@@ -13,7 +13,7 @@ import com.empconn.persistence.entities.PrimarySkill;
 import com.empconn.persistence.entities.SecondarySkill;
 
 public interface SecondarySkillRepository extends CrudRepository<SecondarySkill, Integer> {
-	public List<SecondarySkill> findByIsActiveTrueAndPrimarySkillOrderByName(PrimarySkill primarySkill);
+	List<SecondarySkill> findByIsActiveTrueAndPrimarySkillOrderByName(PrimarySkill primarySkill);
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value = "true") })
 	Set<SecondarySkill> findBySecondarySkillIdInAndIsActiveTrue(List<Integer> ids);
@@ -33,7 +33,7 @@ public interface SecondarySkillRepository extends CrudRepository<SecondarySkill,
 	SecondarySkill findByNameIgnoreCaseAndPrimarySkillNameIgnoreCaseAndIsActiveTrue(String secondarySkillName,
 			String primarySkillName);
 
-	public List<SecondarySkill> findByPrimarySkillNameIgnoreCaseAndNameIgnoreCaseIn(String name,
+	List<SecondarySkill> findByPrimarySkillNameIgnoreCaseAndNameIgnoreCaseIn(String name,
 			List<String> secondarySkillNames);
 
 }

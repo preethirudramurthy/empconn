@@ -14,14 +14,14 @@ public interface ProjectResourceRepository extends CrudRepository<ProjectResourc
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectResource pr SET pr.isActive = 'FALSE' WHERE pr.projectResourcesId NOT IN (?1) AND pr.projectLocation.projectLocationId IN (?2)")
-	public Integer softDeleteProjectResourcesForLocations(Set<Long> resourceIds, Set<Long> locationIds);
+	void softDeleteProjectResourcesForLocations(Set<Long> resourceIds, Set<Long> locationIds);
 
 	@Transactional
 	@Modifying
 	@Query("UPDATE ProjectResource pr SET pr.isActive = 'FALSE' WHERE  pr.projectLocation.projectLocationId IN (:locationIds)")
-	public Integer softDeleteAllProjectResourcesForLocations(Set<Long> locationIds);
+	void softDeleteAllProjectResourcesForLocations(Set<Long> locationIds);
 
 	@Query("SELECT pr.projectResourcesId FROM ProjectResource pr WHERE pr.projectLocation.projectLocationId IN(:projectLocationIds) AND pr.isActive = 'FALSE'")
-	public Set<Long> findSoftDeletedProjectResourcesForProjectLocations(Set<Long> projectLocationIds);
+	Set<Long> findSoftDeletedProjectResourcesForProjectLocations(Set<Long> projectLocationIds);
 
 }

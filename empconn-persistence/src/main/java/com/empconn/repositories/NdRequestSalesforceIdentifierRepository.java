@@ -10,12 +10,12 @@ import com.empconn.persistence.entities.NdRequestSalesforceIdentifier;
 
 public interface NdRequestSalesforceIdentifierRepository extends JpaRepository<NdRequestSalesforceIdentifier, Long> {
 
-	public Long countByValueAndNdRequestProjectProjectIdNotAndIsActiveIsTrue(String value, Long projectId);
+	Long countByValueAndNdRequestProjectProjectIdNotAndIsActiveIsTrue(String value, Long projectId);
 
-	public Long countByValueAndIsActiveIsTrue(String sfId);
+	Long countByValueAndIsActiveIsTrue(String sfId);
 
 	@Modifying
 	@Query("UPDATE NdRequestSalesforceIdentifier e SET e.isActive = 'FALSE' WHERE e.ndRequest.ndRequestId IN(:ndRequestIds)")
-	public void softDelete(List<Long> ndRequestIds);
+	void softDelete(List<Long> ndRequestIds);
 
 }

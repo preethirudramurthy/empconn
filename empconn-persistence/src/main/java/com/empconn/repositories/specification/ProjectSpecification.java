@@ -2,6 +2,7 @@ package com.empconn.repositories.specification;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ public class ProjectSpecification {
 				finalPredicate.add(root.get(PROJECT).get("name").in(benchProjects).not());
 			}
 			query.distinct(true);
-			return criteriaBuilder.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+			return criteriaBuilder.and(finalPredicate.toArray(new Predicate[0]));
 		};
 	}
 
@@ -102,7 +103,7 @@ public class ProjectSpecification {
 				finalPredicate.add(cb.like(root.get("name"), request.getPartial() + "%"));
 			}
 			query.distinct(true);
-			return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+			return cb.and(finalPredicate.toArray(new Predicate[0]));
 		};
 	}
 
@@ -112,7 +113,7 @@ public class ProjectSpecification {
 			final List<Predicate> finalPredicate = new ArrayList<>();
 			finalPredicate.add(cb.equal(root.get(IS_ACTIVE), true));
 			if (request.getIsActive() == null || (request.getIsActive() != null && request.getIsActive())) {
-				finalPredicate.add(root.get("currentStatus").in(Arrays.asList(ProjectStatus.PMO_APPROVED.name())));
+				finalPredicate.add(root.get("currentStatus").in(Collections.singletonList(ProjectStatus.PMO_APPROVED.name())));
 			}
 
 			if (request.getAccountId() != null) {
@@ -147,21 +148,21 @@ public class ProjectSpecification {
 				managerPredicate.add(cb.equal(location.get("employee3").get(EMPLOYEE_ID), loggedInEmployeeId));
 				managerPredicate.add(cb.equal(location.get("employee4").get(EMPLOYEE_ID), loggedInEmployeeId));
 				managerPredicate.add(cb.equal(location.get("employee5").get(EMPLOYEE_ID), loggedInEmployeeId));
-				managerAndGdmPredicate.add(cb.or(managerPredicate.toArray(new Predicate[managerPredicate.size()])));
+				managerAndGdmPredicate.add(cb.or(managerPredicate.toArray(new Predicate[0])));
 
 				final List<Predicate> gdmPredicate = new ArrayList<>();
 				gdmPredicate.add(cb.equal(root.get(EMPLOYEE1).get(EMPLOYEE_ID), loggedInEmployeeId));
 				gdmPredicate.add(cb.equal(root.get(EMPLOYEE2).get(EMPLOYEE_ID), loggedInEmployeeId));
-				managerAndGdmPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[gdmPredicate.size()])));
+				managerAndGdmPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[0])));
 
-				finalPredicate.add(cb.or(managerAndGdmPredicate.toArray(new Predicate[managerAndGdmPredicate.size()])));
+				finalPredicate.add(cb.or(managerAndGdmPredicate.toArray(new Predicate[0])));
 
 			} else if (RolesUtil.isOnlyGDM(loggedInUser)) {
 				final List<Predicate> gdmPredicate = new ArrayList<>();
 				gdmPredicate.add(cb.equal(root.get(EMPLOYEE1).get(EMPLOYEE_ID), loggedInEmployeeId));
 				gdmPredicate.add(cb.equal(root.get(EMPLOYEE2).get(EMPLOYEE_ID), loggedInEmployeeId));
 
-				finalPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[gdmPredicate.size()])));
+				finalPredicate.add(cb.or(gdmPredicate.toArray(new Predicate[0])));
 			} else if (RolesUtil.isAManager(loggedInUser)) {
 				final Join<Project, ProjectLocation> location = root.join(PROJECT_LOCATIONS);
 				finalPredicate.add(cb.equal(location.get(IS_ACTIVE), true));
@@ -171,11 +172,11 @@ public class ProjectSpecification {
 				managerPredicate.add(cb.equal(location.get("employee3").get(EMPLOYEE_ID), loggedInEmployeeId));
 				managerPredicate.add(cb.equal(location.get("employee4").get(EMPLOYEE_ID), loggedInEmployeeId));
 				managerPredicate.add(cb.equal(location.get("employee5").get(EMPLOYEE_ID), loggedInEmployeeId));
-				finalPredicate.add(cb.or(managerPredicate.toArray(new Predicate[managerPredicate.size()])));
+				finalPredicate.add(cb.or(managerPredicate.toArray(new Predicate[0])));
 			}
 
 			query.distinct(true);
-			return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+			return cb.and(finalPredicate.toArray(new Predicate[0]));
 		};
 	}
 

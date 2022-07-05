@@ -27,8 +27,7 @@ public class SuccessFactorManagerChangeOutboundService extends SuccessFactorOutb
 
 	@SuppressWarnings("unchecked")
 	public Boolean syncManagerChanges(Set<ManagerChangeDto> managersDto) {
-		final Object object = managersDto;
-		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) object;
+		final Set<SuccessFactorsOutboundData> object2 = (Set<SuccessFactorsOutboundData>) (Object) managersDto;
 		return syncChanges(object2,ApplicationConstants.SF_FTP.MANAGER.name());
 	}
 

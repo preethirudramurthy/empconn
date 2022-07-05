@@ -55,7 +55,7 @@ public abstract class ClientLocationToAccountLocationDtoMapper {
 					.findById(Long.valueOf(dto.getAccountLocationId())).isPresent()) {
 				Optional<ClientLocation> clOpt = clientLocationRepository
 						.findById(Long.valueOf(dto.getAccountLocationId()));
-				final ClientLocation location = clOpt.isPresent()?clOpt.get():null;
+				final ClientLocation location = clOpt.orElse(null);
 				set.add(accountLocationDtoToClientLocation(dto, location));
 			} else
 				set.add(accountLocationDtoToClientLocation(dto));

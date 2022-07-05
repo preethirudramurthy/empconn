@@ -56,16 +56,16 @@ public class ReleaseDateApproachingEmailService {
 			final StringBuilder managerEmails = new StringBuilder();
 			final Employee repotingManager = a1.getEmployee().getPrimaryAllocation().getReportingManagerId();
 			if (repotingManager != null && !managerEmails.toString().contains(repotingManager.getEmail())) {
-					managerEmails.append(repotingManager.getEmail() + ",");
+					managerEmails.append(repotingManager.getEmail()).append(",");
 			}
 			if(!managerEmails.toString().contains(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail()))
-				managerEmails.append(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail() + ",");
+				managerEmails.append(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail()).append(",");
 
 			final String gdmEmail = emailUtilityService.getGdmEmail(a1.getWorkGroup(), a1.getProject());
 			templateModel.put("noOfDays", noOfDays);
 			templateModel.put("allocation", mailForReleaseDateDto);
 			try {
-				emailService.send("allocation-release-date-email-notification", templateModel, new String[] { managerEmails == null ? "" : managerEmails.toString() + ""},
+				emailService.send("allocation-release-date-email-notification", templateModel, new String[] { managerEmails == null ? "" : managerEmails + ""},
 						new String[] { gdmEmail + "" });
 			} catch (final Exception exception) {
 				exception.printStackTrace();
@@ -86,16 +86,16 @@ public class ReleaseDateApproachingEmailService {
 			final StringBuilder managerEmails = new StringBuilder();
 			final Employee repotingManager = a1.getEmployee().getPrimaryAllocation().getReportingManagerId();
 			if (repotingManager != null && (!managerEmails.toString().contains(repotingManager.getEmail()))) {
-					managerEmails.append(repotingManager.getEmail() + ",");
+					managerEmails.append(repotingManager.getEmail()).append(",");
 			}
 			if(!managerEmails.toString().contains(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail()))
-				managerEmails.append(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail() + ",");
+				managerEmails.append(a1.getEmployee().getPrimaryAllocation().getAllocationManagerId().getEmail()).append(",");
 
 			final String gdmEmail = emailUtilityService.getGdmEmail(a1.getWorkGroup(), a1.getProject());
 
 			templateModel.put("allocation", mailForReleaseDateDto);
 			try {
-				emailService.send("allocation-release-date-past-email-notification", templateModel, new String[] { managerEmails == null ? "" : managerEmails.toString() + ""},
+				emailService.send("allocation-release-date-past-email-notification", templateModel, new String[] { managerEmails == null ? "" : managerEmails + ""},
 						new String[] { gdmEmail + "" });
 			} catch (final Exception exception) {
 				exception.printStackTrace();

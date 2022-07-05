@@ -16,32 +16,32 @@ import com.empconn.persistence.entities.Employee;
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
 
 	@Query("select e from Employee e where (e.businessUnit.name != 'Delivery' or e.division.name != 'Delivery' or e.department.name in ('PMO','SEPG')) and (upper(e.firstName) like concat('%', upper(?1), '%') or upper(e.lastName) like concat('%', upper(?1), '%') or upper(e.empCode) like concat('%', upper(?1), '%')) and e.isActive = true")
-	public Set<Employee> findByMatchingNameForND(@Param("partialName") String partialName);
+	Set<Employee> findByMatchingNameForND(@Param("partialName") String partialName);
 
 	@Query("select e from Employee e where  e.employeeId in (:resourceIdList) or e.location.locationId in (:orgLocationIdList) or e.title.titleId in (:titleIdList) or e.department.departmentId in(:departmentIdList) ")
-	public List<Employee> findByNDResources(List<Long> resourceIdList, List<Integer> orgLocationIdList,
-			List<Integer> titleIdList, List<Long> departmentIdList);
+	List<Employee> findByNDResources(List<Long> resourceIdList, List<Integer> orgLocationIdList,
+									 List<Integer> titleIdList, List<Long> departmentIdList);
 
-	public Employee findByEmployeeId(Long employeeId);
+	Employee findByEmployeeId(Long employeeId);
 
-	public Set<Employee> findByIsManager(Boolean isManager);
+	Set<Employee> findByIsManager(Boolean isManager);
 
-	public Employee findByLoginId(String loginId);
+	Employee findByLoginId(String loginId);
 
 	Employee findByEmpCodeAndIsActiveTrue(String empCode);
 
 	Employee findByEmpCodeIgnoreCaseAndIsActiveTrue(String empCode);
 
-	public Set<Employee> findAllByIsActiveTrue();
+	Set<Employee> findAllByIsActiveTrue();
 
 	@Query("select e from Employee e where e.isActive = true")
-	public List<Employee> findAllActiveEmployee();
+	List<Employee> findAllActiveEmployee();
 
 	@EntityGraph(attributePaths = { "employeeRoles", "employeeRoles.role" })
-	public List<Employee> findAllByFirstNameIgnoreCaseNotLikeAndIsActiveTrueOrderByFirstName(String firstName);
+	List<Employee> findAllByFirstNameIgnoreCaseNotLikeAndIsActiveTrueOrderByFirstName(String firstName);
 
 	@Query("select e.loginId from Employee e where e.isActive = true and e.primaryAllocation.project.projectId = :projectId  and e.primaryAllocation.project.name <> :name  and e.primaryAllocation.project.isActive = true")
-	public List<String> getEmployeeLoginIdsOfPrimaryAllocationProjects(Long projectId, String name);
+	List<String> getEmployeeLoginIdsOfPrimaryAllocationProjects(Long projectId, String name);
 
 	@Query("select e from Employee e where ( upper(concat(e.firstName, ' ', e.lastName)) like concat('%', upper(:fullName), '%') or upper(e.empCode) like concat('%', upper(:empCode), '%')) and e.isActive = true")
 	List<Employee> findEmployeesMatchingNameOrEmpCode(String fullName, String empCode);
@@ -55,15 +55,15 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
 	Set<Object[]> findEmployeesMatchingName(String empName1, String empName2, String empName3, String empName4,
 			String empName5, String empName6, String empName7, String empName8);
 
-	public List<Employee> findByEmployeeIdIn(List<Long> list);
+	List<Employee> findByEmployeeIdIn(List<Long> list);
 
 	@Query("select e from Employee e where (e.businessUnit.name = 'Delivery' and e.division.name = 'Delivery' and e.department.name not in ('PMO','SEPG')) and ( upper(concat(e.firstName, ' ', e.lastName)) like concat('%', upper(:fullName), '%') or upper(e.empCode) like concat('%', upper(:empCode), '%')) and e.isActive = true")
 	List<Employee> findMatchingDeliveryResources(String fullName, String empCode);
 
-	public Optional<Employee> findByLoginIdIgnoreCaseAndIsActiveTrue(String loginId);
+	Optional<Employee> findByLoginIdIgnoreCaseAndIsActiveTrue(String loginId);
 
-	public Employee findByEmailAndIsActiveTrue(String username);
+	Employee findByEmailAndIsActiveTrue(String username);
 
-	public Employee findByLoginIdAndIsActiveTrue(String username);
+	Employee findByLoginIdAndIsActiveTrue(String username);
 
 }

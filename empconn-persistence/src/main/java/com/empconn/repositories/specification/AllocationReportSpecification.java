@@ -114,7 +114,7 @@ public class AllocationReportSpecification implements Specification<Allocation> 
 					root.get(PROJECT).get("currentStatus")));
 
 		query.distinct(true);
-		return cb.and(finalPredicate.toArray(new Predicate[finalPredicate.size()]));
+		return cb.and(finalPredicate.toArray(new Predicate[0]));
 
 	}
 

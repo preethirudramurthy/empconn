@@ -14,10 +14,10 @@ import com.empconn.persistence.entities.ProjectChange;
 public interface ProjectChangeRepository extends CrudRepository<ProjectChange, Long>, JpaSpecificationExecutor<ProjectChange>  {
 
 	@Query("select p from ProjectChange p where p.status != 'Processed'")
-	public Set<ProjectChange> findPendingRequests();
+	Set<ProjectChange> findPendingRequests();
 
 	@Modifying
 	@Query("update ProjectChange p set p.status = :newStatus, p.modifiedOn = now() where p.projectChangeId in (:projectChangeIdList)")
-	public void updateProcessingStatus(String newStatus, List<Long> projectChangeIdList);
+	void updateProcessingStatus(String newStatus, List<Long> projectChangeIdList);
 
 }

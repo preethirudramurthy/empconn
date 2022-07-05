@@ -10,7 +10,7 @@ import com.empconn.vo.UnitValue;
 
 class VerticalUnitValueMapperIntegrationTest {
 
-	private VerticalUnitValueMapper mapper = Mappers.getMapper(VerticalUnitValueMapper.class);
+	private final VerticalUnitValueMapper mapper = Mappers.getMapper(VerticalUnitValueMapper.class);
 
 	@Test
 	void givenSourceToDestination_whenMaps_thenCorrect() {

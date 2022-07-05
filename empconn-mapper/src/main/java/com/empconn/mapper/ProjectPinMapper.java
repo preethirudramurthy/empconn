@@ -2,12 +2,10 @@ package com.empconn.mapper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.empconn.persistence.entities.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -25,16 +23,6 @@ import com.empconn.dto.PinStatusChangeCommentDto;
 import com.empconn.dto.PreApprovalCheckDto;
 import com.empconn.dto.ResourceItemUnitDto;
 import com.empconn.enums.ProjectStatus;
-import com.empconn.persistence.entities.Account;
-import com.empconn.persistence.entities.ClientLocation;
-import com.empconn.persistence.entities.Contact;
-import com.empconn.persistence.entities.Employee;
-import com.empconn.persistence.entities.Project;
-import com.empconn.persistence.entities.ProjectComment;
-import com.empconn.persistence.entities.ProjectLocation;
-import com.empconn.persistence.entities.ProjectResource;
-import com.empconn.persistence.entities.ProjectResourcesSecondarySkill;
-import com.empconn.persistence.entities.SalesforceIdentifier;
 import com.empconn.repositories.EmployeeRepository;
 import com.empconn.vo.UnitValue;
 
@@ -145,7 +133,7 @@ public abstract class ProjectPinMapper {
 		final List<GdmCommentDto> gdmCommentDtos = new ArrayList<>();
 		if (projectComments != null) {
 			projectComments.stream().filter(c -> c.getStatus().equals(ProjectStatus.SENT_BACK.name()))
-					.sorted((c1, c2) -> c1.getCreatedOn().compareTo(c2.getCreatedOn())).forEach(c -> {
+					.sorted(Comparator.comparing(Auditable::getCreatedOn)).forEach(c -> {
 						final Employee commentor = employeeRepository.findById(c.getCreatedBy()).get();
 						gdmCommentDtos.add(new GdmCommentDto(commentor.getEmployeeId().toString(),
 								CommonQualifiedMapper.employeeToFullName(commentor), c.getValue(),

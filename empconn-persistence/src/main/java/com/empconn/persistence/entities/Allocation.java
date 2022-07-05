@@ -282,11 +282,10 @@ public class Allocation extends Auditable<Long> implements Serializable {
 		this.allocationDetails = allocationDetails;
 	}
 
-	public AllocationDetail addAllocationDetails(AllocationDetail allocationDetail) {
+	public void addAllocationDetails(AllocationDetail allocationDetail) {
 		getAllocationDetails().add(allocationDetail);
 		allocationDetail.setAllocation(this);
 
-		return allocationDetail;
 	}
 
 	public AllocationDetail removeAllocationDetails(AllocationDetail allocationDetail) {

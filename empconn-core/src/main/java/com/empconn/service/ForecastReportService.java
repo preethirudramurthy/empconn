@@ -133,7 +133,7 @@ public class ForecastReportService {
 		keysList.stream().forEach(k -> 
 			finalDto.addAll(mapValue.get(k))
 		);
-		Collections.sort(finalDto, (p1, p2) -> p1.getEmpFullName().compareToIgnoreCase(p2.getEmpFullName()));
+		finalDto.sort((p1, p2) -> p1.getEmpFullName().compareToIgnoreCase(p2.getEmpFullName()));
 		return finalDto;
 	}
 
@@ -194,12 +194,12 @@ public class ForecastReportService {
 			if(a.getReleaseDate() != null) {
 				final LocalDate date = DateUtils.convertToLocalDateViaMilisecond(a.getReleaseDate());
 				if (date.getDayOfMonth() <= forecastReportDays) {
-					if(insideMap.get(String.valueOf(date.getMonthValue()+"_"+date.getYear())) != null )
-						insideMap.get(String.valueOf(date.getMonthValue()+"_"+date.getYear())).add(forecastDataDto);
+					if(insideMap.get(date.getMonthValue() + "_" + date.getYear()) != null )
+						insideMap.get(date.getMonthValue() + "_" + date.getYear()).add(forecastDataDto);
 				} else {
 					final LocalDate nextMonth = date.plusMonths(Integer.parseInt(ApplicationConstants.FORECAST_NEXT_MONTH));
-					if(insideMap.get(String.valueOf(nextMonth.getMonthValue()+"_"+nextMonth.getYear())) != null )
-						insideMap.get(String.valueOf(nextMonth.getMonthValue()+"_"+nextMonth.getYear())).add(forecastDataDto);
+					if(insideMap.get(nextMonth.getMonthValue() + "_" + nextMonth.getYear()) != null )
+						insideMap.get(nextMonth.getMonthValue() + "_" + nextMonth.getYear()).add(forecastDataDto);
 				}
 			}
 			if(a.getProject().getName().equals(ApplicationConstants.DELIVERY_BENCH_PROJECT_NAME)) {

@@ -1,15 +1,6 @@
 package com.empconn.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -98,17 +89,15 @@ public class AllocationUtilityService {
 			Comparator<Allocation> sortByPercentageAndStartDate = ((Allocation a,
 					Allocation b) -> getMergedAllocatedPercentage(a).compareTo(getMergedAllocatedPercentage(b)));
 			sortByPercentageAndStartDate = sortByPercentageAndStartDate.reversed()
-					.thenComparing((a, b) -> Collections
+					.thenComparing(Comparator.comparing(a -> Collections
 							.min(a.getAllocationDetails().stream().map(AllocationDetail::getStartDate)
-									.collect(Collectors.toList()))
-							.compareTo(Collections.min(b.getAllocationDetails().stream()
-									.map(AllocationDetail::getStartDate).collect(Collectors.toList()))));
+									.collect(Collectors.toList()))));
 
 			final List<Allocation> sortedAllocations = existingActiveAllocations.stream()
 					.sorted(sortByPercentageAndStartDate).collect(Collectors.toList());
 
 			Optional<Allocation> a = sortedAllocations.stream().findFirst();
-			return a.isPresent()?a.get():null;
+			return a.orElse(null);
 
 		}
 		return null;
@@ -136,8 +125,8 @@ public class AllocationUtilityService {
 						&& p.getAllManagers().get(workgroup) != null))
 				.collect(Collectors.toList());
 		if (!otherLocationsWorkgroupManagers.isEmpty()) {
-			final Comparator<ProjectLocation> sortByLocationHierarchy = ((ProjectLocation a, ProjectLocation b) -> a
-					.getLocation().getHierarchy().compareTo(b.getLocation().getHierarchy()));
+			final Comparator<ProjectLocation> sortByLocationHierarchy = (Comparator.comparing((ProjectLocation a) -> a
+					.getLocation().getHierarchy()));
 
 			otherLocationsWorkgroupManagers.sort(sortByLocationHierarchy);
 
@@ -145,7 +134,7 @@ public class AllocationUtilityService {
 		}
 
 		Optional<Employee> managerOpt = projectLocation.getAllManagers().values().stream().findFirst();
-		return managerOpt.isPresent()? managerOpt.get():null;
+		return managerOpt.orElse(null);
 
 	}
 
@@ -237,9 +226,9 @@ public class AllocationUtilityService {
 
 		final Project project = projectRepository.findByProjectId(request.getProjectId());
 		Optional<ProjectLocation> pl = projectLocationRepository.findById(request.getProjectLocationId());
-		final ProjectLocation projectLocation = pl.isPresent()?pl.get():null;
+		final ProjectLocation projectLocation = pl.orElse(null);
 
-		final Employee autoReportingManager = getAutoReportingManagerId(project, projectLocation,
+		final Employee autoReportingManager = getAutoReportingManagerId(project, Objects.requireNonNull(projectLocation),
 				request.getWorkgroup());
 
 		return new GetResourcesResponseDto(autoReportingManager.getEmployeeId(), autoReportingManager.getFullName(),
@@ -258,8 +247,8 @@ public class AllocationUtilityService {
 						&& p.getAllManagers().get(workgroup) != null))
 				.collect(Collectors.toList());
 		if (!otherLocationsWorkgroupManagers.isEmpty()) {
-			final Comparator<ProjectLocation> sortByLocationHierarchy = ((ProjectLocation a, ProjectLocation b) -> a
-					.getLocation().getHierarchy().compareTo(b.getLocation().getHierarchy()));
+			final Comparator<ProjectLocation> sortByLocationHierarchy = (Comparator.comparing((ProjectLocation a) -> a
+					.getLocation().getHierarchy()));
 
 			otherLocationsWorkgroupManagers.sort(sortByLocationHierarchy);
 
@@ -267,7 +256,7 @@ public class AllocationUtilityService {
 		}
 
 		Optional<Employee> e = projectLocation.getAllManagers().values().stream().findFirst();
-		return e.isPresent()?e.get():null;
+		return e.orElse(null);
 
 	}
 }

@@ -12,6 +12,6 @@ import com.empconn.persistence.entities.LocationHr;
 public interface LocationHrRepository extends JpaRepository<LocationHr, Integer> {
 
 	@QueryHints({ @QueryHint(name = "org.hibernate.cacheable", value ="true") })
-	public Set<LocationHr> findByLocationLocationId(Integer locationId);
+	Set<LocationHr> findByLocationLocationId(Integer locationId);
 
 }

@@ -49,7 +49,7 @@ public abstract class ContactToAccountLocationContactDtoMapper {
 		for (final AccountLocationContactDto dto : source) {
 			if (dto.getAccountLocationContactId() != null) {
 				Optional<Contact> cOpt = contactRepository.findById(Long.valueOf(dto.getAccountLocationContactId()));
-				final Contact contact = cOpt.isPresent()?cOpt.get():null;
+				final Contact contact = cOpt.orElse(null);
 				set.add(accountLocationContactDtoToContact(dto, contact));
 			} else
 				set.add(accountLocationContactDtoToContact(dto));
